@@ -1,1 +1,14 @@
+^/\.git
+^/\.gitignore
+^/\.gitmodules
+^/README.*
+
+^/Makefile
+^/hack
+
 ^/node_modules
+^/package.json
+^/pnpm-lock.yaml
+
+^/commitlint.config.js
+^/\.husky
