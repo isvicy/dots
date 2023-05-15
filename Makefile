@@ -1,5 +1,5 @@
 prepare:
-	bash ./hack/prepare.sh
+	bash ./hack/setup-machine.sh
 preview:
 	stow . --verbose --target=${HOME} --restow --simulate
 link:
