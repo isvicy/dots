@@ -19,6 +19,9 @@ zstyle ':z4h:' start-tmux       no
 # Mark up shell's output with semantic information.
 zstyle ':z4h:' term-shell-integration 'yes'
 
+zstyle ':z4h:term-title:ssh'    precmd                 ${${${Z4H_SSH##*:}//\%/%%}:-%m}': %~'
+zstyle ':z4h:term-title:ssh'    preexec                ${${${Z4H_SSH##*:}//\%/%%}:-%m}': ${1//\%/%%}'
+
 # Right-arrow key accepts one character ('partial-accept') from
 # command autosuggestions or the whole thing ('accept')?
 zstyle ':z4h:autosuggestions' forward-char 'accept'
@@ -33,17 +36,30 @@ zstyle ':z4h:direnv:success' notify 'yes'
 
 # Enable ('yes') or disable ('no') automatic teleportation of z4h over
 # SSH when connecting to these hosts.
-zstyle ':z4h:ssh:example-hostname1'   enable 'yes'
-zstyle ':z4h:ssh:*.example-hostname2' enable 'no'
 # The default value if none of the overrides above match the hostname.
-zstyle ':z4h:ssh:*'                   enable 'no'
+zstyle ':z4h:ssh:*'                   enable 'yes'
+# zstyle ':z4h:ssh:example-hostname1'   enable 'yes'
+# zstyle ':z4h:ssh:*.example-hostname2' enable 'no'
 
 # Send these files over to the remote host when connecting over SSH to the
 # enabled hosts.
 zstyle ':z4h:ssh:*' send-extra-files '~/.nanorc' '~/.env.zsh'
 
-# Start ssh-agent if it's not running yet.
-zstyle ':z4h:ssh-agent:' start yes
+if [[ -e ~/.ssh/id_ed25519 ]]; then
+  zstyle ':z4h:ssh-agent:' start      yes
+  zstyle ':z4h:ssh-agent:' extra-args -t 20h
+else
+  : ${GITSTATUS_AUTO_INSTALL:=0}
+fi
+
+if [[ $TERM == xterm-256color && ! -v ZSH_SCRIPT && ! -v ZSH_EXECUTION_STRING &&
+      -z $SSH_CONNECTON && P9K_SSH -ne 1 && -e ~/.ssh/id_rsa && -e /proc/uptime &&
+      ! (/tmp/wiped-after-boot -nt /proc/uptime) && -r /proc/version &&
+      "$(</proc/version)" == *Microsoft* ]]; then
+  print -Pr -- "%F{3}zsh%f: wiping %U/tmp%u ..."
+  sudo rm -rf -- /tmp/*(ND)
+  : >/tmp/wiped-after-boot
+fi
 
 # Clone additional Git repositories from GitHub.
 #
@@ -52,17 +68,42 @@ zstyle ':z4h:ssh-agent:' start yes
 # example. If you don't plan to use Oh My Zsh, delete this line.
 z4h install ohmyzsh/ohmyzsh || return
 
+z4h install romkatv/archive romkatv/zsh-prompt-benchmark
+
 # Install or update core components (fzf, zsh-autosuggestions, etc.) and
 # initialize Zsh. After this point console I/O is unavailable until Zsh
 # is fully initialized. Everything that requires user interaction or can
 # perform network I/O must be done above. Everything else is best done below.
 z4h init || return
 
+setopt glob_dots magic_equal_subst no_multi_os no_local_loops
+setopt rm_star_silent rc_quotes glob_star_short
+
+ulimit -c $(((4 << 30) / 512))  # 4GB
+
 # Extend PATH.
-path=(~/bin $path)
+path=(~/.local/bin $path)
+path+=('/mnt/c/Program Files/Microsoft VS Code/bin'(-/N))
+
+fpath=($Z4H/romkatv/archive $fpath)
+[[ -d ~/.dots/hack/zsh-functions ]] && fpath=(~/.dots/hack/zsh-functions $fpath)
+
+autoload -Uz -- zmv archive lsarchive unarchive ~/.dots/hack/zsh-functions/[^_]*(N:t)
 
 # Export environment variables.
 export GPG_TTY=$TTY
+export PAGER=less
+export GOPATH=$HOME/go
+export SYSTEMD_LESS=${LESS}S
+export HOMEBREW_NO_ANALYTICS=1
+export MANOPT=--no-hyphenation
+
+() {
+  local hist
+  for hist in ~/.zsh_history*~$HISTFILE(N); do
+    fc -RI $hist
+  done
+}
 
 # Source additional local files if they exist.
 z4h source ~/.env.zsh
@@ -100,10 +141,6 @@ alias tree='tree -a -I .git'
 
 # Add flags to existing aliases.
 alias ls="${aliases[ls]:-ls} -A"
-
-# Set shell options: http://zsh.sourceforge.net/Doc/Release/Options.html.
-setopt glob_dots     # no special treatment for file names with a leading dot
-setopt no_auto_menu  # require an extra TAB press to open the completion menu
 
 alias g="git"
 alias gs="git status"
