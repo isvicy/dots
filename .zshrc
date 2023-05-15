@@ -100,7 +100,7 @@ export MANOPT=--no-hyphenation
 
 () {
   local hist
-  for hist in ~/.zsh_history*~$HISTFILE(N); do
+  for hist in ~/.dots-private/.zsh_history*~$HISTFILE(N); do
     fc -RI $hist
   done
 }
