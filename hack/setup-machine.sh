@@ -13,6 +13,10 @@ fi
 function apply_dots() {
 	pushd -- ~/.dots
 	make link
+	pnpm install
+	popd
+	pushd -- ~/.dots-private
+	pnpm install
 	popd
 }
 
@@ -23,9 +27,11 @@ function install_packages() {
 		apt-transport-https
 		autoconf
 		bfs
+		bison # tmux
 		bsdutils
 		bzip2
 		build-essential
+		byacc # tmux
 		ca-certificates
 		clang-format
 		cmake
@@ -33,18 +39,25 @@ function install_packages() {
 		curl
 		dconf-cli
 		dos2unix
+		gcc # git
 		g++
 		gawk
 		gedit
+		gettext # git
 		git
 		gnome-icon-theme
 		gzip
 		htop
 		jq
 		lftp
+		libcurl4-gnutls-dev # git
+		libevent-dev        # tmux
+		libexpat1-dev       # git
 		libglpk-dev
-		libncurses-dev
+		libncurses5-dev # tmux
+		libssl-dev      # git
 		libxml2-utils
+		libz-dev # git
 		man
 		meld
 		moreutils
@@ -206,6 +219,59 @@ function install_rust_bins() {
 	cargo install zoxide --locked
 }
 
+function install_pnpm() {
+	local v="8.5.1"
+	! command -v pnpm &>/dev/null || [[ "$(pnpm --version)" != "$v" ]] || return 0
+	local tmp
+	tmp="$(mktemp -d)"
+	pushd -- "$tmp"
+	curl -fsSL 'https://get.pnpm.io/install.sh' | env PNPM_VERSION=8.5.1 sh -
+	popd
+	rm -rf -- "$tmp"
+}
+
+function install_golang() {
+	local v="1.20.4"
+	! command -v go &>/dev/null || [[ "$(go version | awk '{print $3}' | tr -d 'go')" != "$v" ]] || return 0
+	local tmp
+	tmp="$(mktemp -d)"
+	pushd -- "$tmp"
+	curl -fsSL "https://go.dev/dl/go${v}.linux-amd64.tar.gz" -o go.tar.gz
+	tar -xzf ./go.tar.gz -C ${HOME}/.local
+	popd
+	rm -rf -- "$tmp"
+}
+
+function install_tmux() {
+	local min_v="3.3a"
+	! command -v tmux &>/dev/null || [[ "$(tmux -V | awk '{print $2}')" < "$min_v" ]] || return 0
+	local tmp
+	tmp="$(mktemp -d)"
+	pushd -- "$tmp"
+	git clone https://github.com/tmux/tmux.git
+	cd tmux
+	git checkout ${min_v}
+	./configure
+	make -j $(($(nproc) / 2))
+	sudo make install
+	popd
+	rm -rf -- "$tmp"
+}
+
+function install_git() {
+	local min_v='2.31.0'
+	! command -v git &>/dev/null || [[ "$(git version | awk '{print $3}')" < "$min_v" ]] || return 0
+	local tmp
+	tmp="$(mktemp -d)"
+	pushd -- "$tmp"
+	curl -fsSL 'https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.39.3.tar.gz' -o git.tar.gz
+	cd git-*
+	make -j $(($(nproc) / 2)) prefix=${HOME}/.local all
+	make prefix=${HOME}/.local install
+	popd
+	rm -rf -- "$tmp"
+}
+
 function fix_locale() {
 	sudo tee /etc/default/locale >/dev/null <<<'LC_ALL="C.UTF-8"'
 }
@@ -354,6 +420,10 @@ install_nuget
 install_bw
 install_rust
 install_rust_bins
+install_pnpm
+install_golang
+install_tmux
+install_git
 # install_fonts
 
 patch_ssh
