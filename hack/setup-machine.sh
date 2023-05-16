@@ -81,6 +81,7 @@ function install_packages() {
 		xz-utils
 		yodl
 		zip
+		zlib1g-dev # mosh
 		zsh
 	)
 
@@ -272,6 +273,55 @@ function install_git() {
 	rm -rf -- "$tmp"
 }
 
+function install_protobuf() {
+	local v='3.21.1'
+	! command -v protoc &>/dev/null || [[ "$(protoc --version | awk '{print $2}')" != ${v} ]] || return 0
+	local tmp
+	tmp="$(mktemp -d)"
+	pushd -- "$tmp"
+	curl -fsSL 'https://github.com/protocolbuffers/protobuf/archive/refs/tags/v21.1.tar.gz' -o proto.tar.gz
+	tar -xzf proto.tar.gz
+	cd protobuf-21.1
+	./autogen.sh
+	./configure
+	make -j $(($(nproc) / 2))
+	sudo make install
+	popd
+	rm -rf -- "$tmp"
+}
+
+function install_mosh() {
+	local min_v='1.3.2'
+	! command -v mosh &>/dev/null || [[ "$(mosh -v | head -n 1 | awk '{print $2}')" != ${min_v} ]] || return 0
+	local tmp
+	tmp="$(mktemp -d)"
+	pushd -- "$tmp"
+	git clone https://github.com/mobile-shell/mosh
+	cd mosh
+	git checkout mosh-1.4.0
+	./autogen.sh
+	./configure
+	make -j $(($(nproc) / 2))
+	sudo make install
+	popd
+	rm -rf -- "$tmp"
+}
+
+function install_live555() {
+	! command -v live555MediaServer &>/dev/null || return 0
+	local tmp
+	tmp="$(mktemp -d)"
+	pushd -- "$tmp"
+	wget http://www.live555.com/liveMedia/public/live555-latest.tar.gz
+	tar xvf live555-latest.tar.gz
+	cd live
+	./genMakefiles linux
+	make -j $(($(nproc) / 2))
+	sudo make install
+	popd
+	rm -rf -- "$tmp"
+}
+
 function fix_locale() {
 	sudo tee /etc/default/locale >/dev/null <<<'LC_ALL="C.UTF-8"'
 }
@@ -424,6 +474,9 @@ install_pnpm
 install_golang
 install_tmux
 install_git
+install_protobuf
+install_mosh
+install_live555
 # install_fonts
 
 patch_ssh
