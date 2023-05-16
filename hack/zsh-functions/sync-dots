@@ -67,7 +67,7 @@ function -sync-dots-repo() {
   -sync-dots-repo dots || return
   popd -q
 
-  pushd -q ~/.dots-private
+  pushd -q ~/.dots-private || return
   local hist=${ZDOTDIR:-~}/.zsh_history.${(%):-%m}
   local -U hist=($hist{,:*}(N))
   [[ -f ${HISTFILE:-} ]] && hist+=($HISTFILE)
