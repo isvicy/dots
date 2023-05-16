@@ -154,3 +154,5 @@ alias gcm="git commit -m"
 alias gct="git commit"
 alias grh="git reset --hard"
 alias grm="git reset --mixed"
+
+eval "$(zoxide init zsh)"
