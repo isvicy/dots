@@ -190,6 +190,22 @@ function install_bw() {
 	rm -rf -- "$tmp"
 }
 
+function install_rust() {
+	! command -v cargo &>/dev/null
+	local temp
+	tmp="$(mktemp -d)"
+	pushd -- "$tmp"
+	curl --proto '=https' --tlsv1.2 -sSf 'https://sh.rustup.rs' | sh -s -- -y
+	popd
+	rm -rf -- "$tmp"
+	source ${HOME}/.cargo/env
+}
+
+function install_rust_bins() {
+	! command -v zoxide &>/dev/null
+	cargo install zoxide --locked
+}
+
 function fix_locale() {
 	sudo tee /etc/default/locale >/dev/null <<<'LC_ALL="C.UTF-8"'
 }
@@ -336,6 +352,8 @@ install_gh
 install_exa
 install_nuget
 install_bw
+install_rust
+install_rust_bins
 # install_fonts
 
 patch_ssh
