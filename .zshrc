@@ -156,4 +156,16 @@ alias grh="git reset --hard"
 alias grm="git reset --mixed"
 alias gri="git rebase -i"
 
-eval "$(zoxide init zsh)"
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
+
+# pnpm
+export PNPM_HOME="/home/aaron/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+export PATH=${HOME}/.local/go/bin:${PATH}
