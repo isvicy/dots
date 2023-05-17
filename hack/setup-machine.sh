@@ -322,6 +322,16 @@ function install_live555() {
 	rm -rf -- "$tmp"
 }
 
+function install_pyenv() {
+	! command -v pyenv &>/dev/null || return 0
+	local tmp
+	tmp="$(mktemp -d)"
+	pushd -- "$tmp"
+	curl https://pyenv.run | bash
+	popd
+	rm -rf -- "$tmp"
+}
+
 function fix_locale() {
 	sudo tee /etc/default/locale >/dev/null <<<'LC_ALL="C.UTF-8"'
 }
@@ -474,6 +484,7 @@ install_pnpm
 install_golang
 install_tmux
 install_git
+install_pyenv
 install_protobuf
 install_mosh
 install_live555
