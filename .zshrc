@@ -177,6 +177,10 @@ if command -v pyenv >/dev/null 2>&1; then
   eval "$(pyenv virtualenv-init -)"
 fi
 
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd)"
+fi
+
 alias setp="export ALL_PROXY=socks5://127.0.0.1:1080"
 alias usetp="unset ALL_PROXY"
 alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"

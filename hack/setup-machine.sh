@@ -11,10 +11,12 @@ else
 fi
 
 function apply_dots() {
+	[[ ! -e ~/.dots ]] || return 0
 	pushd -- ~/.dots
 	make link
 	pnpm install
 	popd
+	[[ ! -e ~/.dots-private ]] || return 0
 	pushd -- ~/.dots-private
 	pnpm install
 	popd
@@ -127,8 +129,8 @@ function install_brew() {
 
 function install_brew_bins() {
 	if ! command -v pnpm &>/dev/null; then
-    brew install pnpm
-  fi
+		brew install pnpm
+	fi
 }
 
 # Install Visual Studio Code.
@@ -222,8 +224,12 @@ function install_rust() {
 }
 
 function install_rust_bins() {
-	! command -v zoxide &>/dev/null
-	cargo install zoxide --locked
+	if ! command -v zoxide &>/dev/null; then
+		cargo install zoxide --locked
+	fi
+	if ! command -v fnm &>/dev/null; then
+		cargo install fnm --locked
+	fi
 }
 
 function install_golang() {
@@ -281,6 +287,7 @@ function install_protobuf() {
 	./configure
 	make -j $(($(nproc) / 2))
 	sudo make install
+	sudo ldconfig
 	popd
 	rm -rf -- "$tmp"
 }
