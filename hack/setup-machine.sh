@@ -113,7 +113,7 @@ function install_docker() {
 		sudo apt-get install -y docker.io
 	fi
 	sudo usermod -aG docker "$USER"
-	pip3 install --user docker-compose
+	# pip3 install --user docker-compose
 }
 
 function install_brew() {
@@ -123,6 +123,12 @@ function install_brew() {
 	curl -fsSLo "$install" https://raw.githubusercontent.com/Homebrew/install/master/install.sh
 	bash -- "$install" </dev/null
 	rm -- "$install"
+}
+
+function install_brew_bins() {
+	if ! command -v pnpm &>/dev/null; then
+    brew install pnpm
+  fi
 }
 
 # Install Visual Studio Code.
@@ -218,17 +224,6 @@ function install_rust() {
 function install_rust_bins() {
 	! command -v zoxide &>/dev/null
 	cargo install zoxide --locked
-}
-
-function install_pnpm() {
-	local v="8.5.1"
-	! command -v pnpm &>/dev/null || [[ "$(pnpm --version)" != "$v" ]] || return 0
-	local tmp
-	tmp="$(mktemp -d)"
-	pushd -- "$tmp"
-	curl -fsSL 'https://get.pnpm.io/install.sh' | env PNPM_VERSION=8.5.1 sh -
-	popd
-	rm -rf -- "$tmp"
 }
 
 function install_golang() {
@@ -471,6 +466,7 @@ add_to_sudoers
 install_packages
 install_docker
 install_brew
+install_brew_bins
 install_vscode
 install_ripgrep
 install_bat
@@ -480,7 +476,6 @@ install_nuget
 install_bw
 install_rust
 install_rust_bins
-install_pnpm
 install_golang
 install_tmux
 install_git
@@ -495,7 +490,7 @@ enable_sshd
 disable_motd_news
 
 fix_locale
-fix_clock
+# fix_clock
 fix_shm
 fix_dbus
 fix_imagemagic
