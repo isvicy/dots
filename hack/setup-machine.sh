@@ -27,7 +27,8 @@ function install_packages() {
 	local packages=(
 		ascii
 		apt-transport-https
-		autoconf
+		autoconf # nvim
+		automake # nvim
 		bfs
 		bison # tmux
 		bsdutils
@@ -36,16 +37,17 @@ function install_packages() {
 		byacc # tmux
 		ca-certificates
 		clang-format
-		cmake
+		cmake # nvim
 		command-not-found
-		curl
+		curl # nvim
 		dconf-cli
 		dos2unix
-		gcc # git
-		g++
+		doxygen # nvim
+		gcc     # git
+		g++     # nvim
 		gawk
 		gedit
-		gettext # git
+		gettext # git,nvim
 		git
 		gnome-icon-theme
 		gzip
@@ -61,25 +63,31 @@ function install_packages() {
 		libncurses5-dev # tmux
 		libreadline-dev # python3.10
 		libssl-dev      # git
+		libsqlite3-dev  # nvim
+		libtool         # nvim
+		libtool-bin     # nvim
 		libxml2-utils
 		libz-dev # git
 		man
 		meld
 		moreutils
 		nano
+		ninja-build # nvim
 		openssh-server
 		p7zip-full
 		p7zip-rar
 		python3-tk # python3.10
 		perl
+		pkg-config # nvim
 		python3
 		python3-pip
 		pigz
 		software-properties-common
 		stow
+		sqlite3 # nvim
 		tree
 		unrar
-		unzip
+		unzip # nvim
 		wget
 		x11-utils
 		xclip
@@ -328,6 +336,29 @@ function install_live555() {
 	rm -rf -- "$tmp"
 }
 
+function install_nvim() {
+	local tmp
+	tmp="$(mktemp -d)"
+	pushd -- "$tmp"
+	git clone https://github.com/neovim/neovim
+	cd neovim
+	git checkout master
+	git pull && git pull --tags --force
+	git checkout stable
+	local nvim_repo_version
+	nvim_repo_version=$(git tag | tail -n 1)
+	if command -v nvim &>/dev/null; then
+		local nvim_current_version=$(nvim --version | head -n 1 | awk '{print $2}')
+		if [ "${nvim_repo_version}" = "${nvim_current_version}" ]; then
+			return 0
+		fi
+	fi
+	make CMAKE_BUILD_TYPE=Release
+	sudo make install
+	popd
+	rm -rf -- "$tmp"
+}
+
 function install_pyenv() {
 	! command -v pyenv &>/dev/null || return 0
 	local tmp
@@ -494,6 +525,7 @@ install_pyenv
 install_protobuf
 install_mosh
 install_live555
+install_nvim
 # install_fonts
 
 patch_ssh
