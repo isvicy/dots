@@ -52,11 +52,14 @@ function install_packages() {
 		htop
 		jq
 		lftp
+		libbz2-dev          # python3.10
 		libcurl4-gnutls-dev # git
 		libevent-dev        # tmux
 		libexpat1-dev       # git
 		libglpk-dev
+		liblzma-dev     # python3.10
 		libncurses5-dev # tmux
+		libreadline-dev # python3.10
 		libssl-dev      # git
 		libxml2-utils
 		libz-dev # git
@@ -67,6 +70,7 @@ function install_packages() {
 		openssh-server
 		p7zip-full
 		p7zip-rar
+		python3-tk # python3.10
 		perl
 		python3
 		python3-pip
