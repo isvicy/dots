@@ -363,6 +363,9 @@ function install_nvim() {
 
 function install_pyenv() {
 	! command -v pyenv &>/dev/null || return 0
+	if [ -e ~/.pyenv ]; then
+		return 0
+	fi
 	local tmp
 	tmp="$(mktemp -d)"
 	pushd -- "$tmp"
