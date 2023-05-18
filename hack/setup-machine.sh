@@ -529,7 +529,7 @@ install_nvim
 # install_fonts
 
 patch_ssh
-enable_sshd
+# enable_sshd
 disable_motd_news
 
 fix_locale
