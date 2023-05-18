@@ -25,16 +25,16 @@ function apply_dots() {
 # Install a bunch of debian packages.
 function install_packages() {
 	local packages=(
-		ascii
 		apt-transport-https
+		ascii
 		autoconf # nvim
 		automake # nvim
 		bfs
 		bison # tmux
 		bsdutils
-		bzip2
 		build-essential
 		byacc # tmux
+		bzip2
 		ca-certificates
 		clang-format
 		cmake # nvim
@@ -44,9 +44,9 @@ function install_packages() {
 		dconf-cli
 		dos2unix
 		doxygen # nvim
-		gcc     # git
 		g++     # nvim
 		gawk
+		gcc     # git
 		gedit
 		gettext # git,nvim
 		git
@@ -63,8 +63,8 @@ function install_packages() {
 		liblzma-dev     # python3.10
 		libncurses5-dev # tmux
 		libreadline-dev # python3.10
-		libssl-dev      # git
 		libsqlite3-dev  # nvim
+		libssl-dev      # git
 		libtool         # nvim
 		libtool-bin     # nvim
 		libxml2-utils
@@ -77,16 +77,16 @@ function install_packages() {
 		openssh-server
 		p7zip-full
 		p7zip-rar
-		python3-tk # python3.10
 		perl
+		pigz
 		pkg-config # nvim
 		python3
 		python3-pip
-		pigz
+		python3-tk # python3.10
 		socat # kk
 		software-properties-common
-		stow
 		sqlite3 # nvim
+		stow
 		tree
 		unrar
 		unzip # nvim
