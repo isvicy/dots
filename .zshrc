@@ -184,3 +184,5 @@ fi
 alias setp="export ALL_PROXY=socks5://127.0.0.1:1080"
 alias usetp="unset ALL_PROXY"
 alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"
+
+alias kl="kubectl"
