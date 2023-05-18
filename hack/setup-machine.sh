@@ -39,7 +39,8 @@ function install_packages() {
 		clang-format
 		cmake # nvim
 		command-not-found
-		curl # nvim
+		conntrack # kk
+		curl      # nvim
 		dconf-cli
 		dos2unix
 		doxygen # nvim
@@ -82,6 +83,7 @@ function install_packages() {
 		python3
 		python3-pip
 		pigz
+		socat # kk
 		software-properties-common
 		stow
 		sqlite3 # nvim
