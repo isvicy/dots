@@ -46,11 +46,12 @@ function install_packages() {
 		doxygen # nvim
 		g++     # nvim
 		gawk
-		gcc     # git
+		gcc # git
 		gedit
 		gettext # git,nvim
 		git
 		gnome-icon-theme
+		gnupg # terraform
 		gzip
 		htop
 		jq
@@ -82,10 +83,10 @@ function install_packages() {
 		pkg-config # nvim
 		python3
 		python3-pip
-		python3-tk # python3.10
-		socat # kk
-		software-properties-common
-		sqlite3 # nvim
+		python3-tk                 # python3.10
+		socat                      # kk
+		software-properties-common # terraform
+		sqlite3                    # nvim
 		stow
 		tree
 		unrar
@@ -112,6 +113,21 @@ function install_packages() {
 	sudo apt-get install -y "${packages[@]}"
 	sudo apt-get autoremove -y
 	sudo apt-get autoclean
+}
+
+function install_terraform() {
+	[[ ! -e /etc/apt/sources.list.d/hashicorp.list ]] || return 0
+	wget -O- https://apt.releases.hashicorp.com/gpg |
+		gpg --dearmor |
+		sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+	gpg --no-default-keyring \
+		--keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+		--fingerprint
+	echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+https://apt.releases.hashicorp.com $(lsb_release -cs) main" |
+		sudo tee /etc/apt/sources.list.d/hashicorp.list
+	sudo apt update
+	sudo apt-get install terraform
 }
 
 function install_docker() {
@@ -144,6 +160,24 @@ function install_brew() {
 function install_brew_bins() {
 	if ! command -v pnpm &>/dev/null; then
 		brew install pnpm
+	fi
+	if ! command -v deno &>/dev/null; then
+		brew install deno
+	fi
+	if ! command -v buf &>/dev/null; then
+		brew install bufbuild/buf/buf
+	fi
+	if ! command -v shellcheck &>/dev/null; then
+		brew install shellcheck
+	fi
+	if ! command -v lua-language-server &>/dev/null; then
+		brew install lua-language-server
+	fi
+}
+
+function install_pnpm_bins() {
+	if ! command -v eslint_d &>/dev/null; then
+		pnpm install -g eslint_d
 	fi
 }
 
@@ -201,17 +235,6 @@ function install_gh() {
 	rm "$deb"
 }
 
-function install_nuget() {
-	((WSL)) || return 0
-	local v="5.8.1"
-	! command -v nuget.exe &>/dev/null || [[ "$(nuget.exe help)" != "NuGet Version: $v."* ]] || return 0
-	local tmp
-	tmp="$(mktemp)"
-	curl -fsSLo "$tmp" "https://dist.nuget.org/win-x86-commandline/v${v}/nuget.exe"
-	chmod +x -- "$tmp"
-	mv -- "$tmp" ~/.local/bin/nuget.exe
-}
-
 function install_bw() {
 	local v="1.22.1"
 	! command -v bw &>/dev/null || [[ "$(bw --version)" != "$v" ]] || return 0
@@ -227,14 +250,15 @@ function install_bw() {
 }
 
 function install_rust() {
-	! command -v cargo &>/dev/null
-	local temp
+	! command -v cargo &>/dev/null || return 0
+	local tmp
 	tmp="$(mktemp -d)"
 	pushd -- "$tmp"
 	curl --proto '=https' --tlsv1.2 -sSf 'https://sh.rustup.rs' | sh -s -- -y
 	popd
 	rm -rf -- "$tmp"
-	source ${HOME}/.cargo/env
+	# shellcheck source=../../.cargo/env
+	source "${HOME}/.cargo/env"
 }
 
 function install_rust_bins() {
@@ -244,18 +268,39 @@ function install_rust_bins() {
 	if ! command -v fnm &>/dev/null; then
 		cargo install fnm --locked
 	fi
+	if ! command -v pylyzer &>/dev/null; then
+		cargo install pylyzer
+	fi
+	if ! command -v stylua &>/dev/null; then
+		cargo install stylua
+	fi
 }
 
 function install_golang() {
 	local v="1.20.4"
 	! command -v go &>/dev/null || [[ "$(go version | awk '{print $3}' | tr -d 'go')" != "$v" ]] || return 0
+	rm -rf "${HOME}/.local/go" # Clear install folders to avoid conflicts between source files of different versions.
 	local tmp
 	tmp="$(mktemp -d)"
 	pushd -- "$tmp"
 	curl -fsSL "https://go.dev/dl/go${v}.linux-amd64.tar.gz" -o go.tar.gz
-	tar -xzf ./go.tar.gz -C ${HOME}/.local
+	tar -xzf ./go.tar.gz -C "${HOME}/.local"
 	popd
 	rm -rf -- "$tmp"
+}
+
+function install_golang_bins() {
+	go install golang.org/x/tools/gopls@latest
+	go install mvdan.cc/gofumpt@latest
+	go install mvdan.cc/sh/v3/cmd/shfmt@latest
+	go install golang.org/x/tools/cmd/goimports@latest
+	go install github.com/google/yamlfmt/cmd/yamlfmt@latest
+	go install github.com/go-delve/delve/cmd/dlv@latest
+}
+
+function install_golangci-lint() {
+	! command -v golangci-lint &>/dev/null || return 0
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)"/bin
 }
 
 function install_tmux() {
@@ -282,15 +327,15 @@ function install_git() {
 	pushd -- "$tmp"
 	curl -fsSL 'https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.39.3.tar.gz' -o git.tar.gz
 	cd git-*
-	make -j $(($(nproc) / 2)) prefix=${HOME}/.local all
-	make prefix=${HOME}/.local install
+	make -j $(($(nproc) / 2)) prefix="${HOME}/.local" all
+	make prefix="${HOME}/.local" install
 	popd
 	rm -rf -- "$tmp"
 }
 
 function install_protobuf() {
 	local v='3.21.1'
-	! command -v protoc &>/dev/null || [[ "$(protoc --version | awk '{print $2}')" != ${v} ]] || return 0
+	! command -v protoc &>/dev/null || [[ "$(protoc --version | awk '{print $2}')" != "${v}" ]] || return 0
 	local tmp
 	tmp="$(mktemp -d)"
 	pushd -- "$tmp"
@@ -308,7 +353,7 @@ function install_protobuf() {
 
 function install_mosh() {
 	local min_v='1.3.2'
-	! command -v mosh &>/dev/null || [[ "$(mosh -v | head -n 1 | awk '{print $2}')" != ${min_v} ]] || return 0
+	! command -v mosh &>/dev/null || [[ "$(mosh -v | head -n 1 | awk '{print $2}')" != "${min_v}" ]] || return 0
 	local tmp
 	tmp="$(mktemp -d)"
 	pushd -- "$tmp"
@@ -350,7 +395,8 @@ function install_nvim() {
 	local nvim_repo_version
 	nvim_repo_version=$(git tag | tail -n 1)
 	if command -v nvim &>/dev/null; then
-		local nvim_current_version=$(nvim --version | head -n 1 | awk '{print $2}')
+		local nvim_current_version
+		nvim_current_version=$(nvim --version | head -n 1 | awk '{print $2}')
 		if [ "${nvim_repo_version}" = "${nvim_current_version}" ]; then
 			return 0
 		fi
@@ -374,26 +420,13 @@ function install_pyenv() {
 	rm -rf -- "$tmp"
 }
 
+function install_pip_packages() {
+	pip install --upgrade black
+	pip install --upgrade debugpy
+}
+
 function fix_locale() {
 	sudo tee /etc/default/locale >/dev/null <<<'LC_ALL="C.UTF-8"'
-}
-
-# Avoid clock snafu when dual-booting Windows and Linux.
-# See https://www.howtogeek.com/323390/how-to-fix-windows-and-linux-showing-different-times-when-dual-booting/.
-function fix_clock() {
-	((!WSL)) || return 0
-	timedatectl set-local-rtc 1 --adjust-system-clock
-}
-
-# Set the shared memory size limit to 64GB (the default is 32GB).
-function fix_shm() {
-	((!WSL)) || return 0
-	! grep -qF '# My custom crap' /etc/fstab || return 0
-	sudo mkdir -p /mnt/c /mnt/d
-	sudo tee -a /etc/fstab >/dev/null <<<'# My custom crap
-tmpfs /dev/shm tmpfs defaults,rw,nosuid,nodev,size=64g 0 0
-UUID=F212115212111D63 /mnt/c ntfs-3g nosuid,nodev,uid=0,gid=0,noatime,streams_interface=none,remove_hiberfile,async,lazytime,big_writes 0 0
-UUID=2A680BF9680BC315 /mnt/d ntfs-3g nosuid,nodev,uid=0,gid=0,noatime,streams_interface=none,remove_hiberfile,async,lazytime,big_writes 0 0'
 }
 
 function win_install_fonts() {
@@ -403,7 +436,8 @@ function win_install_fonts() {
 	mkdir -p "$dst_dir"
 	local src
 	for src in "$@"; do
-		local file="$(basename "$src")"
+		local file
+		file="$(basename "$src")"
 		if [[ ! -f "$dst_dir/$file" ]]; then
 			cp -f "$src" "$dst_dir/"
 		fi
@@ -425,7 +459,7 @@ function install_fonts() {
 function add_to_sudoers() {
 	# This is to be able to create /etc/sudoers.d/"$username".
 	if [[ "$USER" == *'~' || "$USER" == *.* ]]; then
-		echo >&2 "$BASH_SOURCE: invalid username: $USER"
+		echo >&2 "${BASH_SOURCE[0]}: invalid username: $USER"
 		exit 1
 	fi
 
@@ -474,20 +508,6 @@ END
 	fi
 }
 
-# Increase imagemagic memory and disk limits.
-function fix_imagemagic() {
-	# TODO: enable this.
-	return
-	((!WSL)) || return 0
-	local cfg=/etc/ImageMagick-6/policy.xml k v kv
-	[[ -f "$cfg" ]]
-	for kv in "memory 16GiB" "map 32GiB" "width 128KP" "height 128KP" "area 8GiB" "disk 64GiB"; do
-		read k v <<<"$kv"
-		grep -qE 'name="'$k'" value="[^"]*"' "$cfg"
-		sudo sed -i 's/name="'$k'" value="[^"]*"/name="'$k'" value="'$v'"/' "$cfg"
-	done
-}
-
 function with_dbus() {
 	if [[ -z "${DBUS_SESSION_BUS_ADDRESS+X}" ]]; then
 		dbus-launch "$@"
@@ -502,7 +522,7 @@ function disable_motd_news() {
 }
 
 if [[ "$(id -u)" == 0 ]]; then
-	echo "$BASH_SOURCE: please run as non-root" >&2
+	echo "${BASH_SOURCE[0]}: please run as non-root" >&2
 	exit 1
 fi
 
@@ -511,22 +531,26 @@ umask g-w,o-w
 add_to_sudoers
 
 install_packages
+install_terraform
 install_docker
 install_brew
 install_brew_bins
+install_pnpm_bins
 install_vscode
 install_ripgrep
 install_bat
 install_gh
 install_exa
-install_nuget
 install_bw
 install_rust
 install_rust_bins
 install_golang
+install_golang_bins
+install_golangci-lint
 install_tmux
 install_git
 install_pyenv
+install_pip_packages
 install_protobuf
 install_mosh
 install_live555
@@ -538,10 +562,7 @@ patch_ssh
 disable_motd_news
 
 fix_locale
-# fix_clock
-fix_shm
 fix_dbus
-fix_imagemagic
 
 apply_dots
 
