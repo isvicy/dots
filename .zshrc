@@ -94,6 +94,7 @@ autoload -Uz -- zmv archive lsarchive unarchive ~/.dots/hack/zsh-functions/[^_]*
 export GPG_TTY=$TTY
 export PAGER=less
 export GOPATH=$HOME/go
+export PATH=${GOPATH}/bin:${PATH}
 export SYSTEMD_LESS=${LESS}S
 export HOMEBREW_NO_ANALYTICS=1
 export MANOPT=--no-hyphenation
@@ -186,3 +187,11 @@ alias usetp="unset ALL_PROXY"
 alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"
 
 alias kl="kubectl"
+
+# fix windows wsl clock drift
+sync_time(){
+    if sudo echo Starting time sync in background
+    then
+        sudo nohup watch -n 10 ntpdate time.windows.com > /dev/null 2>&1 &
+    fi
+}
