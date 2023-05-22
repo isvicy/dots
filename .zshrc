@@ -37,7 +37,7 @@ zstyle ':z4h:direnv:success' notify 'yes'
 # Enable ('yes') or disable ('no') automatic teleportation of z4h over
 # SSH when connecting to these hosts.
 # The default value if none of the overrides above match the hostname.
-zstyle ':z4h:ssh:*'                   enable 'yes'
+zstyle ':z4h:ssh:*'                   enable 'no'
 # zstyle ':z4h:ssh:example-hostname1'   enable 'yes'
 # zstyle ':z4h:ssh:*.example-hostname2' enable 'no'
 
