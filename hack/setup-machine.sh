@@ -326,6 +326,7 @@ function install_git() {
 	tmp="$(mktemp -d)"
 	pushd -- "$tmp"
 	curl -fsSL 'https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.39.3.tar.gz' -o git.tar.gz
+	tar -zxf git.tar.gz
 	cd git-*
 	make -j $(($(nproc) / 2)) prefix="${HOME}/.local" all
 	make prefix="${HOME}/.local" install
