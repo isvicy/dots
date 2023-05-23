@@ -354,7 +354,7 @@ function install_protobuf() {
 
 function install_mosh() {
 	local min_v='1.3.2'
-	! command -v mosh &>/dev/null || [[ "$(mosh -v | head -n 1 | awk '{print $2}')" != "${min_v}" ]] || return 0
+	! command -v mosh &>/dev/null || [[ "$(mosh -v | head -n 1 | awk '{print $2}')" < "${min_v}" ]] || return 0
 	local tmp
 	tmp="$(mktemp -d)"
 	pushd -- "$tmp"
