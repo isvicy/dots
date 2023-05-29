@@ -90,6 +90,8 @@ function install_brew_bins() {
 	for item in "${binary_list[@]}"; do
 		brew info "${item}" | grep --quiet 'Not installed' && brew install "${item}"
 	done
+
+	return 0
 }
 
 function install_pnpm_bins() {
