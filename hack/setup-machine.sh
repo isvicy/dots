@@ -64,6 +64,8 @@ function install_brew() {
 	curl -fsSLo "$install" https://raw.githubusercontent.com/Homebrew/install/master/install.sh
 	bash -- "$install" </dev/null
 	rm -- "$install"
+
+	exec zsh
 }
 
 function install_brew_bins() {
