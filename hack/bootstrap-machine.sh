@@ -74,6 +74,10 @@ git_private_dir="${HOME}/.dots-private"
 
 zsh -fec 'fpath=(~/.dots/hack/zsh-functions $fpath); autoload -Uz sync-dots; sync-dots'
 
+pushd ${git_dir}
+make link
+popd
+
 bash "${git_dir}/hack/setup-machine.sh"
 
 if [[ -f ${git_private_dir}/bootstrap-machine-private.sh ]]; then
