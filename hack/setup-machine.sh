@@ -65,7 +65,7 @@ function install_brew() {
 	bash -- "$install" </dev/null
 	rm -- "$install"
 
-	exec zsh
+	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 }
 
 function install_brew_bins() {
