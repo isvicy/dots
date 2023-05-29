@@ -9,8 +9,6 @@ fi
 
 umask o-w
 
-mkdir -m 700 -p ~/.ssh/s
-
 if [[ ! -e ~/.ssh/id_ed25519 ]]; then
 	if [[ "$(</proc/version)" != *[Mm]icrosoft* ]] 2>/dev/null; then
 		echo "ERROR: Put your ssh keys at ~/.ssh and retry" >&2
@@ -58,8 +56,8 @@ sudo apt-get autoremove -y
 sudo apt-get autoclean
 
 sudo apt-get install -y curl
-
 sudo apt-get install -y git
+
 sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh-bin/master/install)" \
 	sh -d /usr/local -e yes
 sudo chsh -s /usr/local/bin/zsh "$USER"
@@ -76,10 +74,10 @@ git_private_dir="${HOME}/.dots-private"
 
 zsh -fec 'fpath=(~/.dots/hack/zsh-functions $fpath); autoload -Uz sync-dots; sync-dots'
 
-bash ${git_dir}/hack/setup-machine.sh
+bash "${git_dir}/hack/setup-machine.sh"
 
 if [[ -f ${git_private_dir}/bootstrap-machine-private.sh ]]; then
-	bash ${git_private_dir}/bootstrap-machine-private.sh
+	bash "${git_private_dir}/bootstrap-machine-private.sh"
 fi
 
 if [[ -t 0 && -n "${WSL_DISTRO_NAME-}" ]]; then
