@@ -162,7 +162,7 @@ if command -v zoxide >/dev/null 2>&1; then
 fi
 
 # pnpm
-export PNPM_HOME="/home/aaron/.local/share/pnpm"
+export PNPM_HOME="${HOME}/.local/share/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
