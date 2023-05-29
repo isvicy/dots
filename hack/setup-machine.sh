@@ -34,6 +34,7 @@ function install_packages() {
 		libbz2-dev      # python3.10
 		liblzma-dev     # python3.10
 		libreadline-dev # python3.10
+		libssl-dev
 		man
 		pkg-config # nvim
 		python3
