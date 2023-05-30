@@ -58,6 +58,41 @@ function install_packages() {
 	sudo apt-get autoclean
 }
 
+function install_docker() {
+	[ ! -e /etc/apt/sources.list.d/docker.list ] || return 0
+
+	for pkg in docker.io docker-doc docker-compose containerd runc docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin; do sudo apt-get remove -y $pkg; done
+	# make sure reinstalling process not interruptted
+	sudo rm -rf /var/lib/dpkg/info/dokcer*
+
+	sudo install -m 0755 -d /etc/apt/keyrings
+	curl -fsSL 'https://download.docker.com/linux/ubuntu/gpg' | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+	sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+	echo \
+		"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+	 $(. /etc/os-release && echo $VERSION_CODENAME) stable" |
+		sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+
+	sudo apt-get update
+	sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+}
+
+function install_nvidia_docker_toolkit() {
+	if nvidia-smi; then
+		distribution=$(
+			. /etc/os-release
+			echo $ID$VERSION_ID
+		) &&
+			curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg &&
+			curl -s -L "https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list" |
+			sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' |
+				sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+		sudo apt-get update
+		sudo apt-get install -y nvidia-container-toolkit
+	fi
+}
+
 function install_brew() {
 	! command -v brew &>/dev/null || return 0
 	local install
@@ -214,6 +249,8 @@ function win_install_fonts() {
 		file="$(basename "$src")"
 		if [[ ! -f "$dst_dir/$file" ]]; then
 			cp -f "$src" "$dst_dir/"
+		else
+			return 0
 		fi
 		local win_path
 		win_path="$(wslpath -w "$dst_dir/$file")"
@@ -252,6 +289,8 @@ umask g-w,o-w
 add_to_sudoers
 
 install_packages
+install_docker
+install_nvidia_docker_toolkit
 install_brew
 install_brew_bins
 install_pnpm_bins
