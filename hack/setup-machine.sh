@@ -80,6 +80,7 @@ function install_docker() {
 
 function install_nvidia_docker_toolkit() {
 	if nvidia-smi; then
+		[ ! -e /etc/apt/sources.list.d/nvidia-container-toolkit.list ] || return 0
 		distribution=$(
 			. /etc/os-release
 			echo $ID$VERSION_ID
