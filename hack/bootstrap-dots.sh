@@ -19,11 +19,11 @@ function clone_repo() {
 		return 0
 	fi
 
-	git clone --recurse-submodules ${uri} ${git_dir}
+	git clone --recurse-submodules "${uri}" "${git_dir}"
 }
 
 if [[ "$(id -u)" == 0 ]]; then
-	echo "${BASH_SOURCE}: please run as non-root" >&2
+	echo "${BASH_SOURCE[0]}: please run as non-root" >&2
 	exit 1
 fi
 

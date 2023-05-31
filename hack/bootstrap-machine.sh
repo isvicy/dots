@@ -74,7 +74,7 @@ git_private_dir="${HOME}/.dots-private"
 
 zsh -fec 'fpath=(~/.dots/hack/zsh-functions $fpath); autoload -Uz sync-dots; sync-dots'
 
-pushd ${git_dir}
+pushd "${git_dir}"
 make link
 popd
 
