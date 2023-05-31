@@ -65,6 +65,7 @@ function -sync-dots-repo() {
 
   pushd -q ~/.dots || return
   -sync-dots-repo dots || return
+  make link
   popd -q
 
   pushd -q ~/.dots-private || return
