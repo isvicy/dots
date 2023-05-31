@@ -61,7 +61,15 @@ function install_packages() {
 function install_docker() {
 	[ ! -e /etc/apt/sources.list.d/docker.list ] || return 0
 
-	for pkg in docker.io docker-doc docker-compose containerd runc docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin; do sudo apt-get remove -y $pkg; done
+	local installed_packages
+	installed_packages=$(sudo dpkg-query -l | awk '{print $2}')
+	local to_remove_packages=(docker.io docker-doc docker-compose containerd runc docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin)
+	for package in "${to_remove_packages[@]}"; do
+		# shellcheck disable=2076
+		if [[ " ${installed_packages[*]} " =~ " ${package} " ]]; then
+			sudo apt-get remove -y "${package}"
+		fi
+	done
 	# make sure reinstalling process not interruptted
 	sudo rm -rf /var/lib/dpkg/info/dokcer*
 
@@ -81,6 +89,9 @@ function install_docker() {
 function install_nvidia_docker_toolkit() {
 	if nvidia-smi; then
 		[ ! -e /etc/apt/sources.list.d/nvidia-container-toolkit.list ] || return 0
+		local installed_packages
+		installed_packages=$(sudo dpkg-query -l | awk '{print $2}')
+		[[ " ${installed_packages[*]} " =~ "nvidia-container-toolkit" ]] && sudo apt-get remove -y nvidia-container-toolkit
 		distribution=$(
 			. /etc/os-release
 			echo $ID$VERSION_ID
