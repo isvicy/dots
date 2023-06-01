@@ -79,9 +79,21 @@ cloneOrPullNvApp() {
 			if [[ -d "$location" ]]; then
 				pullRepository "$alias"
 			else
-				cloneRepository "$alias" "$url" "$branch"
+				cloneRepository "$alias" "https://github.com/$url" "$branch"
 			fi
 			return
+		else
+			if [[ -d "$HOME/.config/nvim" ]]; then
+				pullRepository "nvim"
+			else
+				cloneRepository "nvim" "https://github.com/NvChad/Nvchad" "default"
+			fi
+			if [[ -d "$HOME/.config/nvim/lua/custom" ]]; then
+				pullRepository "nvim/lua/custom"
+			else
+				cloneRepository "nvim/lua/custom" "git@github.com:ak2kay/NvChadCustom.git" "default"
+			fi
+
 		fi
 	done
 }
@@ -106,9 +118,9 @@ cloneRepository() {
 
 	# Clear clone depth when a branch is needed.
 	if [[ $branch == "default" ]]; then
-		git clone --depth 1 https://github.com/"$url" "$location"
+		git clone --depth 1 "$url" "$location"
 	else
-		git clone https://github.com/"$url" "$location"
+		git clone "$url" "$location"
 		runCommandFromDirectory "$location" "git checkout $branch"
 	fi
 }
