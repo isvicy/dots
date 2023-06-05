@@ -244,6 +244,11 @@ function install_pyenv() {
 	rm -rf -- "$tmp"
 }
 
+function install_python() {
+	pyenv install -s 3.10
+	pyenv global 3.10
+}
+
 function install_pip_packages() {
 	pip install --upgrade black
 	pip install --upgrade debugpy
@@ -316,6 +321,7 @@ install_golang
 install_golang_bins
 install_golangci-lint
 install_pyenv
+install_python
 install_pip_packages
 install_live555
 install_fonts
