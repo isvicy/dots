@@ -256,11 +256,7 @@ function win_install_fonts() {
 	for src in "$@"; do
 		local file
 		file="$(basename "$src")"
-		if [[ ! -f "$dst_dir/$file" ]]; then
-			cp -f "$src" "$dst_dir/"
-		else
-			return 0
-		fi
+		cp -f "$src" "$dst_dir/"
 		local win_path
 		win_path="$(wslpath -w "$dst_dir/$file")"
 		# Install font for the current user. It'll appear in "Font settings".
