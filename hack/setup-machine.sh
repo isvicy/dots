@@ -151,17 +151,6 @@ function install_pnpm_bins() {
 	fi
 }
 
-# Install Visual Studio Code.
-function install_vscode() {
-	((!WSL)) || return 0
-	! command -v code &>/dev/null || return 0
-	local deb
-	deb="$(mktemp)"
-	curl -fsSL 'https://go.microsoft.com/fwlink/?LinkID=760868' >"$deb"
-	sudo dpkg -i "$deb"
-	rm -- "$deb"
-}
-
 function install_rust() {
 	! command -v cargo &>/dev/null || return 0
 	local tmp
@@ -314,7 +303,6 @@ install_nvidia_docker_toolkit
 install_brew
 install_brew_bins
 install_pnpm_bins
-install_vscode
 install_rust
 install_rust_bins
 install_golang
