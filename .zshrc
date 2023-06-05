@@ -190,10 +190,12 @@ alias kl="kubectl"
 
 # fix windows wsl clock drift
 sync_time(){
-    if sudo echo Starting time sync in background
-    then
-        sudo nohup watch -n 10 ntpdate time.windows.com > /dev/null 2>&1 &
-    fi
+  if sudo echo Starting time sync in background
+  then
+      sudo nohup watch -n 10 ntpdate time.windows.com > /dev/null 2>&1 &
+  fi
 }
 
-[ -f ${HOME}/nvim_appnames ] && . ${HOME}/nvim_appnames
+if [ -f ${HOME}/nvim_appnames ]; then
+	. ${HOME}/nvim_appnames
+fi
