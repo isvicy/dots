@@ -50,13 +50,33 @@ fi
 
 rm -rf ~/.cache
 
-sudo apt-get update
-sudo sh -c 'DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confold" upgrade -y'
-sudo apt-get autoremove -y
-sudo apt-get autoclean
+machine_out="$(uname -s)"
+case "${machine_out}" in
+Linux)
+	distro_name=$(cat /etc/*-release | grep -E '^NAME')
+	if echo "${distro_name}" | grep -i 'ubuntu'; then
+		machine=Ubuntu
 
-sudo apt-get install -y curl
-sudo apt-get install -y git
+		sudo apt-get update
+		sudo sh -c 'DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confold" upgrade -y'
+		sudo apt-get autoremove -y
+		sudo apt-get autoclean
+
+		sudo apt-get install -y curl
+		sudo apt-get install -y git
+	else
+		echo "not supported distro: ${distro_name}, exiting bootstrap."
+		exit 1
+	fi
+
+	;;
+
+Darwin) machine=Mac ;;
+*)
+	echo "not supported os: ${machine_out}, exiting bootstrap."
+	exit 1
+	;;
+esac
 
 sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh-bin/master/install)" \
 	sh -d /usr/local -e yes
@@ -78,16 +98,17 @@ pushd "${git_dir}"
 make link
 popd
 
-bash "${git_dir}/hack/setup-machine.sh"
+bash "${git_dir}/hack/setup-common.sh"
+
+case "${machine}" in
+Ubuntu)
+	bash "${git_dir}/hack/setup-ubuntu.sh"
+	;;
+Mac)
+	bash "${git_dir}/hack/setup-mac.sh"
+	;;
+esac
 
 if [[ -f ${git_private_dir}/bootstrap-machine-private.sh ]]; then
 	bash "${git_private_dir}/bootstrap-machine-private.sh"
-fi
-
-if [[ -t 0 && -n "${WSL_DISTRO_NAME-}" ]]; then
-	read -p "Need to restart WSL to complete installation. Terminate WSL now? [y/N] " -n 1 -r
-	echo
-	if [[ ${REPLY,,} == @(y|yes) ]]; then
-		wsl.exe --terminate "$WSL_DISTRO_NAME"
-	fi
 fi
