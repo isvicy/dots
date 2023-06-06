@@ -62,8 +62,7 @@ Linux)
 		sudo apt-get autoremove -y
 		sudo apt-get autoclean
 
-		sudo apt-get install -y curl
-		sudo apt-get install -y git
+		sudo apt-get install -y curl git
 	else
 		echo "not supported distro: ${distro_name}, exiting bootstrap."
 		exit 1
@@ -94,20 +93,7 @@ git_private_dir="${HOME}/.dots-private"
 
 zsh -fec 'fpath=(~/.dots/hack/zsh-functions $fpath); autoload -Uz sync-dots; sync-dots'
 
-pushd "${git_dir}"
-make link
-popd
-
-bash "${git_dir}/hack/setup-common.sh"
-
-case "${machine}" in
-Ubuntu)
-	bash "${git_dir}/hack/setup-ubuntu.sh"
-	;;
-Mac)
-	bash "${git_dir}/hack/setup-mac.sh"
-	;;
-esac
+bash "${git_dir}/hack/setup-machine.sh" ${machine}
 
 if [[ -f ${git_private_dir}/bootstrap-machine-private.sh ]]; then
 	bash "${git_private_dir}/bootstrap-machine-private.sh"

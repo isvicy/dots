@@ -9,6 +9,15 @@ function install_brew() {
 	curl -fsSLo "$install" https://raw.githubusercontent.com/Homebrew/install/master/install.sh
 	bash -- "$install" </dev/null
 	rm -- "$install"
+
+	case "$(uname -s)" in
+	Linux)
+		eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+		;;
+	Darwin)
+		eval "$(/opt/homebrew/bin/brew shellenv)"
+		;;
+	esac
 }
 
 function install_brew_bins() {
@@ -32,6 +41,7 @@ function install_brew_bins() {
 		pyright
 		mypy
 		ruff
+		stow
 	)
 	for item in "${binary_list[@]}"; do
 		brew info "${item}" | grep --quiet 'Not installed' && brew install "${item}"
@@ -143,6 +153,22 @@ function install_pip_packages() {
 	pip install --upgrade debugpy
 }
 
+function apply_dots() {
+	pushd "${HOME}/.dots"
+	make link
+	popd
+}
+
+git_dir="$HOME/.dots"
+case "${1}" in
+Ubuntu)
+	bash "${git_dir}/hack/setup-ubuntu.sh"
+	;;
+Mac)
+	bash "${git_dir}/hack/setup-mac.sh"
+	;;
+esac
+
 install_brew
 install_brew_bins
 install_pnpm_bins
@@ -155,4 +181,6 @@ install_pyenv
 install_python
 install_pip_packages
 
-echo SETUP COMMON SUCCEED
+apply_dots
+
+echo SETUP MACHINE SUCCEED
