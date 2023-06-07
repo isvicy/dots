@@ -55,8 +55,6 @@ case "${machine_out}" in
 Linux)
 	distro_name=$(cat /etc/*-release | grep -E '^NAME')
 	if echo "${distro_name}" | grep -i 'ubuntu'; then
-		machine=Ubuntu
-
 		sudo apt-get update
 		sudo sh -c 'DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::options::="--force-confdef" -o DPkg::options::="--force-confold" upgrade -y'
 		sudo apt-get autoremove -y
@@ -70,7 +68,7 @@ Linux)
 
 	;;
 
-Darwin) machine=Mac ;;
+Darwin) ;;
 *)
 	echo "not supported os: ${machine_out}, exiting bootstrap."
 	exit 1
@@ -93,7 +91,7 @@ git_private_dir="${HOME}/.dots-private"
 
 zsh -fec 'fpath=(~/.dots/hack/zsh-functions $fpath); autoload -Uz sync-dots; sync-dots'
 
-bash "${git_dir}/hack/setup-machine.sh" ${machine}
+bash "${git_dir}/hack/setup-machine.sh"
 
 if [[ -f ${git_private_dir}/bootstrap-machine-private.sh ]]; then
 	bash "${git_private_dir}/bootstrap-machine-private.sh"
