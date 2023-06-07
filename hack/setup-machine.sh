@@ -160,12 +160,25 @@ function apply_dots() {
 }
 
 git_dir="$HOME/.dots"
-case "${1}" in
-Ubuntu)
-	bash "${git_dir}/hack/setup-ubuntu.sh"
+machine_out="$(uname -s)"
+case "${machine_out}" in
+Linux)
+	distro_name=$(cat /etc/*-release | grep -E '^NAME')
+	if echo "${distro_name}" | grep -i 'ubuntu'; then
+		bash "${git_dir}/hack/setup-ubuntu.sh"
+	else
+		echo "not supported distro: ${distro_name}, exiting bootstrap."
+		exit 1
+	fi
+
 	;;
-Mac)
+
+Darwin)
 	bash "${git_dir}/hack/setup-mac.sh"
+	;;
+*)
+	echo "not supported os: ${machine_out}, exiting bootstrap."
+	exit 1
 	;;
 esac
 
