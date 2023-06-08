@@ -199,3 +199,6 @@ sync_time(){
 if [ -f ${HOME}/nvim_appnames ]; then
 	. ${HOME}/nvim_appnames
 fi
+
+# for binary supported both linux and mac, so they can share one config accross multi platform.
+export XDG_CONFIG_HOME="$HOME/.config"
