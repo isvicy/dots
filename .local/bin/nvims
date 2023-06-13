@@ -116,11 +116,8 @@ cloneRepository() {
 	branch="$3"
 	location=$HOME/.config/$alias
 
-	# Clear clone depth when a branch is needed.
-	if [[ $branch == "default" ]]; then
-		git clone --depth 1 "$url" "$location"
-	else
-		git clone "$url" "$location"
+	git clone "$url" "$location"
+	if [[ $branch != "default" ]]; then
 		runCommandFromDirectory "$location" "git checkout $branch"
 	fi
 }
