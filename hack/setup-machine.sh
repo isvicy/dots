@@ -160,6 +160,9 @@ function install_golangci-lint() {
 }
 
 function install_pyenv() {
+	export PYENV_ROOT="$HOME/.pyenv"
+	export PATH="$PYENV_ROOT/bin:$PATH"
+
 	! command -v pyenv &>/dev/null || return 0
 	if [ -e ~/.pyenv ]; then
 		return 0
