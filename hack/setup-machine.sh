@@ -53,6 +53,7 @@ function install_brew_bins() {
 }
 
 function install_pnpm_bins() {
+	! echo "${PATH}" | grep --quiet -i 'pnpm' && pnpm setup
 	if ! command -v eslint_d &>/dev/null; then
 		pnpm install -g eslint_d
 	fi
