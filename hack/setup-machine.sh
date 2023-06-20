@@ -112,6 +112,7 @@ function install_golang() {
 	tar -xzf ./go.tar.gz -C "${HOME}/.local"
 	popd
 	rm -rf -- "$tmp"
+	export PATH="${HOME}/.local/go/bin:${PATH}"
 }
 
 function install_golang_bins() {
