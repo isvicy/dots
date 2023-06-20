@@ -95,17 +95,37 @@ function install_golang() {
 	local tmp
 	tmp="$(mktemp -d)"
 	pushd -- "$tmp"
+
 	arch=$(uname -m)
-	case ${arch} in
-	x86_64)
-		curl -fsSL "https://go.dev/dl/go${v}.darwin-amd64.tar.gz" -o go.tar.gz
+
+	case "$(uname -s)" in
+	Linux)
+		case ${arch} in
+		x86_64)
+			curl -fsSL "https://go.dev/dl/go${v}.linux-amd64.tar.gz" -o go.tar.gz
+			;;
+		arm64)
+			curl -fsSL "https://go.dev/dl/go${v}.linux-arm64.tar.gz" -o go.tar.gz
+			;;
+		*)
+			echo "not supported arch: ${arch}, skip install golang."
+			exit 0
+			;;
+		esac
 		;;
-	arm64)
-		curl -fsSL "https://go.dev/dl/go${v}.darwin-arm64.tar.gz" -o go.tar.gz
-		;;
-	*)
-		echo "not supported arch: ${arch}, skip install golang."
-		exit 0
+	Darwin)
+		case ${arch} in
+		x86_64)
+			curl -fsSL "https://go.dev/dl/go${v}.darwin-amd64.tar.gz" -o go.tar.gz
+			;;
+		arm64)
+			curl -fsSL "https://go.dev/dl/go${v}.darwin-arm64.tar.gz" -o go.tar.gz
+			;;
+		*)
+			echo "not supported arch: ${arch}, skip install golang."
+			exit 0
+			;;
+		esac
 		;;
 	esac
 
