@@ -173,7 +173,7 @@ add_to_sudoers
 install_packages
 install_docker
 install_nvidia_docker_toolkit
-install_live555
+# install_live555
 install_fonts
 
 fix_locale
