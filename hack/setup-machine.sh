@@ -43,6 +43,7 @@ function install_brew_bins() {
 		ruff
 		stow
 		git-delta
+		fsouza/prettierd/prettierd
 	)
 	for item in "${binary_list[@]}"; do
 		brew info "${item}" | grep --quiet 'Not installed' && brew install "${item}"
