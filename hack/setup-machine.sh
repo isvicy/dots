@@ -43,7 +43,7 @@ function install_brew_bins() {
 		ruff
 		stow
 		git-delta
-		fsouza/prettierd/prettierd
+		prettierd
 	)
 	for item in "${binary_list[@]}"; do
 		brew info "${item}" | grep --quiet 'Not installed' && brew install "${item}"
@@ -53,7 +53,12 @@ function install_brew_bins() {
 }
 
 function install_pnpm_bins() {
-	! echo "${PATH}" | grep --quiet -i 'pnpm' && pnpm setup
+	export PNPM_HOME="${HOME}/.local/share/pnpm"
+	case ":$PATH:" in
+	*":$PNPM_HOME:"*) ;;
+	*) export PATH="$PNPM_HOME:$PATH" ;;
+	esac
+
 	if ! command -v eslint_d &>/dev/null; then
 		pnpm install -g eslint_d
 	fi
