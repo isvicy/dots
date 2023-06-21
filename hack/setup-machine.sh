@@ -21,35 +21,7 @@ function install_brew() {
 }
 
 function install_brew_bins() {
-	local binary_list=(
-		nodejs
-		pnpm
-		deno
-		buf
-		shellcheck
-		lua-language-server
-		neovim
-		tmux
-		terraform
-		ripgrep
-		bat
-		gh
-		exa
-		git
-		mosh
-		cilium-cli
-		pyright
-		mypy
-		ruff
-		stow
-		git-delta
-		prettierd
-	)
-	for item in "${binary_list[@]}"; do
-		brew info "${item}" | grep --quiet 'Not installed' && brew install "${item}"
-	done
-
-	return 0
+	brew bundle --file='~/Brewfile'
 }
 
 function install_pnpm_bins() {
