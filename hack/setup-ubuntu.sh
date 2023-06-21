@@ -166,7 +166,7 @@ function install_live555() {
 }
 
 function fix_locale() {
-	sudo tee /etc/default/locale >/dev/null <<<'LC_ALL="C.UTF-8"'
+	sudo tee /etc/default/locale >/dev/null <<<'LC_ALL="en_US.UTF-8"'
 }
 
 function win_install_fonts() {
