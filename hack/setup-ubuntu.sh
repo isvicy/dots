@@ -98,6 +98,39 @@ function install_docker() {
 	sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 }
 
+function post_docker_installation() {
+	# post installation
+	if getent group docker >/dev/null 2>&1; then
+		echo "Docker group already exists"
+	else
+		sudo groupadd docker
+
+		# Verify that the group has been created
+		if getent group docker >/dev/null 2>&1; then
+			echo "Docker group has been created"
+		else
+			echo "Failed to create Docker group"
+		fi
+	fi
+
+	# Check if the user is in the docker group
+	if id -nG "$USER" | grep -qw docker; then
+		echo "User $USER is already in the docker group"
+		return 0
+	else
+		# Add the user to the docker group
+		sudo usermod -aG docker "$USER"
+
+		# Verify that the user has been added to the group
+		if id -nG "$USER" | grep -qw docker; then
+			echo "User $USER has been added to the docker group"
+		else
+			echo "Failed to add user $USER to the docker group"
+		fi
+	fi
+	newgrp docker
+}
+
 function install_nvidia_docker_toolkit() {
 	if nvidia-smi; then
 		[ ! -e /etc/apt/sources.list.d/nvidia-container-toolkit.list ] || return 0
@@ -172,6 +205,7 @@ add_to_sudoers
 
 install_packages
 install_docker
+post_docker_installation
 install_nvidia_docker_toolkit
 # install_live555
 install_fonts
