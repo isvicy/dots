@@ -181,6 +181,7 @@ function install_python() {
 }
 
 function install_pip_packages() {
+	pip install --upgrade pip
 	pip install --upgrade black
 	pip install --upgrade debugpy
 }
