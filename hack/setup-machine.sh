@@ -21,7 +21,7 @@ function install_brew() {
 }
 
 function install_brew_bins() {
-	brew bundle --file='~/.dots/Brewfile'
+	brew bundle --file='~/.dots/.Brewfile'
 }
 
 function install_pnpm_bins() {
