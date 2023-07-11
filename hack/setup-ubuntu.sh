@@ -43,10 +43,23 @@ function install_packages() {
 		gzip
 		htop
 		jq
-		libbz2-dev      # python3.10
-		liblzma-dev     # python3.10
-		libreadline-dev # python3.10
-		libssl-dev
+		libbz2-dev         # python3.10
+		liblzma-dev        # python3.10
+		libreadline-dev    # python3.10
+		gdb                # python3.10
+		lcov               # python3.10
+		libffi-dev         # python3.10
+		libgdbm-dev        # python3.10
+		libgdbm-compat-dev # python3.10
+		libncurses5-dev    # python3.10
+		libreadline6-dev   # python3.10
+		libsqlite3-dev     # python3.10
+		lzma               # python3.10
+		lzma-dev           # python3.10
+		tk-dev             # python3.10
+		uuid-dev           # python3.10
+		zlib1g-dev         # python3.10
+		libssl-dev         # python3.10
 		man
 		pkg-config # nvim
 		python3
