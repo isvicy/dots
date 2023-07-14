@@ -1,3 +1,4 @@
 **/node_modules
 **/state.yml
 **/.Brewfile.lock.json
+**/Brewfile.lock.json
