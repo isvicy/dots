@@ -34,6 +34,9 @@ function install_pnpm_bins() {
 	if ! command -v eslint_d &>/dev/null; then
 		pnpm install -g eslint_d
 	fi
+	if ! command -v fixjson &>/dev/null; then
+		pnpm install -g fixjson
+	fi
 }
 
 function install_rust() {
