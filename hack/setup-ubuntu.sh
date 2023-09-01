@@ -160,6 +160,13 @@ function install_nvidia_docker_toolkit() {
 				sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 		sudo apt-get update
 		sudo apt-get install -y nvidia-container-toolkit
+		# generate CDI specification
+		sudo nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml
+		sudo nvidia-ctk runtime configure --runtime=docker
+		# to make sure the nvidia runtime is configured properly, it's recommended we restart docker service
+		sudo systemctl restart docker
+		# make sure nvidia runtime is working
+		sudo docker run --rm --runtime=nvidia --gpus all nvidia/cuda:11.6.2-base-ubuntu20.04 nvidia-smi
 	fi
 }
 
