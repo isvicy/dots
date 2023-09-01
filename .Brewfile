@@ -2,12 +2,12 @@ tap "bufbuild/buf"
 tap "fsouza/prettierd"
 tap "homebrew/bundle"
 tap "homebrew/command-not-found"
-# GNU binary tools for native development
-brew "binutils"
 # GNU compiler collection
 brew "gcc"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
+# Cryptography and SSL/TLS Toolkit
+brew "openssl@3"
 # CLI to install, manage & troubleshoot Kubernetes clusters running Cilium
 brew "cilium-cli"
 # Statistics utility to count lines of code
@@ -34,6 +34,8 @@ brew "git"
 brew "git-delta"
 # Blazing fast terminal-ui for git written in rust
 brew "gitui"
+# Render markdown on the CLI
+brew "glow"
 # Program providing model for GNU coding standards and practices
 brew "hello"
 # Simple terminal UI for git commands
@@ -42,8 +44,6 @@ brew "lazygit"
 brew "lua-language-server"
 # Just-In-Time Compiler (JIT) for the Lua programming language
 brew "luajit"
-# Cryptography and SSL/TLS Toolkit
-brew "openssl@3"
 # Remote terminal application
 brew "mosh"
 # Experimental optional static type checker for Python
