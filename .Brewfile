@@ -70,6 +70,8 @@ brew "terraform"
 brew "tig"
 # Terminal multiplexer
 brew "tmux"
+# Language Server Protocol implementation for TypeScript wrapping tsserver
+brew "typescript-language-server"
 # View colored diff with side by side and auto pager support
 brew "ydiff"
 # A new way of working with Protocol Buffers.
