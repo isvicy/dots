@@ -6,9 +6,11 @@
 #
 # alias      | Github repository       | default or branch name
 readonly neovim_apps=(
-	"astro     | AstroNvim/AstroNvim     | default"
-	"default   | none                    | none"
-	"nvchad    | NvChad/NvChad           | default"
+	"astro     | https://github.com/AstroNvim/AstroNvim     | default"
+	"default   | none                                       | none"
+	"nvchad    | https://github.com/NvChad/NvChad           | default"
+	"starter   | https://github.com/LazyVim/starter         | default"
+	"lazy      | git@git.enceinte.cc:ak2kay/lazy.git        | default"
 )
 
 # File name that is overwritten with nvim appname aliases.
@@ -79,7 +81,7 @@ cloneOrPullNvApp() {
 			if [[ -d "$location" ]]; then
 				pullRepository "$alias"
 			else
-				cloneRepository "$alias" "https://github.com/$url" "$branch"
+				cloneRepository "$alias" "$url" "$branch"
 			fi
 			return
 		else
