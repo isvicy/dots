@@ -4,13 +4,12 @@
 # The repository clonded must bootstrap itself.  In otherwords, clone and nvim
 # is all tha tis needed.
 #
-# alias      | Github repository       | default or branch name
+# alias      | url,url#relative_path    | default or branch name
 readonly neovim_apps=(
 	"astro     | https://github.com/AstroNvim/AstroNvim     | default"
-	"default   | none                                       | none"
-	"nvchad    | https://github.com/NvChad/NvChad           | default"
+	"nvchad    | https://github.com/NvChad/NvChad,git@github.com:ak2kay/NvChadCustom.git#lua/custom          | default"
 	"starter   | https://github.com/LazyVim/starter         | default"
-	"lazy      | git@git.enceinte.cc:ak2kay/lazy.git        | default"
+	"default   | git@git.enceinte.cc:ak2kay/lazy.git        | default"
 )
 
 # File name that is overwritten with nvim appname aliases.
@@ -71,31 +70,29 @@ buildNeovimAppArray() {
 
 cloneOrPullNvApp() {
 	for fields in "${neovim_apps[@]}"; do
-		IFS=$'|' read -r alias url branch <<<"$fields"
+		IFS=$'|' read -r alias urls branch <<<"$fields"
 
 		alias="$(removeSpaces "$alias")"
-		if [[ "$1" == "$alias" ]]; then
-			url="$(removeSpaces "$url")"
+		if [[ ${alias} == "default" ]]; then
+			alias=""
+		fi
+		if [[ "$1" == "${alias}" ]]; then
+			if [[ ${alias} == "" ]]; then
+				alias="nvim"
+			fi
+			urls="$(removeSpaces "$urls")"
 			branch="$(removeSpaces "$branch")"
-			location=$HOME/.config/$alias
-			if [[ -d "$location" ]]; then
-				pullRepository "$alias"
-			else
-				cloneRepository "$alias" "$url" "$branch"
-			fi
-			return
-		else
-			if [[ -d "$HOME/.config/nvim" ]]; then
-				pullRepository "nvim"
-			else
-				cloneRepository "nvim" "https://github.com/NvChad/Nvchad" "default"
-			fi
-			if [[ -d "$HOME/.config/nvim/lua/custom" ]]; then
-				pullRepository "nvim/lua/custom"
-			else
-				cloneRepository "nvim/lua/custom" "git@github.com:ak2kay/NvChadCustom.git" "default"
-			fi
+			IFS=',' read -ra addrs <<<"$urls"
+			for addrInfo in "${addrs[@]}"; do
+				IFS='#' read -r url path <<<"$addrInfo"
+				location=$HOME/.config/$alias/$path
+				if [[ -d "$location" ]]; then
+					pullRepository "$alias" $location
+				else
+					cloneRepository "$alias" "$url" "$branch" "$location"
+				fi
 
+			done
 		fi
 	done
 }
@@ -105,7 +102,7 @@ cloneOrPullNvApp() {
 
 pullRepository() {
 	alias="$1"
-	location=$HOME/.config/$alias
+	location="$2"
 	runCommandFromDirectory "$location" "git pull"
 }
 
@@ -116,7 +113,7 @@ cloneRepository() {
 	alias="$1"
 	url="$2"
 	branch="$3"
-	location=$HOME/.config/$alias
+	location="$4"
 
 	git clone "$url" "$location"
 	if [[ $branch != "default" ]]; then
@@ -139,16 +136,28 @@ removeDirIfPresent() {
 
 deleteNvimApp() {
 	for fields in "${neovim_apps[@]}"; do
-		IFS=$'|' read -r alias url branch <<<"$fields"
+		IFS=$'|' read -r alias urls branch <<<"$fields"
 
 		alias="$(removeSpaces "$alias")"
-		if [[ "$1" == "$alias" ]]; then
+		if [[ ${alias} == "default" ]]; then
+			alias=""
+		fi
+		if [[ "$1" == "${alias}" ]]; then
+			if [[ ${alias} == "" ]]; then
+				alias="nvim"
+			fi
 			echo "Deleting $alias if required."
+			urls="$(removeSpaces "$urls")"
+			branch="$(removeSpaces "$branch")"
+			IFS=',' read -ra addrs <<<"$urls"
+			for addrInfo in "${addrs[@]}"; do
+				IFS='#' read -r url path <<<"$addrInfo"
+				location=$HOME/.config/$alias/$path
+				removeDirIfPresent "$location"
+			done
 			removeDirIfPresent "$HOME"/.cache/"$alias"
-			removeDirIfPresent "$HOME"/.config/"$alias"
 			removeDirIfPresent "$HOME"/.local/share/"$alias"
 			removeDirIfPresent "$HOME"/.local/state/"$alias"
-			return
 		fi
 	done
 }
