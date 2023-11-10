@@ -64,7 +64,7 @@ function install_rust_bins() {
 }
 
 function install_golang() {
-	local v="1.20.4"
+	local v="1.21.3"
 	! command -v go &>/dev/null || [[ "$(go version | awk '{print $3}' | tr -d 'go')" != "$v" ]] || return 0
 	rm -rf "${HOME}/.local/go" # Clear install folders to avoid conflicts between source files of different versions.
 	local tmp
