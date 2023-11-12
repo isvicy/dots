@@ -14,7 +14,11 @@ end
 
 -- For example, changing the color scheme:
 config.color_scheme = "Batman"
-config.font = wezterm.font("JetBrainsMono Nerd Font")
+config.font = wezterm.font_with_fallback({
+	"Rec Mono Casual",
+	"FiraCode Nerd Font",
+	"JetBrainsMono Nerd Font",
+})
 config.tab_bar_at_bottom = true
 config.font_size = 14.0
 -- and finally, return the configuration to wezterm
