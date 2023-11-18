@@ -156,12 +156,9 @@ function install_python() {
 }
 
 function install_pip_packages() {
-	if [ -n "$ALL_PROXY" ]; then
-		PROXY_ADDR=${ALL_PROXY}
-		unset ALL_PROXY
-	fi
+	unset ALL_PROXY
+
 	pip install --upgrade pysocks
-	export ALL_PROXY=${PROXY_ADDR}
 	pip install --upgrade pip
 	pip install --upgrade black
 	pip install --upgrade debugpy
