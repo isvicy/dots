@@ -20,10 +20,14 @@ end)
 -- timeout_milliseconds defaults to 1000 and can be omitted
 config.leader = { key = "a", mods = "CTRL", timeout_milliseconds = 1000 }
 config.keys = {
-	-- Send "CTRL-A" to the terminal when pressing CTRL-A, CTRL-A
+	{
+		key = "|",
+		mods = "LEADER|SHIFT",
+		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+	},
 	{
 		key = "f",
-		mods = "LEADER",
+		mods = "LEADER|CTRL",
 		action = wezterm.action.ShowTabNavigator,
 	},
 	-- Send "CTRL-A" to the terminal when pressing CTRL-A, CTRL-A
@@ -31,6 +35,11 @@ config.keys = {
 		key = "a",
 		mods = "LEADER|CTRL",
 		action = wezterm.action.SendKey({ key = "a", mods = "CTRL" }),
+	},
+	{
+		key = "t",
+		mods = "LEADER|CTRL",
+		action = wezterm.action.SpawnTab("CurrentPaneDomain"),
 	},
 }
 
