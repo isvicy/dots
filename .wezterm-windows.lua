@@ -17,6 +17,21 @@ wezterm.on("gui-startup", function(cmd)
 end)
 
 -- This is where you actually apply your config choices
+-- timeout_milliseconds defaults to 1000 and can be omitted
+config.leader = { key = "a", mods = "CTRL", timeout_milliseconds = 502 }
+config.keys = {
+	{
+		key = "|",
+		mods = "LEADER",
+		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+	},
+	-- Send "CTRL-A" to the terminal when pressing CTRL-A, CTRL-A
+	{
+		key = "f",
+		mods = "LEADER",
+		action = wezterm.action.ShowTabNavigator,
+	},
+}
 
 -- For example, changing the color scheme:
 config.color_scheme = "Bamboo Multiplex"
