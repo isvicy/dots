@@ -41,6 +41,7 @@ config.keys = {
 		mods = "LEADER|CTRL",
 		action = wezterm.action.SpawnTab("CurrentPaneDomain"),
 	},
+	{ key = "l", mods = "LEADER", action = wezterm.action.ShowLauncher },
 }
 
 -- For example, changing the color scheme:
@@ -54,5 +55,13 @@ config.font = wezterm.font_with_fallback({
 config.tab_bar_at_bottom = true
 config.default_domain = "WSL:Ubuntu-22.04"
 config.font_size = 12.0
+
+local launch_menu = {}
+if wezterm.target_triplet == "x86_64-pc-windows-msvc" then
+	table.insert(launch_menu, {
+		label = "PowerShell",
+		args = { "powershell.exe", "-NoLogo" },
+	})
+end
 -- and finally, return the configuration to wezterm
 return config
