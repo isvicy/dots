@@ -209,3 +209,12 @@ export LANG=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 
 export HOMEBREW_NO_AUTO_UPDATE=1
+
+export EDITOR='nvim'
+# add command line edit hotkey
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^X^E' edit-command-line
+# try get used to gitui
+alias tig=gitui
+alias gu=gitui
