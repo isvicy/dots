@@ -141,7 +141,6 @@ function post_docker_installation() {
 			echo "Failed to add user $USER to the docker group"
 		fi
 	fi
-	newgrp docker
 }
 
 function install_nvidia_docker_toolkit() {
