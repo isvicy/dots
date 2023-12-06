@@ -19,7 +19,7 @@ end)
 
 -- This is where you actually apply your config choices
 -- timeout_milliseconds defaults to 1000 and can be omitted
-config.leader = { key = "a", mods = "CTRL", timeout_milliseconds = 1000 }
+config.leader = { key = "m", mods = "CTRL", timeout_milliseconds = 1000 }
 config.keys = {
 	{
 		key = "|",
@@ -28,18 +28,12 @@ config.keys = {
 	},
 	{
 		key = "f",
-		mods = "LEADER|CTRL",
+		mods = "LEADER",
 		action = act.ShowTabNavigator,
-	},
-	-- Send "CTRL-A" to the terminal when pressing CTRL-A, CTRL-A
-	{
-		key = "a",
-		mods = "LEADER|CTRL",
-		action = act.SendKey({ key = "a", mods = "CTRL" }),
 	},
 	{
 		key = "t",
-		mods = "LEADER|CTRL",
+		mods = "LEADER",
 		action = act.SpawnTab("CurrentPaneDomain"),
 	},
 	{ key = "l", mods = "LEADER", action = act.ShowLauncher },
