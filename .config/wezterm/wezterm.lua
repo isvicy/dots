@@ -55,7 +55,7 @@ config.font = wezterm.font_with_fallback({
 	"JetBrainsMono Nerd Font",
 })
 config.tab_bar_at_bottom = true
-config.font_size = 14.0
+config.font_size = 12.0
 
 local launch_menu = {}
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
