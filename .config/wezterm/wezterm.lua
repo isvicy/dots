@@ -56,12 +56,13 @@ config.tab_bar_at_bottom = true
 config.font_size = 14.0
 
 local launch_menu = {}
-if wezterm.target_triplet == "x86_64-pc-windows-msvc" then
+if wezterm.target_triple == "x86_64-pc-windows-msvc" then
 	config.default_domain = "WSL:Ubuntu-22.04"
 	table.insert(launch_menu, {
 		label = "PowerShell",
 		args = { "powershell.exe", "-NoLogo" },
 	})
 end
+config.launch_menu = launch_menu
 -- and finally, return the configuration to wezterm
 return config
