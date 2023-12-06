@@ -1,6 +1,7 @@
 -- Pull in the wezterm API
 local wezterm = require("wezterm")
 local mux = wezterm.mux
+local act = wezterm.action
 
 -- This table will hold the configuration.
 local config = {}
@@ -23,27 +24,34 @@ config.keys = {
 	{
 		key = "|",
 		mods = "LEADER|SHIFT",
-		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+		action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }),
 	},
 	{
 		key = "f",
 		mods = "LEADER|CTRL",
-		action = wezterm.action.ShowTabNavigator,
+		action = act.ShowTabNavigator,
 	},
 	-- Send "CTRL-A" to the terminal when pressing CTRL-A, CTRL-A
 	{
 		key = "a",
 		mods = "LEADER|CTRL",
-		action = wezterm.action.SendKey({ key = "a", mods = "CTRL" }),
+		action = act.SendKey({ key = "a", mods = "CTRL" }),
 	},
 	{
 		key = "t",
 		mods = "LEADER|CTRL",
-		action = wezterm.action.SpawnTab("CurrentPaneDomain"),
+		action = act.SpawnTab("CurrentPaneDomain"),
 	},
-	{ key = "l", mods = "LEADER", action = wezterm.action.ShowLauncher },
+	{ key = "l", mods = "LEADER", action = act.ShowLauncher },
 }
-
+for i = 1, 8 do
+	-- <leader> + number to activate that tab
+	table.insert(config.keys, {
+		key = tostring(i),
+		mods = "LEADER",
+		action = act.ActivateTab(i - 1),
+	})
+end
 -- For example, changing the color scheme:
 config.color_scheme = "Bamboo Multiplex"
 config.font = wezterm.font("JetBrainsMono Nerd Font")
