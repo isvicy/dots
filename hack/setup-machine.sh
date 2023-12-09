@@ -24,6 +24,16 @@ function install_brew_bins() {
 	brew bundle --file='~/.dots/.Brewfile'
 }
 
+function post_install_brew_bins() {
+	# Install tmux plugin manager
+	if [ ! -d "${HOME}/.tmux/plugins/tpm" ]; then
+		git clone https://github.com/tmux-plugins/tpm "${HOME}/.tmux/plugins/tpm"
+	fi
+
+	# Install lua magick for image rendering in neovim
+	luarocks --lua-version 5.1 install magick
+}
+
 function install_pnpm_bins() {
 	export PNPM_HOME="${HOME}/.local/share/pnpm"
 	case ":$PATH:" in
@@ -195,6 +205,7 @@ esac
 
 install_brew
 install_brew_bins
+post_install_brew_bins
 install_pnpm_bins
 install_rust
 install_rust_bins

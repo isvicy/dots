@@ -2,28 +2,26 @@ tap "bufbuild/buf"
 tap "fsouza/prettierd"
 tap "homebrew/bundle"
 tap "homebrew/command-not-found"
-# GNU compiler collection
-brew "gcc"
-# Clone of cat(1) with syntax highlighting and Git integration
-brew "bat"
 # Cryptography and SSL/TLS Toolkit
 brew "openssl@3"
+# C library implementing the SSH2 protocol
+brew "libssh2"
+# Clone of cat(1) with syntax highlighting and Git integration
+brew "bat"
 # CLI to install, manage & troubleshoot Kubernetes clusters running Cilium
 brew "cilium-cli"
 # Statistics utility to count lines of code
 brew "cloc"
 # Tool for interacting with remote images and registries
 brew "crane"
-# C library implementing the SSH2 protocol
-brew "libssh2"
-# Get a file from an HTTP, HTTPS or FTP server
-brew "curl"
 # Core application library for C
 brew "glib"
 # Secure runtime for JavaScript and TypeScript
 brew "deno"
 # Modern replacement for 'ls'
 brew "exa"
+# GNU compiler collection
+brew "gcc"
 # GNOME XML library
 brew "libxml2"
 # GitHub command-line tool
@@ -38,12 +36,18 @@ brew "gitui"
 brew "glow"
 # Program providing model for GNU coding standards and practices
 brew "hello"
+# Tools and libraries to manipulate images in many formats
+brew "imagemagick"
 # Simple terminal UI for git commands
 brew "lazygit"
 # Language Server for the Lua language
 brew "lua-language-server"
+# Powerful, lightweight programming language (v5.1.5)
+brew "lua@5.1"
 # Just-In-Time Compiler (JIT) for the Lua programming language
 brew "luajit"
+# Package manager for the Lua programming language
+brew "luarocks"
 # Remote terminal application
 brew "mosh"
 # Experimental optional static type checker for Python
@@ -52,6 +56,8 @@ brew "mypy"
 brew "neovim"
 # Platform built on V8 to build network applications
 brew "node"
+# Manage compile and link flags for libraries
+brew "pkg-config"
 # Fast, disk space efficient package manager
 brew "pnpm"
 # Static type checker for Python
