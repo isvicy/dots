@@ -27,18 +27,23 @@ config.keys = {
 		action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }),
 	},
 	{
+		key = "-",
+		mods = "LEADER",
+		action = act.SplitVertical({ domain = "CurrentPaneDomain" }),
+	},
+	{
 		key = "f",
 		mods = "LEADER",
 		action = act.ShowTabNavigator,
 	},
 	{
-		key = "t",
+		key = "c",
 		mods = "LEADER",
 		action = act.SpawnTab("CurrentPaneDomain"),
 	},
 	{ key = "l", mods = "LEADER", action = act.ShowLauncher },
 	{
-		key = "e",
+		key = ",",
 		mods = "LEADER",
 		action = act.PromptInputLine({
 			description = "Enter new name for tab",
