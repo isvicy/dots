@@ -143,6 +143,43 @@ alias tree='tree -a -I .git'
 # Add flags to existing aliases.
 alias ls="${aliases[ls]:-ls} -A"
 
+# Custom stuff
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
+
+# pnpm
+export PNPM_HOME="${HOME}/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+if command -v pyenv >/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init - | sed s/precmd/chpwd/g)"
+fi
+
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd)"
+fi
+
+# fix windows wsl clock drift
+sync_time(){
+  if sudo echo Starting time sync in background
+  then
+      sudo nohup watch -n 10 ntpdate time.windows.com > /dev/null 2>&1 &
+  fi
+}
+
+# alias for multi nvim distro
+if [ -f ${HOME}/nvim_appnames ]; then
+	. ${HOME}/nvim_appnames
+fi
+
 alias g="git"
 alias gs="git status"
 alias gd="git diff"
@@ -156,65 +193,30 @@ alias gct="git commit"
 alias grh="git reset --hard"
 alias grm="git reset --mixed"
 alias gri="git rebase -i"
-
-if command -v zoxide >/dev/null 2>&1; then
-  eval "$(zoxide init zsh)"
-fi
-
-# pnpm
-export PNPM_HOME="${HOME}/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-# pnpm end
-
-export PATH=${HOME}/.local/go/bin:${PATH}
-
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-if command -v pyenv >/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-  eval "$(pyenv virtualenv-init - | sed s/precmd/chpwd/g)"
-fi
-
-if command -v fnm >/dev/null 2>&1; then
-  eval "$(fnm env --use-on-cd)"
-fi
-
+# proxy
 alias setp="export ALL_PROXY=socks5://127.0.0.1:1080"
 alias usetp="unset ALL_PROXY"
 alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"
-
+# kube
 alias kl="kubectl"
+# gitui
+alias gu=gitui
 
-# fix windows wsl clock drift
-sync_time(){
-  if sudo echo Starting time sync in background
-  then
-      sudo nohup watch -n 10 ntpdate time.windows.com > /dev/null 2>&1 &
-  fi
-}
-
-if [ -f ${HOME}/nvim_appnames ]; then
-	. ${HOME}/nvim_appnames
-fi
-
+export PATH=${HOME}/.local/go/bin:${PATH}
 # for binary supported both linux and mac, so they can share one config accross multi platform.
 export XDG_CONFIG_HOME="$HOME/.config"
-
+# locale
 export LANGUAGE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
-
+# homebrew
 export HOMEBREW_NO_AUTO_UPDATE=1
-
+# default editor
 export EDITOR='nvim'
-# add command line edit hotkey
+
+# command line hotkey
 autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey '^X^E' edit-command-line
-# try get used to gitui
-alias tig=gitui
-alias gu=gitui
+bindkey '^U' backward-kill-line
