@@ -180,6 +180,8 @@ function apply_dots() {
 	popd
 }
 
+apply_dots
+
 git_dir="$HOME/.dots"
 machine_out="$(uname -s)"
 case "${machine_out}" in
@@ -203,6 +205,7 @@ Darwin)
 	;;
 esac
 
+
 install_brew
 install_brew_bins
 post_install_brew_bins
@@ -215,7 +218,5 @@ install_golangci-lint
 install_pyenv
 install_python
 install_pip_packages
-
-apply_dots
 
 echo SETUP MACHINE SUCCEED
