@@ -18,8 +18,6 @@ brew "crane"
 brew "glib"
 # Secure runtime for JavaScript and TypeScript
 brew "deno"
-# Modern replacement for 'ls'
-brew "exa"
 # GNU compiler collection
 brew "gcc"
 # GNOME XML library
