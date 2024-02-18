@@ -74,6 +74,9 @@ function install_packages() {
 		wget
 		xz-utils
 		zip
+		# psql
+		postgresql
+		postgresql-contrib
 	)
 
 	sudo apt-get update
