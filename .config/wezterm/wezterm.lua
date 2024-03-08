@@ -76,6 +76,7 @@ config.font = wezterm.font_with_fallback({
 })
 config.tab_bar_at_bottom = true
 config.font_size = 12.0
+config.window_decorations = "RESIZE"
 
 local launch_menu = {}
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
