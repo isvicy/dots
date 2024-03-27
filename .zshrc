@@ -220,3 +220,6 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey '^X^E' edit-command-line
 bindkey '^U' backward-kill-line
+
+# silent pushd and popd otherwise it will print long path stack
+setopt PUSHDSILENT
