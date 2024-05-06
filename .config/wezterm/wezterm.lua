@@ -68,14 +68,47 @@ for i = 1, 8 do
 end
 -- For example, changing the color scheme:
 config.color_scheme = "Bamboo Multiplex"
-config.font = wezterm.font("JetBrainsMono Nerd Font")
 config.font = wezterm.font_with_fallback({
+	"Operator Mono Book",
 	"Rec Mono Casual",
 	"FireCode Nerd Font",
 	"JetBrainsMono Nerd Font",
 })
+config.font_rules = {
+	{
+		intensity = "Bold",
+		italic = false,
+		font = wezterm.font("Operator Mono Bold", { italic = false }),
+	},
+	{
+		intensity = "Bold",
+		italic = true,
+		font = wezterm.font("Operator Mono Bold", { italic = true }),
+	},
+
+	{
+		intensity = "Normal",
+		italic = true,
+		font = wezterm.font("Operator Mono Book", { italic = true }),
+	},
+	{
+		intensity = "Normal",
+		italic = false,
+		font = wezterm.font("Operator Mono Book", { italic = false }),
+	},
+	{
+		intensity = "Half",
+		italic = true,
+		font = wezterm.font("Operator Mono Light", { italic = true }),
+	},
+	{
+		intensity = "Half",
+		italic = false,
+		font = wezterm.font("Operator Mono Light", { italic = false }),
+	},
+}
 config.tab_bar_at_bottom = true
-config.font_size = 12.0
+config.font_size = 14.0
 config.window_decorations = "RESIZE"
 
 local launch_menu = {}
