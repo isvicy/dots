@@ -13,7 +13,7 @@ if wezterm.config_builder then
 end
 
 wezterm.on("gui-startup", function(cmd)
-	local tab, pane, window = mux.spawn_window(cmd or {})
+	local _, _, window = mux.spawn_window(cmd or {})
 	window:gui_window():maximize()
 end)
 
@@ -47,7 +47,7 @@ config.keys = {
 		mods = "LEADER",
 		action = act.PromptInputLine({
 			description = "Enter new name for tab",
-			action = wezterm.action_callback(function(window, pane, line)
+			action = wezterm.action_callback(function(window, _, line)
 				-- line will be `nil` if they hit escape without entering anything
 				-- An empty string if they just hit enter
 				-- Or the actual line of text they wrote
