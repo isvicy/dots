@@ -41,6 +41,11 @@ config.keys = {
 		mods = "LEADER",
 		action = act.SpawnTab("CurrentPaneDomain"),
 	},
+	{
+		key = "x",
+		mods = "LEADER",
+		action = act.CloseCurrentTab({ confirm = false }),
+	},
 	{ key = "l", mods = "LEADER", action = act.ShowLauncher },
 	{
 		key = ",",
