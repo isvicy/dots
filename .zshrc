@@ -171,7 +171,7 @@ fi
 sync_time(){
   if sudo echo Starting time sync in background
   then
-      sudo nohup watch -n 10 ntpdate time.windows.com > /dev/null 2>&1 &
+      sudo nohup watch -n 10 hwclock -s > /dev/null 2>&1 &
   fi
 }
 
