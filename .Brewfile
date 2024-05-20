@@ -40,8 +40,6 @@ brew "imagemagick"
 brew "lazygit"
 # Language Server for the Lua language
 brew "lua-language-server"
-# Powerful, lightweight programming language (v5.1.5)
-brew "lua@5.1"
 # Just-In-Time Compiler (JIT) for the Lua programming language
 brew "luajit"
 # Package manager for the Lua programming language
