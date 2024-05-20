@@ -230,7 +230,7 @@ install_docker
 post_docker_installation
 install_nvidia_docker_toolkit
 # install_live555
-install_fonts
+# install_fonts
 
 fix_locale
 
