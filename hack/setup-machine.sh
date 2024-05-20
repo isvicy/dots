@@ -208,7 +208,7 @@ esac
 
 install_brew
 install_brew_bins
-post_install_brew_bins
+# post_install_brew_bins
 install_pnpm_bins
 install_rust
 install_rust_bins
