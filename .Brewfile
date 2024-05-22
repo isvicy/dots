@@ -32,8 +32,6 @@ brew "git-delta"
 brew "gitui"
 # Render markdown on the CLI
 brew "glow"
-# Program providing model for GNU coding standards and practices
-brew "hello"
 # Tools and libraries to manipulate images in many formats
 brew "imagemagick"
 # Simple terminal UI for git commands
