@@ -222,3 +222,5 @@ bindkey '^U' backward-kill-line
 
 # silent pushd and popd otherwise it will print long path stack
 setopt PUSHDSILENT
+
+ulimit -n 65535
