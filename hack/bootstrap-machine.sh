@@ -60,7 +60,7 @@ Linux)
 		sudo apt-get autoremove -y
 		sudo apt-get autoclean
 
-		sudo apt-get install -y curl git make
+		sudo apt-get install -y curl git make stow
 	else
 		echo "not supported distro: ${distro_name}, exiting bootstrap."
 		exit 1
