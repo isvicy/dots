@@ -93,8 +93,6 @@ autoload -Uz -- zmv archive lsarchive unarchive ~/.dots/hack/zsh-functions/[^_]*
 # Export environment variables.
 export GPG_TTY=$TTY
 export PAGER=less
-export GOPATH=$HOME/go
-export PATH=${GOPATH}/bin:${PATH}
 export SYSTEMD_LESS=${LESS}S
 export HOMEBREW_NO_ANALYTICS=1
 export MANOPT=--no-hyphenation
@@ -204,7 +202,6 @@ alias kl="kubectl"
 # gitui
 alias gu=gitui
 
-export PATH=${HOME}/.local/go/bin:${PATH}
 # for binary supported both linux and mac, so they can share one config accross multi platform.
 export XDG_CONFIG_HOME="$HOME/.config"
 # locale
