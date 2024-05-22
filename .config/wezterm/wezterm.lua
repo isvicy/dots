@@ -46,7 +46,7 @@ config.keys = {
 		mods = "LEADER",
 		action = act.CloseCurrentTab({ confirm = false }),
 	},
-	{ key = "l", mods = "LEADER", action = act.ShowLauncher },
+	{ key = "T", mods = "LEADER", action = act.ShowLauncher },
 	{
 		key = ",",
 		mods = "LEADER",
