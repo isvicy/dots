@@ -10,20 +10,28 @@ brew "asdf"
 brew "libssh2"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
+# Resource monitor. C++ version and continuation of bashtop and bpytop
+brew "btop"
+# Core application library for C
+brew "glib"
 # CLI to install, manage & troubleshoot Kubernetes clusters running Cilium
 brew "cilium-cli"
 # Statistics utility to count lines of code
 brew "cloc"
 # Tool for interacting with remote images and registries
 brew "crane"
-# Core application library for C
-brew "glib"
 # Secure runtime for JavaScript and TypeScript
 brew "deno"
+# Simple, fast and user-friendly alternative to find
+brew "fd"
 # GNU compiler collection
 brew "gcc"
 # GNOME XML library
 brew "libxml2"
+# Create thumbnails for your video files
+brew "ffmpegthumbnailer"
+# Command-line fuzzy finder written in Go
+brew "fzf"
 # GitHub command-line tool
 brew "gh"
 # Distributed revision control system
@@ -34,8 +42,12 @@ brew "git-delta"
 brew "gitui"
 # Render markdown on the CLI
 brew "glow"
+# Program providing model for GNU coding standards and practices
+brew "hello"
 # Tools and libraries to manipulate images in many formats
 brew "imagemagick"
+# Lightweight and flexible command-line JSON processor
+brew "jq"
 # Simple terminal UI for git commands
 brew "lazygit"
 # Language Server for the Lua language
@@ -56,6 +68,8 @@ brew "node"
 brew "pkg-config"
 # Fast, disk space efficient package manager
 brew "pnpm"
+# PDF rendering library (based on the xpdf-3.0 code base)
+brew "poppler"
 # Static type checker for Python
 brew "pyright"
 # Search tool like grep and The Silver Searcher
@@ -64,6 +78,8 @@ brew "ripgrep"
 brew "ruff"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
+# Organize software neatly under a single directory tree (e.g. /usr/local)
+brew "stow"
 # Tool to build, change, and version infrastructure
 brew "terraform"
 # Text interface for Git repositories
@@ -72,8 +88,14 @@ brew "tig"
 brew "tmux"
 # Language Server Protocol implementation for TypeScript wrapping tsserver
 brew "typescript-language-server"
+# Command-line unarchiving tools supporting multiple formats
+brew "unar"
+# Blazing fast terminal file manager written in Rust, based on async I/O
+brew "yazi"
 # View colored diff with side by side and auto pager support
 brew "ydiff"
+# Shell extension to navigate your filesystem faster
+brew "zoxide"
 # The best way of working with Protocol Buffers.
 brew "bufbuild/buf/buf"
 # prettier, on SPEED!
