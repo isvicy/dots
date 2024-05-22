@@ -163,6 +163,8 @@ if command -v pyenv >/dev/null 2>&1; then
   eval "$(pyenv virtualenv-init - | sed s/precmd/chpwd/g)"
 fi
 
+. $(brew --prefix asdf)/libexec/asdf.sh
+
 if command -v fnm >/dev/null 2>&1; then
   eval "$(fnm env --use-on-cd)"
 fi

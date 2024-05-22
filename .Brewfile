@@ -4,6 +4,8 @@ tap "homebrew/bundle"
 tap "homebrew/command-not-found"
 # Cryptography and SSL/TLS Toolkit
 brew "openssl@3"
+# Extendable version manager with support for Ruby, Node.js, Erlang & more
+brew "asdf"
 # C library implementing the SSH2 protocol
 brew "libssh2"
 # Clone of cat(1) with syntax highlighting and Git integration
@@ -72,7 +74,7 @@ brew "tmux"
 brew "typescript-language-server"
 # View colored diff with side by side and auto pager support
 brew "ydiff"
-# A new way of working with Protocol Buffers.
+# The best way of working with Protocol Buffers.
 brew "bufbuild/buf/buf"
 # prettier, on SPEED!
 brew "fsouza/prettierd/prettierd"
