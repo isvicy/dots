@@ -7,9 +7,9 @@
 # alias      | url,url#relative_path    | default or branch name
 readonly neovim_apps=(
 	"astro     | https://github.com/AstroNvim/AstroNvim     | default"
-	"nvchad    | https://github.com/NvChad/NvChad,git@github.com:ak2kay/NvChadCustom.git#lua/custom          | default"
+	"nvchad    | https://github.com/NvChad/NvChad,git@github.com:isvicy/NvChadCustom.git#lua/custom          | default"
 	"starter   | https://github.com/LazyVim/starter         | default"
-	"default   | git@git.enceinte.cc:ak2kay/lazy.git        | default"
+	"default   | git@git.enceinte.cc:isvic/lazy.git        | coq"
 )
 
 # File name that is overwritten with nvim appname aliases.
