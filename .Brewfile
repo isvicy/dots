@@ -62,8 +62,6 @@ brew "ripgrep"
 brew "ruff"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
-# Organize software neatly under a single directory tree (e.g. /usr/local)
-brew "stow"
 # Tool to build, change, and version infrastructure
 brew "terraform"
 # Text interface for Git repositories
