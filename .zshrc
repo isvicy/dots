@@ -138,7 +138,27 @@ compdef _directories md
 # Define aliases.
 alias tree='tree -a -I .git'
 
-# Custom stuff
+###### Custom stuff
+
+#### zsh
+# command line hotkey
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^X^E' edit-command-line
+bindkey '^U' backward-kill-line
+
+# silent pushd and popd otherwise it will print long path stack
+setopt PUSHDSILENT
+
+ulimit -n 65535
+
+zshaddhistory() {
+  local cmd=${1%%$'\n'}
+  print -s "$(pwd); $cmd"
+  return 1  # 阻止原始命令被添加到历史记录中
+}
+#### zsh
+
 if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init zsh)"
 fi
@@ -210,14 +230,3 @@ export LC_CTYPE=en_US.UTF-8
 export HOMEBREW_NO_AUTO_UPDATE=1
 # default editor
 export EDITOR='nvim'
-
-# command line hotkey
-autoload -Uz edit-command-line
-zle -N edit-command-line
-bindkey '^X^E' edit-command-line
-bindkey '^U' backward-kill-line
-
-# silent pushd and popd otherwise it will print long path stack
-setopt PUSHDSILENT
-
-ulimit -n 65535
