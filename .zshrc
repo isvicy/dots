@@ -211,7 +211,7 @@ alias grh="git reset --hard"
 alias grm="git reset --mixed"
 alias gri="git rebase -i"
 # proxy
-alias setp="export ALL_PROXY=socks5://127.0.0.1:1080"
+alias setp="export ALL_PROXY=socks5://127.0.0.1:8899"
 alias usetp="unset ALL_PROXY"
 alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"
 # kube
