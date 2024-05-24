@@ -2,6 +2,7 @@ tap "bufbuild/buf"
 tap "fsouza/prettierd"
 tap "homebrew/bundle"
 tap "homebrew/command-not-found"
+tap "joshmedeski/sesh"
 # Cryptography and SSL/TLS Toolkit
 brew "openssl@3"
 # Extendable version manager with support for Ruby, Node.js, Erlang & more
@@ -100,3 +101,5 @@ brew "zoxide"
 brew "bufbuild/buf/buf"
 # prettier, on SPEED!
 brew "fsouza/prettierd/prettierd"
+# Smart terminal session manager
+brew "joshmedeski/sesh/sesh"
