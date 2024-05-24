@@ -138,9 +138,6 @@ compdef _directories md
 # Define aliases.
 alias tree='tree -a -I .git'
 
-# Add flags to existing aliases.
-alias ls="${aliases[ls]:-ls} -A"
-
 # Custom stuff
 if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init zsh)"
