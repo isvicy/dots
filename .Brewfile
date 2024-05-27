@@ -15,6 +15,10 @@ brew "bat"
 brew "btop"
 # Core application library for C
 brew "glib"
+# GNOME XML library
+brew "libxml2"
+# Versatile and fast Unicode/ASCII/ANSI graphics renderer
+brew "chafa"
 # CLI to install, manage & troubleshoot Kubernetes clusters running Cilium
 brew "cilium-cli"
 # Statistics utility to count lines of code
@@ -27,8 +31,6 @@ brew "deno"
 brew "fd"
 # GNU compiler collection
 brew "gcc"
-# GNOME XML library
-brew "libxml2"
 # Create thumbnails for your video files
 brew "ffmpegthumbnailer"
 # Command-line fuzzy finder written in Go
@@ -39,8 +41,6 @@ brew "gh"
 brew "git"
 # Syntax-highlighting pager for git and diff output
 brew "git-delta"
-# Blazing fast terminal-ui for git written in rust
-brew "gitui"
 # Render markdown on the CLI
 brew "glow"
 # Program providing model for GNU coding standards and practices
