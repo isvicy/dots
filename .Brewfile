@@ -43,8 +43,6 @@ brew "git"
 brew "git-delta"
 # Render markdown on the CLI
 brew "glow"
-# Program providing model for GNU coding standards and practices
-brew "hello"
 # Tools and libraries to manipulate images in many formats
 brew "imagemagick"
 # Lightweight and flexible command-line JSON processor
