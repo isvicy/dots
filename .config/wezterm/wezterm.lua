@@ -77,7 +77,7 @@ for i = 1, 8 do
 	})
 end
 -- For example, changing the color scheme:
-config.color_scheme = "Bamboo Multiplex"
+config.color_scheme = "Black Metal (Venom) (base16)"
 config.font = wezterm.font_with_fallback({
 	"Rec Mono Casual",
 	"Operator Mono Book",
