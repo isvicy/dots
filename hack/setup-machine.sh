@@ -21,7 +21,7 @@ function install_brew() {
 }
 
 function install_brew_bins() {
-	brew bundle --file='~/.dots/.Brewfile'
+	brew bundle --file='~/.dots/.Brewfile --cleanup'
 }
 
 function post_install_brew_bins() {
@@ -204,7 +204,6 @@ Darwin)
 	exit 1
 	;;
 esac
-
 
 install_brew
 install_brew_bins
