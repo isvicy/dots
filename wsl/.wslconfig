@@ -1,0 +1,10 @@
+[wsl2]
+networkingMode=mirrored
+dnsTunneling=true
+firewall=true
+autoProxy=true
+[experimental]
+autoMemoryReclaim=gradual
+hostAddressLoopback=true
+ignoredPorts=22
+sparseVhd=true
