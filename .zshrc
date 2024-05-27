@@ -148,7 +148,24 @@ ulimit -n 65535
 
 zshaddhistory() {
   local cmd=${1%%$'\n'}
-  print -s "CMDDIR=$(pwd); $cmd"
+  local current_dir=$(pwd)
+  local cmddir_pattern='# CMDDIR=([^;]+)$'
+
+  if [[ $cmd =~ $cmddir_pattern ]]; then
+    local existing_dir=${match[1]}
+    if [[ $existing_dir == $current_dir ]]; then
+      # CMDDIR exists and matches the current directory, do nothing
+      return 1
+    else
+      # CMDDIR exists but does not match the current directory, replace it
+      cmd=$(echo $cmd | sed "s|# CMDDIR=${existing_dir}|# CMDDIR=${current_dir}|")
+    fi
+  else
+    # CMDDIR does not exist, append it as a comment
+    cmd="$cmd # CMDDIR=${current_dir}"
+  fi
+
+  print -s "$cmd"
   return 1  # 阻止原始命令被添加到历史记录中
 }
 #### zsh
