@@ -21,7 +21,7 @@ function install_brew() {
 }
 
 function install_brew_bins() {
-	brew bundle --file='~/.dots/.Brewfile --cleanup'
+	brew bundle --file='~/.dots/.Brewfile' --cleanup
 }
 
 function post_install_brew_bins() {
