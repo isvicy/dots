@@ -85,7 +85,7 @@ config.font = wezterm.font_with_fallback({
 	"FireCode Nerd Font",
 })
 config.tab_bar_at_bottom = true
-config.font_size = 14.0
+config.font_size = 13.0
 config.window_decorations = "RESIZE"
 
 local launch_menu = {}
