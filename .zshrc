@@ -154,7 +154,7 @@ ulimit -n 65535
 
 zshaddhistory() {
   local cmd=${1%%$'\n'}
-  print -s "$(pwd); $cmd"
+  print -s "CMDDIR=$(pwd); $cmd"
   return 1  # 阻止原始命令被添加到历史记录中
 }
 #### zsh
