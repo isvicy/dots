@@ -161,8 +161,8 @@ function install_pyenv() {
 }
 
 function install_python() {
-	pyenv install -s 3.10
-	pyenv global 3.10
+	pyenv install -s 3.12
+	pyenv global 3.12
 }
 
 function install_pip_packages() {
@@ -236,8 +236,8 @@ install_golangci-lint
 install_pnpm_bins
 install_rust
 install_rust_bins
-# install_pyenv
-# install_python
-# install_pip_packages
+install_pyenv
+install_python
+install_pip_packages
 
 echo SETUP MACHINE SUCCEED
