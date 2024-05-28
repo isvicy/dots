@@ -77,7 +77,7 @@ for i = 1, 8 do
 	})
 end
 -- For example, changing the color scheme:
-config.color_scheme = "Black Metal (Venom) (base16)"
+config.color_scheme = "Bright (base16)"
 config.font = wezterm.font_with_fallback({
 	"Rec Mono Casual",
 	"Operator Mono Book",
@@ -85,7 +85,7 @@ config.font = wezterm.font_with_fallback({
 	"FireCode Nerd Font",
 })
 config.tab_bar_at_bottom = true
-config.font_size = 13.0
+config.font_size = 12.0
 config.window_decorations = "RESIZE"
 
 local launch_menu = {}
