@@ -191,8 +191,10 @@ function install_gvm() {
 }
 
 function post_install_gvm() {
-	gvm install go1.22.3 -B
-	gvm use go1.22.3
+	set +xueE
+	[[ -s "$GVM_ROOT/scripts/gvm" ]] && source "$GVM_ROOT/scripts/gvm"
+	gvm install go1.22.3 -B && gvm use go1.22.3 --default
+	set -uxeE
 }
 
 function apply_dots() {
