@@ -174,6 +174,22 @@ function install_pip_packages() {
 	pip install --upgrade debugpy
 }
 
+function install_gvm() {
+	export GVM_ROOT="$HOME/.gvm"
+	export PATH="$GVM_ROOT/bin:$PATH"
+
+	! command -v gvm &>/dev/null || return 0
+	if [ -e ~/.gvm ]; then
+		return 0
+	fi
+	local tmp
+	tmp="$(mktemp -d)"
+	pushd -- "$tmp"
+	curl -s -S -L https://raw.githubusercontent.com/isvicy/gvm/master/binscripts/gvm-installer | bash
+	popd
+	rm -rf -- "$tmp"
+}
+
 function apply_dots() {
 	pushd "${HOME}/.dots"
 	make link
@@ -207,7 +223,8 @@ esac
 
 install_brew
 install_brew_bins
-# post_install_brew_bins
+post_install_brew_bins
+install_gvm
 install_pnpm_bins
 install_rust
 install_rust_bins
