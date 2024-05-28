@@ -161,7 +161,9 @@ function install_pyenv() {
 }
 
 function install_python() {
-	pyenv install -s 3.12
+	CC=$(brew --prefix)/bin/gcc-14 CPPFLAGS="-I$(brew --prefix)/include" LDFLAGS="-L$(brew --prefix)/lib" pyenv install -s 3.12
+	# this way, pyenv is activated in current shell, so the global setting below will work
+	eval "$(pyenv init -)"
 	pyenv global 3.12
 }
 
