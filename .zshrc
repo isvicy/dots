@@ -189,6 +189,8 @@ if command -v pyenv >/dev/null 2>&1; then
   eval "$(pyenv virtualenv-init - | sed s/precmd/chpwd/g)"
 fi
 
+[[ -s "${HOME}/.gvm/scripts/gvm" ]] && source "${HOME}/.gvm/scripts/gvm"
+
 if command -v fnm >/dev/null 2>&1; then
   eval "$(fnm env --use-on-cd)"
 fi
