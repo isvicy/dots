@@ -5,8 +5,6 @@ tap "homebrew/command-not-found"
 tap "joshmedeski/sesh"
 # Cryptography and SSL/TLS Toolkit
 brew "openssl@3"
-# Extendable version manager with support for Ruby, Node.js, Erlang & more
-brew "asdf"
 # C library implementing the SSH2 protocol
 brew "libssh2"
 # Clone of cat(1) with syntax highlighting and Git integration
