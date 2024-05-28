@@ -190,6 +190,11 @@ function install_gvm() {
 	rm -rf -- "$tmp"
 }
 
+function post_install_gvm() {
+	gvm install go1.22.3 -B
+	gvm use go1.22.3
+}
+
 function apply_dots() {
 	pushd "${HOME}/.dots"
 	make link
@@ -225,12 +230,12 @@ install_brew
 install_brew_bins
 post_install_brew_bins
 install_gvm
+post_install_gvm
+install_golang_bins
+install_golangci-lint
 install_pnpm_bins
 install_rust
 install_rust_bins
-# install_golang
-# install_golang_bins
-# install_golangci-lint
 # install_pyenv
 # install_python
 # install_pip_packages
