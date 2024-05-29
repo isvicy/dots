@@ -41,6 +41,8 @@ brew "gh"
 brew "git"
 # Syntax-highlighting pager for git and diff output
 brew "git-delta"
+# Git extension for versioning large files
+brew "git-lfs"
 # Render markdown on the CLI
 brew "glow"
 # Tools and libraries to manipulate images in many formats
