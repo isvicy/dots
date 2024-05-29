@@ -65,6 +65,8 @@ brew "mypy"
 brew "neovim"
 # Platform built on V8 to build network applications
 brew "node"
+# Interactive grep tool
+brew "percol"
 # Manage compile and link flags for libraries
 brew "pkg-config"
 # Fast, disk space efficient package manager
