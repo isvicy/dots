@@ -17,8 +17,8 @@ fi
 
 [[ -s "${HOME}/.gvm/scripts/gvm" ]] && source "${HOME}/.gvm/scripts/gvm"
 # default cd function from gvm is much slow, disable it
-if functions[cd]; then
-  unset -f cd  # Unset the 'cd' function
+if (( $+functions[cd] )); then
+  unset -f cd
 fi
 
 if command -v fnm >/dev/null 2>&1; then
