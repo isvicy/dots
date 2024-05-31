@@ -42,7 +42,7 @@ zstyle ':z4h:ssh:*'                   enable 'no'
 # perform network I/O must be done above. Everything else is best done below.
 z4h init || return
 
-# Source custom configuration files
-for custom_config in ${HOME}/.zsh-custom/*.zsh; do
-    source $custom_config
-done
+source ${HOME}/.zsh-custom/config.zsh
+source ${HOME}/.zsh-custom/env.zsh
+source ${HOME}/.zsh-custom/aliases.zsh
+source ${HOME}/.zsh-custom/thirdparty.zsh
