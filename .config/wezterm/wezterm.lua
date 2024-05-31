@@ -79,6 +79,7 @@ end
 -- For example, changing the color scheme:
 config.color_scheme = "Bright (base16)"
 config.font = wezterm.font_with_fallback({
+	"MesloLGS NF",
 	"Rec Mono Casual",
 	"Operator Mono Book",
 	"JetBrainsMono Nerd Font",
