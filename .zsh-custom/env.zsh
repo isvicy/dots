@@ -11,3 +11,7 @@ export HOMEBREW_NO_ANALYTICS=1                 # Disable Homebrew analytics data
 export MANOPT=--no-hyphenation                 # Display man pages without hyphenation for better readability
 export XDG_CONFIG_HOME="$HOME/.config"         # Set the base directory for user-specific configuration files
 export PATH="${HOME}/.local/bin":${PATH}       # add local path for current user
+
+if [ -e "$HOME"/.cargo/env ]; then
+  . "$HOME/.cargo/env"
+fi
