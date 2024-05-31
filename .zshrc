@@ -41,3 +41,8 @@ zstyle ':z4h:ssh:*'                   enable 'no'
 # is fully initialized. Everything that requires user interaction or can
 # perform network I/O must be done above. Everything else is best done below.
 z4h init || return
+
+# Source custom configuration files
+for custom_config in ${HOME}/.zsh-custom/*.zsh; do
+    source $custom_config
+done
