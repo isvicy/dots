@@ -27,6 +27,14 @@ zshaddhistory() {
   return 1  # Prevent the original command from being added to history
 }
 
+# fix windows wsl clock drift
+sync_time(){
+  if sudo echo Starting time sync in background
+  then
+      sudo nohup watch -n 10 hwclock -s > /dev/null 2>&1 &
+  fi
+}
+
 autoload -Uz -- ${HOME}/.dots/hack/zsh-functions/[^_]*(N:t) # autoload custom zsh functions like sync-dots
 autoload -Uz edit-command-line          # Mark the 'edit-command-line' function for autoloading
 
