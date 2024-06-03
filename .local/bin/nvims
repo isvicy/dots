@@ -13,7 +13,7 @@ readonly neovim_apps=(
 )
 
 # File name that is overwritten with nvim appname aliases.
-readonly nvimAppNameFile="$HOME"/nvim_appnames
+readonly nvimAppNameFile="$HOME"/.nvim_appnames
 
 # nvapp names extracted from neovim_apps array.
 nvapps=()
@@ -206,7 +206,6 @@ toWorkingDirectory() {
 #  Write neovim aliases to a file that can be sourced.
 
 writeAliasesFile() {
-	echo "#!/bin/bash" >"$nvimAppNameFile"
 	echo "# NVIM_APPNAME aliases" >>"$nvimAppNameFile"
 	for nvapp in "${nvapps[@]}"; do
 		if [[ "default" != "$nvapp" ]]; then
