@@ -5,6 +5,7 @@
 
 ^/Makefile
 ^/hack
+^/\.wsl
 
 ^/node_modules
 ^/package.json
