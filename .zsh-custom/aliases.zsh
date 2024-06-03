@@ -20,3 +20,5 @@ alias usetp="unset ALL_PROXY"
 alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"
 # kube
 alias kl="kubectl"
+# try different nvim distro
+[[ -s "${HOME}/.nvim_appnames" ]] && source "${HOME}/.nvim_appnames"
