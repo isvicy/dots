@@ -18,7 +18,7 @@ ensureTargetDir "${HOME}/.local/share"
 
 # Run stow in simulation mode to detect conflicts
 # use uniq to remove duplicates cause stow will output the confilcts info multiple times
-conflicts=$(stow --simulate --verbose=2 --target="$target" "$package" 2>&1 | grep "cannot stow" | awk -F"target " '{print $2}' | awk '{print $1}' | uniq)
+conflicts=$(stow --simulate --verbose=2 --target="$target" "$package" 2>&1 | grep "cannot stow" | awk -F"target " '{print $2}' | awk '{print $1}' | sort | uniq)
 
 if [ -z "$conflicts" ]; then
 	# No conflicts, proceed with stowing
