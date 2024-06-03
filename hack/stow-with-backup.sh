@@ -3,6 +3,8 @@
 package=$1
 target=$2
 
+echo "linking ${package} to ${target}"
+
 script=$(readlink -f "$0")
 base_dir=$(dirname "$script")
 
@@ -14,23 +16,27 @@ ensureTargetDir "${HOME}/.local"
 ensureTargetDir "${HOME}/.local/bin"
 ensureTargetDir "${HOME}/.local/share"
 
-if ! stow --target="$target" "$package" --restow; then
-	# find the conflicting files
-	conflicts=$(stow --simulate --verbose=2 --target="$target" "$package" 2>&1 | grep "existing target is")
-	bakdir="${HOME}"/.config.bak
+# Run stow in simulation mode to detect conflicts
+# use uniq to remove duplicates cause stow will output the confilcts info multiple times
+conflicts=$(stow --simulate --verbose=2 --target="$target" "$package" 2>&1 | grep "cannot stow" | awk -F"target " '{print $2}' | awk '{print $1}' | uniq)
 
-	# loop over each conflicting file
-	while read -r conflict; do
-		# extract the filename
-		file=$(echo "$conflict" | awk '{print $NF}')
-
-		# backup the conflicting file
-		mv "${target}/$file" "${bakdir}"
-
-		# report the backup
-		echo "backed up ${target}/${file} to ${bakdir}/${file}"
-	done <<<"${conflicts}"
-
-	# retry the stow command
-	stow --target="${target}" "${package}" --verbose --restow
+if [ -z "$conflicts" ]; then
+	# No conflicts, proceed with stowing
+	stow --target="$target" "$package" --verbose --restow
+	exit 0
 fi
+
+# Handle conflicts
+backupdir="${HOME}"/.config.bak
+
+# Loop over each conflicting file
+while read -r file; do
+	# Backup the conflicting file
+	mv "${target}/$file" "${backupdir}"
+
+	# Report the backup
+	echo "backed up ${target}/${file} to ${backupdir}/${file}"
+done <<<"${conflicts}"
+
+# Retry the stow command
+stow --target="${target}" "${package}" --verbose --restow
