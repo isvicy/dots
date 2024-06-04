@@ -1,0 +1,4 @@
+# copy commit hash with osc
+# we have to make tig execute this command in foreground, so we use >
+# use ! can achieve the same, but you have to press enter after 'osc'
+bind generic I >sh -c "printf '%s' %(commit) | osc"
