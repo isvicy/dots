@@ -46,3 +46,5 @@ z4h init || return
 [[ -s ${HOME}/.zsh-custom/env.zsh ]] && source ${HOME}/.zsh-custom/env.zsh
 [[ -s ${HOME}/.zsh-custom/aliases.zsh ]] && source ${HOME}/.zsh-custom/aliases.zsh
 [[ -s ${HOME}/.zsh-custom/thirdparty.zsh ]] && source ${HOME}/.zsh-custom/thirdparty.zsh
+
+[[ -s ${HOME}/.${(%):-%m}.zsh ]] && source ${HOME}/.${(%):-%m}.zsh
