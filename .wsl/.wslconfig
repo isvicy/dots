@@ -3,6 +3,7 @@ networkingMode=mirrored
 dnsTunneling=true
 firewall=true
 autoProxy=true
+guiApplications=false
 [experimental]
 autoMemoryReclaim=gradual
 hostAddressLoopback=true
