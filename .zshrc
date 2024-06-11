@@ -42,9 +42,9 @@ zstyle ':z4h:ssh:*'                   enable 'no'
 # perform network I/O must be done above. Everything else is best done below.
 z4h init || return
 
-[[ -s ${HOME}/.zsh-custom/config.zsh ]] && source ${HOME}/.zsh-custom/config.zsh
-[[ -s ${HOME}/.zsh-custom/env.zsh ]] && source ${HOME}/.zsh-custom/env.zsh
-[[ -s ${HOME}/.zsh-custom/aliases.zsh ]] && source ${HOME}/.zsh-custom/aliases.zsh
-[[ -s ${HOME}/.zsh-custom/thirdparty.zsh ]] && source ${HOME}/.zsh-custom/thirdparty.zsh
+[[ -s ${HOME}/.zsh-custom/config.zsh ]] && source ${HOME}/.zsh-custom/config.zsh || true
+[[ -s ${HOME}/.zsh-custom/env.zsh ]] && source ${HOME}/.zsh-custom/env.zsh || true
+[[ -s ${HOME}/.zsh-custom/aliases.zsh ]] && source ${HOME}/.zsh-custom/aliases.zsh || true
+[[ -s ${HOME}/.zsh-custom/thirdparty.zsh ]] && source ${HOME}/.zsh-custom/thirdparty.zsh || true
 
-[[ -s ${HOME}/.${(%):-%m}.zsh ]] && source ${HOME}/.${(%):-%m}.zsh
+[[ -s ${HOME}/.${(%):-%m}.zsh ]] && source ${HOME}/.${(%):-%m}.zsh || true
