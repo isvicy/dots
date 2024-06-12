@@ -233,15 +233,15 @@ esac
 install_brew
 install_brew_bins
 post_install_brew_bins
-install_gvm
-post_install_gvm
-install_golang_bins
-install_golangci-lint
+# install_gvm
+# post_install_gvm
+# install_golang_bins
+# install_golangci-lint
 install_pnpm_bins
 install_rust
 install_rust_bins
-install_pyenv
-install_python
-install_pip_packages
+# install_pyenv
+# install_python
+# install_pip_packages
 
 echo SETUP MACHINE SUCCEED
