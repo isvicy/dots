@@ -22,3 +22,8 @@ alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"
 alias kl="kubectl"
 # try different nvim distro
 [[ -s "${HOME}/.nvim_appnames" ]] && source "${HOME}/.nvim_appnames" || true
+# docker
+isize() {
+    local image_tag=$1
+    docker history --no-trunc --format "{{.Size}}, {{.CreatedBy}}" "${image_tag}" | grep -v 0B
+}
