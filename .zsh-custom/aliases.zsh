@@ -21,4 +21,4 @@ alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"
 # kube
 alias kl="kubectl"
 # try different nvim distro
-[[ -s "${HOME}/.nvim_appnames" ]] && source "${HOME}/.nvim_appnames"
+[[ -s "${HOME}/.nvim_appnames" ]] && source "${HOME}/.nvim_appnames" || true
