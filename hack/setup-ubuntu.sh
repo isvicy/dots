@@ -213,6 +213,11 @@ function install_fonts() {
 	win_install_fonts ~/.local/share/fonts/NerdFonts/*.ttf
 }
 
+function install_nix() {
+	! command -v nix &>/dev/null || return 0
+	curl -fsSL https://nixos.org/nix/install | sh -s -- --daemon --yes
+}
+
 if [[ "$(id -u)" == 0 ]]; then
 	echo "${BASH_SOURCE[0]}: please run as non-root" >&2
 	exit 1
@@ -226,6 +231,7 @@ install_packages
 install_docker
 post_docker_installation
 install_nvidia_docker_toolkit
+install_nix
 # install_live555
 # install_fonts
 
