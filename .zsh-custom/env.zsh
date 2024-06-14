@@ -12,6 +12,14 @@ export MANOPT=--no-hyphenation                 # Display man pages without hyphe
 export XDG_CONFIG_HOME="$HOME/.config"         # Set the base directory for user-specific configuration files
 export PATH="${HOME}/.local/bin":${PATH}       # add local path for current user
 
+if [[ "$(</proc/version)" == *[Mm]icrosoft* ]] 2>/dev/null; then
+  export WSL_LIB_PATH="/usr/lib/wsl/lib/"
+  case ":$PATH:" in
+    *":$WSL_LIB_PATH:"*) ;;
+    *) export PATH="$WSL_LIB_PATH:$PATH" ;;
+  esac
+fi
+
 if [ -e "$HOME"/.cargo/env ]; then
   . "$HOME/.cargo/env"
 fi
