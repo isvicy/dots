@@ -12,6 +12,12 @@ export MANOPT=--no-hyphenation                 # Display man pages without hyphe
 export XDG_CONFIG_HOME="$HOME/.config"         # Set the base directory for user-specific configuration files
 export PATH="${HOME}/.local/bin":${PATH}       # add local path for current user
 
+export HOMEBREW_INSTALL_FROM_API=1
+export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
+export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
+export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
+export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
+
 if [[ "$(</proc/version)" == *[Mm]icrosoft* ]] 2>/dev/null; then
   export WSL_LIB_PATH="/usr/lib/wsl/lib/"
   case ":$PATH:" in
