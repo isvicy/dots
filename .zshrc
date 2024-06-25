@@ -4,6 +4,8 @@
 #
 # Documentation: https://github.com/romkatv/zsh4humans/blob/v5/README.md.
 
+[[ -s ${HOME}/.zsh-custom/init.zsh ]] && source ${HOME}/.zsh-custom/init.zsh || true
+
 # Periodic auto-update on Zsh startup: 'ask' or 'no'.
 # You can manually run `z4h update` to update everything.
 zstyle ':z4h:' auto-update      'no'
