@@ -27,6 +27,8 @@ brew "cloc"
 brew "crane"
 # Secure runtime for JavaScript and TypeScript
 brew "deno"
+# Load/unload environment variables based on $PWD
+brew "direnv"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
 # GNU compiler collection
