@@ -7,6 +7,10 @@ tap "joshmedeski/sesh"
 brew "openssl@3"
 # C library implementing the SSH2 protocol
 brew "libssh2"
+# GNOME XML library
+brew "libxml2"
+# Download with resuming and segmented downloading
+brew "aria2"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
 # Parser generator
@@ -15,8 +19,6 @@ brew "bison"
 brew "btop"
 # Core application library for C
 brew "glib"
-# GNOME XML library
-brew "libxml2"
 # Versatile and fast Unicode/ASCII/ANSI graphics renderer
 brew "chafa"
 # CLI to install, manage & troubleshoot Kubernetes clusters running Cilium
