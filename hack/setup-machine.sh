@@ -71,6 +71,9 @@ function install_rust_bins() {
 	if ! command -v stylua &>/dev/null; then
 		cargo install stylua
 	fi
+	if ! command -v rust-analyzer &>/dev/null; then
+		rustup component add rust-analyzer
+	fi
 }
 
 function install_golang() {
