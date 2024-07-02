@@ -67,6 +67,7 @@ config.keys = {
 	{ key = "l", mods = "LEADER", action = act.ActivatePaneDirection("Right") },
 	{ key = "k", mods = "LEADER", action = act.ActivatePaneDirection("Up") },
 	{ key = "j", mods = "LEADER", action = act.ActivatePaneDirection("Down") },
+	{ key = "z", mods = "LEADER", action = act.TogglePaneZoomState },
 }
 for i = 1, 8 do
 	-- <leader> + number to activate that tab
