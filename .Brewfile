@@ -75,8 +75,6 @@ brew "percol"
 brew "pkg-config"
 # Fast, disk space efficient package manager
 brew "pnpm"
-# PDF rendering library (based on the xpdf-3.0 code base)
-brew "poppler"
 # Static type checker for Python
 brew "pyright"
 # Search tool like grep and The Silver Searcher
