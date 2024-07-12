@@ -27,3 +27,7 @@ isize() {
     local image_tag=$1
     docker history --no-trunc --format "{{.Size}}, {{.CreatedBy}}" "${image_tag}" | grep -v 0B
 }
+# systemctl
+alias scs="sudo systemctl status"
+alias sct="sudo systemctl start"
+alias scr="sudo systemctl restart"
