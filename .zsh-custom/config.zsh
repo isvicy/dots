@@ -35,6 +35,11 @@ sync_time(){
   fi
 }
 
+eo() {
+  export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/openaikey.gpg)
+  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/openaihost.gpg)
+}
+
 [[ -d ${HOME}/.dots/hack/zsh-functions ]] && fpath=(${HOME}/.dots/hack/zsh-functions $fpath)
 autoload -Uz -- ${HOME}/.dots/hack/zsh-functions/[^_]*(N:t) # autoload custom zsh functions like sync-dots
 autoload -Uz edit-command-line          # Mark the 'edit-command-line' function for autoloading
