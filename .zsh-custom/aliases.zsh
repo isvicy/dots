@@ -31,3 +31,5 @@ isize() {
 alias scs="sudo systemctl status"
 alias sct="sudo systemctl start"
 alias scr="sudo systemctl restart"
+# clean sensitive env && make gpg require password immediately
+alias cl="unset OPENAI_API_KEY && unset OPENAI_API_BASE && gpgconf --kill gpg-agent"
