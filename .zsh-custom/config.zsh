@@ -37,7 +37,7 @@ sync_time(){
 
 eo() {
   export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/openaikey.gpg)
-  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/openaihost.gpg)
+  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/openaibase.gpg)
 }
 
 [[ -d ${HOME}/.dots/hack/zsh-functions ]] && fpath=(${HOME}/.dots/hack/zsh-functions $fpath)
