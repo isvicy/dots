@@ -39,6 +39,11 @@ eo() {
   export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/openaikey.gpg)
   export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/openaibase.gpg)
 }
+# keys from burn.hair
+ebo() {
+  export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/burnopenaikey.gpg)
+  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/burnopenaibase.gpg)
+}
 
 [[ -d ${HOME}/.dots/hack/zsh-functions ]] && fpath=(${HOME}/.dots/hack/zsh-functions $fpath)
 autoload -Uz -- ${HOME}/.dots/hack/zsh-functions/[^_]*(N:t) # autoload custom zsh functions like sync-dots
