@@ -2,7 +2,6 @@ export PAGER=less                              # Use 'less' as the default pager
 export EDITOR='nvim'                           # Set Neovim as the default text editor
 export GPG_TTY=$TTY                            # Set GPG to use the current terminal for passphrase prompts
 export LANGUAGE=en_US.UTF-8                    # Set the language for the locale to English (UTF-8)
-export LC_ALL=en_US.UTF-8                      # Override all locale settings to use English (UTF-8)
 export LANG=en_US.UTF-8                        # Set the default locale to English (UTF-8)
 export LC_CTYPE=en_US.UTF-8                    # Set the character encoding to UTF-8 for the terminal
 export SYSTEMD_LESS=${LESS}S                   # Configure 'less' for systemd logs to fold long lines
