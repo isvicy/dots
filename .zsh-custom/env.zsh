@@ -8,8 +8,7 @@ export SYSTEMD_LESS=${LESS}S                   # Configure 'less' for systemd lo
 export MANOPT=--no-hyphenation                 # Display man pages without hyphenation for better readability
 export XDG_CONFIG_HOME="$HOME/.config"         # Set the base directory for user-specific configuration files
 
-export PATH="${HOME}/.local/bin":/usr/local/bin:${PATH}       # add local path for current user
-export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH        # user installed library has higher priority
+export PATH="${HOME}/.local/bin":${PATH}       # add local path for current user
 
 if [[ "$(</proc/version)" == *[Mm]icrosoft* ]] 2>/dev/null; then
   export WSL_LIB_PATH="/usr/lib/wsl/lib/"
