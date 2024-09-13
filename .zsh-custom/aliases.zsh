@@ -27,6 +27,9 @@ isize() {
     local image_tag=$1
     docker history --no-trunc --format "{{.Size}}, {{.CreatedBy}}" "${image_tag}" | grep -v 0B
 }
+dc() {
+  docker container ls | percol | awk '{print $1}' | xargs -I {} sh -c 'docker stop {} && docker rm {}'
+}
 # systemctl
 alias scs="sudo systemctl status"
 alias sct="sudo systemctl start"
