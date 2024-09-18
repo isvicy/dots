@@ -30,6 +30,9 @@ isize() {
 dc() {
   docker container ls | percol | awk '{print $1}' | xargs -I {} sh -c 'docker stop {} && docker rm {}'
 }
+di() {
+  docker image ls | percol | awk '{print $1":"$2}' | xargs -I {} docker image rm {}
+}
 # systemctl
 alias scs="sudo systemctl status"
 alias sct="sudo systemctl start"
