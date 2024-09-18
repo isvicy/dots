@@ -59,3 +59,6 @@ ulimit -c $(((4 << 30) / 512))  # Sets the maximum size of core dump files to 4G
 setopt GLOB_DOTS           # Include dotfiles in globbing patterns
 setopt NO_AUTO_MENU        # Require and extra TAB press to open the completion menu
 setopt PUSHDSILENT         # Silent pushd and popd to avoid printing the directory stack
+
+echo -ne '\e[3 q' # Use underline blink cursor on startup.
+preexec() { echo -ne '\e[3 q' ;} # Use underline blink cursor for each new prompt.
