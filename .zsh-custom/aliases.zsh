@@ -14,6 +14,11 @@ alias gct="git commit"
 alias grh="git reset --hard"
 alias grm="git reset --mixed"
 alias gri="git rebase -i"
+# find the first tag contains COMMIT_HASH
+tac() {
+  local COMMIT_HASH=$1
+  git describe --tags $(git rev-list --tags --reverse --ancestry-path ${COMMIT_HASH}..HEAD) | head -n 1
+}
 # proxy
 alias setp="export ALL_PROXY=socks5h://127.0.0.1:7890; export HTTP_PROXY=socks5h://127.0.0.1:7890; export HTTPS_PROXY=socks5h://127.0.0.1:7890; export no_proxy='localhost,127.0.0.1,.megvii-inc.com'"
 alias usetp="unset ALL_PROXY"
