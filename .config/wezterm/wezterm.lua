@@ -73,6 +73,8 @@ config.keys = {
 		mods = "CTRL",
 		action = act({ SendString = "\x1b[13;5u" }),
 	},
+	{ key = "Enter", mods = "NONE", action = act.SendKey({ key = "Enter" }) },
+	{ key = "Enter", mods = "SHIFT", action = wezterm.action({ SendString = "\x1b[13;2u" }) },
 }
 for i = 1, 8 do
 	-- <leader> + number to activate that tab
