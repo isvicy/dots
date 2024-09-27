@@ -25,6 +25,23 @@ alias usetp="unset ALL_PROXY"
 alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"
 # kube
 alias kl="kubectl"
+kpd() {
+    read namespace podname <<< $(kubectl get pods -A | percol | awk '{print $1, $2}')
+    kubectl describe pod "$podname" -n "$namespace" "$@"
+}
+
+kpl() {
+    read namespace podname <<< $(kubectl get pods -A | percol | awk '{print $1, $2}')
+    containers=$(kubectl get pod "$podname" -n "$namespace" -o jsonpath='{.spec.containers[*].name}')
+    containername=$(echo $containers | tr ' ' '\n' | percol)
+    kubectl logs "$podname" -n "$namespace" -c "$containername" "$@"
+}
+
+kpc() {
+    read namespace podname <<< $(kubectl get pods -A | percol | awk '{print $1, $2}')
+    kubectl get pod "$podname" -n "$namespace" -o jsonpath='{.spec.containers[*].name}' "$@"
+}
+
 # try different nvim distro
 [[ -s "${HOME}/.nvim_appnames" ]] && source "${HOME}/.nvim_appnames" || true
 # docker
