@@ -8,6 +8,8 @@ export LC_CTYPE=en_US.UTF-8                    # Set the character encoding to U
 export SYSTEMD_LESS=${LESS}S                   # Configure 'less' for systemd logs to fold long lines
 export MANOPT=--no-hyphenation                 # Display man pages without hyphenation for better readability
 export XDG_CONFIG_HOME="$HOME/.config"         # Set the base directory for user-specific configuration files
+# fix locale warning of nvim which installed by nix
+export LOCALE_ARCHIVE=/usr/lib/locale/locale-archive
 
 export PATH="${HOME}/.local/bin":${PATH}       # add local path for current user
 
