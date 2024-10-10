@@ -52,6 +52,9 @@ isize() {
 dc() {
   docker container ls | percol | awk '{print $1}' | xargs -I {} sh -c 'docker stop {} && docker rm {}'
 }
+dl() {
+  docker container ls | percol | awk '{print $1}' | xargs -I {} sh -c 'docker logs -f {}'
+}
 di() {
   docker image ls | percol | awk '{print $1":"$2}' | xargs -I {} docker image rm {}
 }
