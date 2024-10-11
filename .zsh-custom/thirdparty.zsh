@@ -4,17 +4,16 @@ else
   echo "zoxide missing!"
 fi
 
-if command -v atuin >/dev/null 2>&1; then
-  eval "$(atuin init zsh)"
-else
-  echo "atuin missing!"
-fi
-
-# Shell integrations
 if command -v fzf >/dev/null 2>&1; then
   eval "$(fzf --zsh)"
 else
   echo "fzf missing!"
+fi
+
+if command -v atuin >/dev/null 2>&1; then
+  eval "$(atuin init zsh)"
+else
+  echo "atuin missing!"
 fi
 
 export PNPM_HOME="${HOME}/.local/share/pnpm"
