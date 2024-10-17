@@ -13,6 +13,8 @@ export LOCALE_ARCHIVE=/usr/lib/locale/locale-archive
 
 export PATH="${HOME}/.local/bin":${PATH}       # add local path for current user
 
+export no_proxy="localhost,127.0.0.1,10.0.0.0/8"
+
 if [[ "$(</proc/version)" == *[Mm]icrosoft* ]] 2>/dev/null; then
   export WSL_LIB_PATH="/usr/lib/wsl/lib/"
   case ":$PATH:" in
