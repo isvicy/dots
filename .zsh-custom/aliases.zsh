@@ -17,6 +17,11 @@ kpd() {
     kubectl describe pod "$podname" -n "$namespace" "$@"
 }
 
+kpe() {
+    read namespace podname <<< $(kubectl get pods -A | percol | awk '{print $1, $2}')
+    kubectl edit pod "$podname" -n "$namespace" "$@"
+}
+
 kpl() {
     read namespace podname <<< $(kubectl get pods -A | percol | awk '{print $1, $2}')
     containers=$(kubectl get pod "$podname" -n "$namespace" -o jsonpath='{.spec.containers[*].name}')
