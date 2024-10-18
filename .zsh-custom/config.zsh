@@ -31,5 +31,7 @@ setopt GLOB_DOTS           # Include dotfiles in globbing patterns
 setopt NO_AUTO_MENU        # Require and extra TAB press to open the completion menu
 setopt PUSHDSILENT         # Silent pushd and popd to avoid printing the directory stack
 
+setopt interactivecomments # Enable comments in interactive shell
+
 echo -ne '\e[3 q' # Use underline blink cursor on startup.
 preexec() { echo -ne '\e[3 q' ;} # Use underline blink cursor for each new prompt.
