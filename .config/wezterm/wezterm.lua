@@ -88,10 +88,9 @@ end
 config.color_scheme = "Bright (base16)"
 config.font = wezterm.font_with_fallback({
 	"Rec Mono Casual",
-	"MesloLGS NF",
-	"Operator Mono Book",
+	"Noto Sans Math",
+	"Symbols NF",
 	"JetBrainsMono Nerd Font",
-	"FireCode Nerd Font",
 })
 config.tab_bar_at_bottom = true
 config.font_size = 13.0
@@ -101,10 +100,12 @@ local launch_menu = {}
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
 	config.default_domain = "SSH:wsl"
 	table.insert(launch_menu, {
-		label = "PowerShell",
+		label = "New Tab (domain `local:PowerShell`)",
 		args = { "powershell.exe", "-NoLogo" },
+		-- make sure powershell is opened in local domain, otherwise, it will exits immediately.
+		domain = { DomainName = "local" },
 	})
 end
 config.launch_menu = launch_menu
--- and finally, return the configuration to wezterm
+
 return config
