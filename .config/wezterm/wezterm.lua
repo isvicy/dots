@@ -97,14 +97,10 @@ config.font_size = 13.0
 config.window_decorations = "RESIZE"
 
 local launch_menu = {}
-if wezterm.target_triple == "x86_64-pc-windows-msvc" then
+if wezterm.target_triple:find("windows") then
+	-- default_prog only affects local domain not default domain
+	config.default_prog = { "powershell.exe", "-NoLogo" }
 	config.default_domain = "SSH:wsl"
-	table.insert(launch_menu, {
-		label = "New Tab (domain `local:PowerShell`)",
-		args = { "powershell.exe", "-NoLogo" },
-		-- make sure powershell is opened in local domain, otherwise, it will exits immediately.
-		domain = { DomainName = "local" },
-	})
 end
 config.launch_menu = launch_menu
 
