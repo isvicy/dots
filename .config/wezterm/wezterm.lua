@@ -95,6 +95,7 @@ config.font = wezterm.font_with_fallback({
 config.tab_bar_at_bottom = true
 config.font_size = 13.0
 config.window_decorations = "RESIZE"
+config.max_fps = 120
 
 local launch_menu = {}
 if wezterm.target_triple:find("windows") then
