@@ -13,3 +13,5 @@
 
 ^/commitlint.config.js
 ^/\.husky
+
+^/template
