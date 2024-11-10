@@ -16,6 +16,12 @@ else
   echo "atuin missing!"
 fi
 
+if command -v direnv >/dev/null 2>&1; then
+  eval "$(direnv hook zsh)"
+else
+  echo "direnv missing!"
+fi
+
 export PNPM_HOME="${HOME}/.local/share/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
