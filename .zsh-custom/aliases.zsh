@@ -11,6 +11,8 @@ tac() {
 alias setp="export ALL_PROXY=socks5h://127.0.0.1:7890; export HTTP_PROXY=socks5h://127.0.0.1:7890; export HTTPS_PROXY=socks5h://127.0.0.1:7890; export no_proxy='localhost,127.0.0.1,.megvii-inc.com'"
 alias usetp="unset ALL_PROXY"
 alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"
+alias work="proxychains4 -q -f ${HOME}/.config/proxychains/work.conf"
+alias fly="proxychains4 -q -f ${HOME}/.config/proxychains/fly.conf"
 # kube
 kpd() {
     read namespace podname <<< $(kubectl get pods -A | percol | awk '{print $1, $2}')
