@@ -8,8 +8,8 @@ tac() {
   git describe --tags $(git rev-list --tags --reverse --ancestry-path ${COMMIT_HASH}..HEAD) | head -n 1
 }
 # proxy
-alias setp="export ALL_PROXY=socks5h://127.0.0.1:7890; export HTTP_PROXY=socks5h://127.0.0.1:7890; export HTTPS_PROXY=socks5h://127.0.0.1:7890; export no_proxy='localhost,127.0.0.1,.megvii-inc.com'"
-alias usetp="unset ALL_PROXY"
+alias setp="export ALL_PROXY=http://127.0.0.1:7890; export HTTP_PROXY=http://127.0.0.1:7890; export HTTPS_PROXY=http://127.0.0.1:7890; export no_proxy='localhost,127.0.0.1,.megvii-inc.com'"
+alias usetp="unset ALL_PROXY; unset HTTP_PROXY; unset HTTPS_PROXY; unset all_proxy; unset http_proxy; unset https_proxy"
 alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"
 alias work="proxychains4 -q -f ${HOME}/.config/proxychains/work.conf"
 alias fly="proxychains4 -q -f ${HOME}/.config/proxychains/fly.conf"
