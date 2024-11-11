@@ -212,7 +212,7 @@ ebo() {
 # keys from wild
 ew() {
   export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
-  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
+  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)/v1
   export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
   export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
 }
