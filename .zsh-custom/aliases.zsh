@@ -209,5 +209,12 @@ ebo() {
   export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/burnopenaikey.gpg)
   export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/burnopenaibase.gpg)
 }
+# keys from wild
+ew() {
+  export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
+  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
+  export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
+  export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
+}
 # clean sensitive env && make gpg require password immediately
-alias cl="unset OPENAI_API_KEY && unset OPENAI_API_BASE && gpgconf --kill gpg-agent"
+alias cl="unset OPENAI_API_KEY && unset OPENAI_API_BASE && unset ANTHROPIC_API_KEY && unset ANTHROPIC_BASE_URL && gpgconf --kill gpg-agent"
