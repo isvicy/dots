@@ -30,6 +30,8 @@ work() {
     fi
 }
 # kube
+# manage multiple kubeconfig
+export KUBECONFIG=$(find ~/.kube -maxdepth 1 -type f -name "config*" | paste -sd ":" -)
 kpd() {
     read namespace podname <<< $(kubectl get pods -A | percol | awk '{print $1, $2}')
     kubectl describe pod "$podname" -n "$namespace" "$@"
