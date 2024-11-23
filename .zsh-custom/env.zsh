@@ -15,8 +15,7 @@ export PATH="${HOME}/.local/bin":${PATH}       # add local path for current user
 
 export no_proxy="localhost,127.0.0.1,10.0.0.0/8"
 
-# Set the word separator characters to include /, #, ?, and =
-export WORDCHARS=${WORDCHARS//[\/\#\?\=]/}
+export WORDCHARS=$'!"$%&\'()*+,-.:;<>@[\\]^_`{|}~'
 
 if [[ "$(</proc/version)" == *[Mm]icrosoft* ]] 2>/dev/null; then
   export WSL_LIB_PATH="/usr/lib/wsl/lib/"
