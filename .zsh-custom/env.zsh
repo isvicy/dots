@@ -13,8 +13,7 @@ export LOCALE_ARCHIVE=/usr/lib/locale/locale-archive
 
 export PATH="${HOME}/.local/bin":${PATH}       # add local path for current user
 
-# Set the word separator characters to include /, #, ?, and =
-export WORDCHARS=${WORDCHARS//[\/\#\?\=]/}
+export WORDCHARS=$'!"$%&\'()*+,-.:;<>@[\\]^_`{|}~'
 
 if [[ "$(</proc/version)" == *[Mm]icrosoft* ]] 2>/dev/null; then
   export WSL_LIB_PATH="/usr/lib/wsl/lib/"
