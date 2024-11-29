@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Function to encode data to Base64
 osc52_copy() {

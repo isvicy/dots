@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 curl --request GET \
   --url https://api.tailscale.com/api/v2/tailnet/-/devices \

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 sesh connect "$(
   sesh list | fzf-tmux -p 55%,60% \
