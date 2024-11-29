@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Define Neovim applications you want to experiment with.
 
 # The repository clonded must bootstrap itself.  In otherwords, clone and nvim
