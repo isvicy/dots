@@ -68,6 +68,8 @@ config.keys = {
 	{ key = "k", mods = "LEADER", action = act.ActivatePaneDirection("Up") },
 	{ key = "j", mods = "LEADER", action = act.ActivatePaneDirection("Down") },
 	{ key = "z", mods = "LEADER", action = act.TogglePaneZoomState },
+	-- tmux style copy mode
+	{ key = "[", mods = "LEADER", action = act.ActivateCopyMode },
 	{
 		key = "Enter",
 		mods = "CTRL",
