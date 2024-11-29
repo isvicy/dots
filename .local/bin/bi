@@ -2,28 +2,28 @@
 
 # Function to select a file using percol
 select_file() {
-	local dir="${1:-.}"
-	shift
-	local patterns=("$@")
-	local find_args=()
-	for pattern in "${patterns[@]}"; do
-		if [ ${#find_args[@]} -eq 0 ]; then
-			find_args+=(-name "$pattern")
-		else
-			find_args+=(-o -name "$pattern")
-		fi
-	done
-	find "$dir" -type f \( "${find_args[@]}" \) | percol
+  local dir="${1:-.}"
+  shift
+  local patterns=("$@")
+  local find_args=()
+  for pattern in "${patterns[@]}"; do
+    if [ ${#find_args[@]} -eq 0 ]; then
+      find_args+=(-name "$pattern")
+    else
+      find_args+=(-o -name "$pattern")
+    fi
+  done
+  find "$dir" -type f \( "${find_args[@]}" \) | percol
 }
 
 # Function to display usage information
 usage() {
-	echo "Usage: $0 [-i <image_dir>] [-j <json_file>] [-f <json_field>]"
-	echo "  -i <image_dir>   Directory to search for images (optional)"
-	echo "  -j <json_file>   Input JSON file (optional)"
-	echo "  -f <json_field>  JSON field to patch (optional, default: 'data')"
-	echo "If parameters are not provided, you will be prompted to select interactively."
-	exit 1
+  echo "Usage: $0 [-i <image_dir>] [-j <json_file>] [-f <json_field>]"
+  echo "  -i <image_dir>   Directory to search for images (optional)"
+  echo "  -j <json_file>   Input JSON file (optional)"
+  echo "  -f <json_field>  JSON field to patch (optional, default: 'data')"
+  echo "If parameters are not provided, you will be prompted to select interactively."
+  exit 1
 }
 
 # Initialize variables
@@ -33,57 +33,57 @@ json_field="data" # Default value
 
 # Parse command-line options
 while getopts ":i:j:f:h" opt; do
-	case ${opt} in
-	i)
-		image_dir=$OPTARG
-		;;
-	j)
-		input_file=$OPTARG
-		;;
-	f)
-		json_field=$OPTARG
-		;;
-	h)
-		usage
-		;;
-	\?)
-		echo "Invalid option: $OPTARG" 1>&2
-		usage
-		;;
-	:)
-		echo "Invalid option: $OPTARG requires an argument" 1>&2
-		usage
-		;;
-	esac
+  case ${opt} in
+  i)
+    image_dir=$OPTARG
+    ;;
+  j)
+    input_file=$OPTARG
+    ;;
+  f)
+    json_field=$OPTARG
+    ;;
+  h)
+    usage
+    ;;
+  \?)
+    echo "Invalid option: $OPTARG" 1>&2
+    usage
+    ;;
+  :)
+    echo "Invalid option: $OPTARG requires an argument" 1>&2
+    usage
+    ;;
+  esac
 done
 
 # Select image file
 if [ -z "$image_dir" ]; then
-	image_file=$(select_file "." "*.jpg" "*.jpeg" "*.png" "*.gif")
+  image_file=$(select_file "." "*.jpg" "*.jpeg" "*.png" "*.gif")
 else
-	image_file=$(select_file "$image_dir" "*.jpg" "*.jpeg" "*.png" "*.gif")
+  image_file=$(select_file "$image_dir" "*.jpg" "*.jpeg" "*.png" "*.gif")
 fi
 
 if [ -z "$image_file" ]; then
-	echo "No image selected. Exiting."
-	exit 1
+  echo "No image selected. Exiting."
+  exit 1
 fi
 
 # Select JSON file if not provided
 if [ -z "$input_file" ]; then
-	input_file=$(select_file "." "*.json")
-	if [ -z "$input_file" ]; then
-		echo "No JSON file selected. Exiting."
-		exit 1
-	fi
+  input_file=$(select_file "." "*.json")
+  if [ -z "$input_file" ]; then
+    echo "No JSON file selected. Exiting."
+    exit 1
+  fi
 fi
 
 # Patch the JSON file
 output_file="${input_file%.*}_data.${input_file##*.}"
 if jq --arg img "$(base64 -w 0 "$image_file")" --arg field "$json_field" '.[$field] = $img' "$input_file" >"$output_file"; then
-	echo "JSON file updated successfully. Output saved to $output_file"
-	echo "Patched field: $json_field"
+  echo "JSON file updated successfully. Output saved to $output_file"
+  echo "Patched field: $json_field"
 else
-	echo "Error updating JSON file."
-	exit 1
+  echo "Error updating JSON file."
+  exit 1
 fi
