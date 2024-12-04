@@ -1,0 +1,214 @@
+#!/usr/bin/env bash
+
+# Default settings
+src_dir=""
+ext=""
+target_dir=""
+prefix=""
+
+# Default directories to exclude
+exclude_dirs=(
+  ".git"
+  ".vscode"
+  "node_modules"
+  ".idea"
+  ".svn"
+  ".hg"
+  "__pycache__"
+  "build"
+  "dist"
+)
+
+# Default file extensions to exclude
+exclude_exts=(
+  "pyc"
+  "pyo"
+  "mo"
+  "o"
+  "class"
+  "swp"
+  "swo"
+  "log"
+  "cache"
+  "tmp"
+  "webp"
+  "png"
+  "jpg"
+  "jpeg"
+  "bin"
+  "xz"
+  "tar"
+  "gz"
+  "tar.xz"
+  "txt"
+)
+
+# Default filename patterns to exclude (using regex)
+exclude_patterns=(
+  ".*/.*rc\\..*$"          # Configuration files like .eslintrc, .npmrc
+  ".*/.*\\.lock$"          # Lock files like package-lock.json, yarn.lock
+  ".*package-lock\\.json$" # npm lock file
+  ".*pnpm-lock\\.yaml$"    # pnpm lock file
+  ".*yarn\\.lock$"         # yarn lock file
+  ".*/\\.env.*"            # Environment files like .env, .env.local
+  ".*/\\.gitignore$"       # Git ignore file
+  ".*/\\.dockerignore$"    # Docker ignore file
+  ".*/hardware-configuration.nix"
+)
+
+# Function to show usage
+usage() {
+  echo "Usage: $0 -s <source_directory> [-e <extension>] [-t <tag>] [-d <exclude_dirs>] [-x <exclude_exts>] [-p <exclude_patterns>]"
+  echo "Options:"
+  echo "  -s, --source       Source directory (required)"
+  echo "  -e, --extension    File extension to process (optional)"
+  echo "  -t, --tag          Tag to prefix files with (optional)"
+  echo "  -d, --exclude-dir  Additional directories to exclude (comma-separated)"
+  echo "  -x, --exclude-ext  Additional extensions to exclude (comma-separated)"
+  echo "  -p, --pattern      Additional filename patterns to exclude (comma-separated regex)"
+  echo "  -h, --help         Show this help message"
+  echo
+  echo "Example:"
+  echo "  $0 -s my_project -e nix"
+  echo "  $0 -s my_project -t reference"
+  echo "  $0 -s my_project -t impl -p '.*\.config$,.*\.lock$'"
+  exit 1
+}
+
+# Parse command line arguments
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+  -s | --source)
+    src_dir="$2"
+    shift 2
+    ;;
+  -e | --extension)
+    ext="$2"
+    shift 2
+    ;;
+  -t | --tag)
+    prefix="tag-$2"
+    shift 2
+    ;;
+  -d | --exclude-dir)
+    IFS=',' read -ra additional_dirs <<<"$2"
+    exclude_dirs+=("${additional_dirs[@]}")
+    shift 2
+    ;;
+  -x | --exclude-ext)
+    IFS=',' read -ra additional_exts <<<"$2"
+    exclude_exts+=("${additional_exts[@]}")
+    shift 2
+    ;;
+  -p | --pattern)
+    IFS=',' read -ra additional_patterns <<<"$2"
+    exclude_patterns+=("${additional_patterns[@]}")
+    shift 2
+    ;;
+  -h | --help)
+    usage
+    ;;
+  *)
+    echo "Unknown parameter: $1"
+    usage
+    ;;
+  esac
+done
+
+# Check if source directory is provided
+if [ -z "$src_dir" ]; then
+  echo "Error: Source directory is required"
+  usage
+fi
+
+# Get absolute path of source directory
+src_dir=$(realpath "$src_dir")
+
+# Validate source directory
+if [ ! -d "$src_dir" ]; then
+  echo "Error: Source directory '$src_dir' does not exist"
+  exit 1
+fi
+
+# Create target directory at the same level as source directory
+src_parent=$(dirname "$src_dir")
+src_name=$(basename "$src_dir")
+target_dir="${src_parent}/${src_name}_flat"
+mkdir -p "$target_dir"
+
+# Build exclude pattern for find command
+exclude_pattern=""
+
+# Add directory exclusions
+for dir in "${exclude_dirs[@]}"; do
+  exclude_pattern="$exclude_pattern -not -path '*/$dir/*'"
+done
+
+# Add file extension exclusions
+for ext_to_exclude in "${exclude_exts[@]}"; do
+  exclude_pattern="$exclude_pattern -not -name '*.$ext_to_exclude'"
+done
+
+# Add regex pattern exclusions
+for pattern in "${exclude_patterns[@]}"; do
+  exclude_pattern="$exclude_pattern -not -regex '$pattern'"
+done
+
+# Function to process each file
+process_file() {
+  local file="$1"
+  local src_prefix="$2/"
+  local target="$3"
+  local tag_prefix="$4"
+
+  # Remove source directory prefix and convert path separators to comma
+  local new_name
+  new_name=$(echo "${file#"$src_prefix"}" | tr "/" ",")
+
+  # Add tag prefix if provided
+  if [ -n "$tag_prefix" ]; then
+    new_name="${tag_prefix}__${new_name}"
+  fi
+
+  # Check if target file already exists
+  if [ -f "$target/$new_name" ]; then
+    echo "Warning: File '$new_name' already exists in target directory, skipping..."
+    return
+  fi
+
+  echo "Moving: $file -> $target/$new_name"
+  cp "$file" "$target/$new_name"
+}
+
+export -f process_file
+
+# Construct find command based on whether extension is provided
+if [ -n "$ext" ]; then
+  # Extension provided - find files with specific extension
+  echo "Processing files with .$ext extension..."
+  find_pattern="-name \"*.$ext\""
+else
+  # No extension provided - find all files
+  echo "Processing all files..."
+  find_pattern="-type f"
+fi
+
+# Display settings being used
+echo "Settings:"
+echo "Source directory: $src_dir"
+echo "Target directory: $target_dir"
+echo "File extension: ${ext:-all}"
+echo "Tag prefix: ${prefix:-none}"
+echo "Excluded directories: ${exclude_dirs[*]}"
+echo "Excluded extensions: ${exclude_exts[*]}"
+echo "Excluded patterns: ${exclude_patterns[*]}"
+echo
+
+# Find and process files
+eval "find \"$src_dir\" -type f $find_pattern $exclude_pattern" |
+  while IFS= read -r file; do
+    process_file "$file" "$src_dir" "$target_dir" "$prefix"
+  done
+
+echo "Done! Files have been copied to $target_dir"
+echo "Note: Original files are preserved in their original location"
