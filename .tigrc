@@ -5,3 +5,6 @@ bind generic I >sh -c "printf '%s' %(commit) | osc"
 
 # copy tag with osc
 bind generic T >sh -c "printf '%s' %(tag) | osc"
+
+# copy commit message with osc
+bind generic <Ctrl-T> >sh -c "git log -1 --pretty=%B %(commit) | tr -d '\n' | osc"
