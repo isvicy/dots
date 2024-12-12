@@ -12,7 +12,6 @@ bindkey '^X^E' edit-command-line        # Bind 'Ctrl-X Ctrl-E' to the 'edit-comm
 bindkey '^U' backward-kill-line         # Bind Ctrl-U to delete from the cursor to the start of the line
 
 ulimit -n 65535 # Increase file descriptor limit
-ulimit -c $(((4 << 30) / 512))  # Sets the maximum size of core dump files to 4GB
 
 # History
 HISTSIZE=5000
