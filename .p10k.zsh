@@ -28,6 +28,13 @@
 [[ ! -o 'no_brace_expand' ]] || p10k_config_opts+=('no_brace_expand')
 'builtin' 'setopt' 'no_aliases' 'no_sh_glob' 'brace_expand'
 
+function prompt_nix_dev_profile() {
+  if [[ -n $IN_NIX_SHELL ]]; then
+    local profile=${NIX_DEV_PROFILE:-$IN_NIX_SHELL}
+    p10k segment -f grey -i '▼' -t "${profile//\%/%%}"
+  fi
+}
+
 () {
   emulate -L zsh -o extended_glob
 
@@ -66,6 +73,7 @@
     virtualenv                # python virtual environment
     context                   # user@host
     kubecontext
+    nix_dev_profile
     # time                    # current time
     # =========================[ Line #2 ]=========================
     newline                   # \n
