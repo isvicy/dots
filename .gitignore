@@ -3,3 +3,5 @@
 **/.Brewfile.lock.json
 **/Brewfile.lock.json
 **/.uuid
+**/.DS_Store
+**/registry.json
