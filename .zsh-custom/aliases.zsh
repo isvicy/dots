@@ -237,12 +237,28 @@ ew() {
   export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
 }
 
+# keys from api.burn.hair with claude
 ebh() {
   export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
   export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)/v1
   export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
   export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
   export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
+  export TAVILY_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tavilykey.gpg)
+}
+
+eai() {
+  export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
+  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)/v1
+  export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
+  export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
+  export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
+  export TAVILY_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tavilykey.gpg)
+}
+
+ems() {
+  export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/mskey.gpg)
+  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msbase.gpg)/v1
 }
 
 eg() {
