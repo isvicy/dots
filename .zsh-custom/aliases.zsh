@@ -4,8 +4,8 @@ alias c='clear'
 alias tree='tree -a -I .git'
 # find the first tag contains COMMIT_HASH
 tac() {
-  local COMMIT_HASH=$1
-  git describe --tags $(git rev-list --tags --reverse --ancestry-path ${COMMIT_HASH}..HEAD) | head -n 1
+    local COMMIT_HASH=$1
+    git describe --tags $(git rev-list --tags --reverse --ancestry-path ${COMMIT_HASH}..HEAD) | head -n 1
 }
 # proxy
 alias setp="export ALL_PROXY=http://127.0.0.1:7890; export HTTP_PROXY=http://127.0.0.1:7890; export HTTPS_PROXY=http://127.0.0.1:7890; export no_proxy='localhost,127.0.0.1,.megvii-inc.com'"
@@ -32,10 +32,10 @@ work() {
 # kube
 # manage multiple kubeconfig
 if [ -d ~/.kube ]; then
-  FOUND_CONFIGS=$(find ~/.kube -maxdepth 1 -type f -name "config*" | paste -sd ":" -)
-  if [ -n "$FOUND_CONFIGS" ]; then
-    export KUBECONFIG="$FOUND_CONFIGS"
-  fi
+    FOUND_CONFIGS=$(find ~/.kube -maxdepth 1 -type f -name "config*" | paste -sd ":" -)
+    if [ -n "$FOUND_CONFIGS" ]; then
+        export KUBECONFIG="$FOUND_CONFIGS"
+    fi
 fi
 kpd() {
     read namespace podname <<< $(kubectl get pods -A | percol | awk '{print $1, $2}')
@@ -106,29 +106,29 @@ kpvd() {
 #
 krdn() {
     local usage="Usage: krdn <namespace> <resourceType> [--force]"
-    
+
     # Input validation with more descriptive messages
     if [ $# -lt 2 ]; then
         echo "$usage"
         echo "Example: krdn default pods"
         return 1
     fi
-    
+
     local namespace="$1"
     local resourceType="$2"
     local force_delete=false
-    
+
     # Check for force flag
     if [ "$3" = "--force" ]; then
         force_delete=true
     fi
-    
+
     # Validate namespace exists
     if ! kubectl get namespace "$namespace" &>/dev/null; then
         echo "Error: Namespace '$namespace' does not exist"
         return 1
     fi
-    
+
     # Get list of resources with error handling
     local resources
     if ! resources=$(kubectl get "$resourceType" -n "$namespace" --no-headers -o custom-columns=":metadata.name" 2>/dev/null); then
@@ -136,17 +136,17 @@ krdn() {
         echo "Please check if the resource type is valid"
         return 1
     fi
-    
+
     if [ -z "$resources" ]; then
         echo "No resources of type '$resourceType' found in namespace '$namespace'"
         return 0
     fi
-    
+
     # Show resources that will be deleted with count
     local resource_count=$(echo "$resources" | wc -l)
     echo -e "\nFound $resource_count $resourceType(s) in namespace '$namespace':"
     echo "$resources" | sed 's/^/- /'
-    
+
     # Skip confirmation if force flag is used
     if [ "$force_delete" = true ]; then
         echo -e "\nForce flag detected - proceeding with deletion..."
@@ -154,18 +154,18 @@ krdn() {
         # Ask for confirmation (compatible with bash and zsh)
         echo -e "\nAre you sure you want to delete these resources? (y/N): "
         read -r confirm
-        
+
         if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
             echo "Operation cancelled"
             return 0
         fi
     fi
-    
+
     # Delete resources with progress indicator
     echo -e "\nDeleting resources..."
     local deleted_count=0
     local failed_count=0
-    
+
     while IFS= read -r resource; do
         if kubectl delete "$resourceType" "$resource" -n "$namespace" &>/dev/null; then
             echo "✓ Deleted $resource"
@@ -175,7 +175,7 @@ krdn() {
             ((failed_count++))
         fi
     done <<< "$resources"
-    
+
     # Summary
     echo -e "\nDeletion Summary:"
     echo "- Successfully deleted: $deleted_count"
@@ -190,22 +190,22 @@ krdn() {
 [[ -s "${HOME}/.nvim_appnames" ]] && source "${HOME}/.nvim_appnames" || true
 # docker
 dcr() {
-  docker container ls | percol | awk '{print $1}' | xargs -I {} sh -c 'docker stop {} && docker rm {}'
+    docker container ls | percol | awk '{print $1}' | xargs -I {} sh -c 'docker stop {} && docker rm {}'
 }
 dcl() {
-  docker container ls | percol | awk '{print $1}' | xargs -I {} sh -c 'docker logs -f {}'
+    docker container ls | percol | awk '{print $1}' | xargs -I {} sh -c 'docker logs -f {}'
 }
 dis() {
     local image_tag=$1
     docker history --no-trunc --format "{{.Size}}, {{.CreatedBy}}" "${image_tag}" | grep -v 0B
 }
 dir() {
-  docker image ls | percol | awk '{print $1":"$2}' | xargs -I {} docker image rm {}
+    docker image ls | percol | awk '{print $1":"$2}' | xargs -I {} docker image rm {}
 }
 # copy image from one registry to another, useful when you are dealing with multi-arch images.
 dic() {
-  TAG=$1
-  skopeo copy --insecure-policy --src-tls-verify=false --dest-tls-verify=false --multi-arch=all docker://${SRC_REGISTRY}/${TAG} docker://${DST_REGISTRY}/${TAG}
+    TAG=$1
+    skopeo copy --insecure-policy --src-tls-verify=false --dest-tls-verify=false --multi-arch=all docker://${SRC_REGISTRY}/${TAG} docker://${DST_REGISTRY}/${TAG}
 }
 # systemctl
 alias scs="sudo systemctl status"
@@ -213,57 +213,57 @@ alias sct="sudo systemctl start"
 alias scr="sudo systemctl restart"
 # fix windows wsl clock drift
 sync_time(){
-  if sudo echo Starting time sync in background
-  then
-      sudo nohup watch -n 10 hwclock -s > /dev/null 2>&1 &
-  fi
+    if sudo echo Starting time sync in background
+    then
+        sudo nohup watch -n 10 hwclock -s > /dev/null 2>&1 &
+    fi
 }
 
 eo() {
-  export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/openaikey.gpg)
-  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/openaibase.gpg)
+    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/openaikey.gpg)
+    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/openaibase.gpg)
 }
 # keys from burn.hair
 ebo() {
-  export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/burnopenaikey.gpg)
-  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/burnopenaibase.gpg)
+    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/burnopenaikey.gpg)
+    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/burnopenaibase.gpg)
 }
 # keys from wild
 ew() {
-  export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
-  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)/v1
-  export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
-  export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
-  export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
+    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
+    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)/v1
+    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
+    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
+    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
 }
 
 # keys from api.burn.hair with claude
 ebh() {
-  export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
-  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)/v1
-  export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
-  export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
-  export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
-  export TAVILY_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tavilykey.gpg)
+    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
+    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)/v1
+    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
+    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
+    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
+    export TAVILY_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tavilykey.gpg)
 }
 
 eai() {
-  export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
-  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)/v1
-  export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
-  export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
-  export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
-  export TAVILY_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tavilykey.gpg)
+    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
+    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)/v1
+    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
+    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
+    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
+    export TAVILY_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tavilykey.gpg)
 }
 
 ems() {
-  export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/mskey.gpg)
-  export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msbase.gpg)/v1
+    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/mskey.gpg)
+    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msbase.gpg)/v1
 }
 
 eg() {
-  export GITLAB_TOKEN=$(gpg --quiet --decrypt ${HOME}/.gpgs/gitlabkey.gpg)
-  export GITLAB_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/gitlabbase.gpg)
+    export GITLAB_TOKEN=$(gpg --quiet --decrypt ${HOME}/.gpgs/gitlabkey.gpg)
+    export GITLAB_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/gitlabbase.gpg)
 }
 # clean sensitive env && make gpg require password immediately
 alias clai="unset OPENAI_API_KEY && unset OPENAI_API_BASE && unset ANTHROPIC_API_KEY && unset ANTHROPIC_API_BASE && unset ANTHROPIC_BASE_URL && gpgconf --kill gpg-agent"

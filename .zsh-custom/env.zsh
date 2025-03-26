@@ -10,13 +10,13 @@ export PATH="${HOME}/.local/bin":${PATH}       # add local path for current user
 export WORDCHARS=$'!"$%&\'()*+,-.:;<>@[\\]^_`{|}~'
 
 if [[ "$(</proc/version)" == *[Mm]icrosoft* ]] 2>/dev/null; then
-  export WSL_LIB_PATH="/usr/lib/wsl/lib/"
-  case ":$PATH:" in
-    *":$WSL_LIB_PATH:"*) ;;
-    *) export PATH="$WSL_LIB_PATH:$PATH" ;;
-  esac
+    export WSL_LIB_PATH="/usr/lib/wsl/lib/"
+    case ":$PATH:" in
+        *":$WSL_LIB_PATH:"*) ;;
+        *) export PATH="$WSL_LIB_PATH:$PATH" ;;
+    esac
 fi
 
 if [ -e "$HOME"/.cargo/env ]; then
-  . "$HOME/.cargo/env"
+    . "$HOME/.cargo/env"
 fi
