@@ -267,6 +267,7 @@ eallinone() {
     export DEEPSEEK_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/deepseekkey.gpg)
     export DEEPSEEK_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/deepseekbase.gpg)
     export LLM_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/orgkey.gpg)
+    export GEMINI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/geminikey.gpg)
 }
 
 ems() {
