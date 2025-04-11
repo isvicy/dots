@@ -89,13 +89,14 @@ end
 -- For example, changing the color scheme:
 config.color_scheme = "Bright (base16)"
 config.font = wezterm.font_with_fallback({
+	"Comic Code",
 	"Rec Mono Casual",
 	"Noto Sans Math",
 	"Symbols NF",
 	"JetBrainsMono Nerd Font",
 })
 config.tab_bar_at_bottom = true
-config.font_size = 13.0
+config.font_size = 14.0
 config.warn_about_missing_glyphs = false
 config.window_decorations = "RESIZE"
 config.window_background_opacity = 0.65
