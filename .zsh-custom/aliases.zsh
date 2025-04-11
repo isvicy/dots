@@ -270,6 +270,20 @@ eallinone() {
     export GEMINI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/geminikey.gpg)
 }
 
+eallinoneai() {
+    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
+    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)/v1
+    export OPENAI_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)/v1
+    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
+    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
+    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
+    export TAVILY_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tavilykey.gpg)
+    export DEEPSEEK_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/deepseekkey.gpg)
+    export DEEPSEEK_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/deepseekbase.gpg)
+    export MOONSHOT_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/moonshotkey.gpg)
+    export GEMINI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/geminikey.gpg)
+}
+
 ems() {
     export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/mskey.gpg)
     export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msbase.gpg)/v1
