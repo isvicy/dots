@@ -83,7 +83,7 @@ kpvd() {
 #     resourceType - The type of Kubernetes resource to delete (pods, deployments, etc.)
 #     --force     - (Optional) Skip confirmation prompt and delete immediately
 #
-# Examples:
+# Exapmles:
 #     krdn default pods         # Delete all pods in default namespace
 #     krdn dev deployments     # Delete all deployments in dev namespace
 #     krdn prod services --force # Force delete all services in prod namespace
@@ -110,7 +110,7 @@ krdn() {
     # Input validation with more descriptive messages
     if [ $# -lt 2 ]; then
         echo "$usage"
-        echo "Example: krdn default pods"
+        echo "Exapmle: krdn default pods"
         return 1
     fi
 
