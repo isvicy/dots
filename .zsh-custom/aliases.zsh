@@ -268,6 +268,8 @@ eallinone() {
     export DEEPSEEK_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/deepseekbase.gpg)
     export MOONSHOT_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/moonshotkey.gpg)
     export GEMINI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/geminikey.gpg)
+    export MOONSHOT_APM_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapmbase.gpg)
+    export MOONSHOT_APM_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapmapikey.gpg)
 }
 
 eallinoneai() {
@@ -282,6 +284,8 @@ eallinoneai() {
     export DEEPSEEK_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/deepseekbase.gpg)
     export MOONSHOT_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/moonshotkey.gpg)
     export GEMINI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/geminikey.gpg)
+    export MOONSHOT_APM_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapmbase.gpg)
+    export MOONSHOT_APM_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapmapikey.gpg)
 }
 
 ems() {
