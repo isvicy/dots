@@ -8,7 +8,7 @@ tac() {
     git describe --tags $(git rev-list --tags --reverse --ancestry-path ${COMMIT_HASH}..HEAD) | head -n 1
 }
 # proxy
-alias setp="export ALL_PROXY=http://127.0.0.1:7890; export HTTP_PROXY=http://127.0.0.1:7890; export HTTPS_PROXY=http://127.0.0.1:7890; export no_proxy='localhost,127.0.0.1,.megvii-inc.com'"
+alias setp="export ALL_PROXY=http://127.0.0.1:7890; export HTTP_PROXY=http://127.0.0.1:7890; export HTTPS_PROXY=http://127.0.0.1:7890; export no_proxy='localhost,127.0.0.1,msh.team,msh.work,launchpad,svc,ivolces.com,aliyuncs.com,ksyun.cn,volces.com,aliyun.com,goproxy.cn'"
 alias usetp="unset ALL_PROXY; unset HTTP_PROXY; unset HTTPS_PROXY; unset all_proxy; unset http_proxy; unset https_proxy"
 alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"
 fly() {
@@ -83,7 +83,7 @@ kpvd() {
 #     resourceType - The type of Kubernetes resource to delete (pods, deployments, etc.)
 #     --force     - (Optional) Skip confirmation prompt and delete immediately
 #
-# Examples:
+# Exapmles:
 #     krdn default pods         # Delete all pods in default namespace
 #     krdn dev deployments     # Delete all deployments in dev namespace
 #     krdn prod services --force # Force delete all services in prod namespace
@@ -110,7 +110,7 @@ krdn() {
     # Input validation with more descriptive messages
     if [ $# -lt 2 ]; then
         echo "$usage"
-        echo "Example: krdn default pods"
+        echo "Exapmle: krdn default pods"
         return 1
     fi
 
