@@ -99,7 +99,7 @@ config.tab_bar_at_bottom = true
 config.font_size = 14.0
 config.warn_about_missing_glyphs = false
 config.window_decorations = "RESIZE"
-config.window_background_opacity = 0.65
+config.window_background_opacity = 1
 config.max_fps = 120
 
 local launch_menu = {}
