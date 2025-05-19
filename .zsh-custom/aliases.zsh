@@ -270,6 +270,11 @@ eallinone() {
     export GEMINI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/geminikey.gpg)
     export MOONSHOT_APM_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapmbase.gpg)
     export MOONSHOT_APM_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapmapikey.gpg)
+    export MOONSHOT_RESEARCH_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchkey.gpg)
+    export MOONSHOT_RESEARCH_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchbase.gpg)
+    export RESEARCH_MCP_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchmcpbase.gpg)
+    export RESEARCH_MCP_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchmcpkey.gpg)
+    export TOKENISM_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tokenismkey.gpg)
 }
 
 eallinoneai() {
@@ -286,6 +291,11 @@ eallinoneai() {
     export GEMINI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/geminikey.gpg)
     export MOONSHOT_APM_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapmbase.gpg)
     export MOONSHOT_APM_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapmapikey.gpg)
+    export MOONSHOT_RESEARCH_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchkey.gpg)
+    export MOONSHOT_RESEARCH_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchbase.gpg)
+    export RESEARCH_MCP_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchmcpbase.gpg)
+    export RESEARCH_MCP_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchmcpkey.gpg)
+    export TOKENISM_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tokenismkey.gpg)
 }
 
 ems() {
