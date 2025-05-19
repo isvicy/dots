@@ -1,6 +1,6 @@
 font-size=14
 font-family="Rec Mono Casual"
 theme = "3024 Night"
-background-opacity = 0.35
+background-opacity = 1
 macos-titlebar-style = hidden
 macos-option-as-alt = true
