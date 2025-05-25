@@ -6,25 +6,25 @@
 set -xueEo pipefail
 
 if [[ -z "${GITHUB_USERNAME:-}" ]]; then
-	echo "ERROR: GITHUB_USERNAME not set" >&2
-	exit 1
+  echo "ERROR: GITHUB_USERNAME not set" >&2
+  exit 1
 fi
 
 function clone_repo() {
-	local repo=$1
-	local git_dir="$HOME/.$repo"
-	local uri="git@github.com:$GITHUB_USERNAME/$repo.git"
+  local repo=$1
+  local git_dir="$HOME/.$repo"
+  local uri="git@github.com:$GITHUB_USERNAME/$repo.git"
 
-	if [[ -e "$git_dir" ]]; then
-		return 0
-	fi
+  if [[ -e "$git_dir" ]]; then
+    return 0
+  fi
 
-	git clone --recurse-submodules "${uri}" "${git_dir}"
+  git clone --recurse-submodules "${uri}" "${git_dir}"
 }
 
 if [[ "$(id -u)" == 0 ]]; then
-	echo "${BASH_SOURCE[0]}: please run as non-root" >&2
-	exit 1
+  echo "${BASH_SOURCE[0]}: please run as non-root" >&2
+  exit 1
 fi
 
 clone_repo dots
