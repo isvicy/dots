@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$GEMINI_API_KEY" \
-  -H 'Content-Type: application/json' \
-  -X POST \
-  -d '{
+	-H 'Content-Type: application/json' \
+	-X POST \
+	-d '{
   "contents": [{
     "parts":[{"text": "Say hello"}]
     }]

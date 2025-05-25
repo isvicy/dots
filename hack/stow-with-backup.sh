@@ -21,9 +21,9 @@ ensureTargetDir "${HOME}/.local/share"
 conflicts=$(stow --simulate --verbose=2 --target="$target" "$package" 2>&1 | grep "cannot stow" | awk -F"target " '{print $2}' | awk '{print $1}' | sort | uniq)
 
 if [ -z "$conflicts" ]; then
-	# No conflicts, proceed with stowing
-	stow --target="$target" "$package" --verbose --restow
-	exit 0
+  # No conflicts, proceed with stowing
+  stow --target="$target" "$package" --verbose --restow
+  exit 0
 fi
 
 # Handle conflicts
@@ -31,11 +31,11 @@ backupdir="${HOME}"/.config.bak
 
 # Loop over each conflicting file
 while read -r file; do
-	# Backup the conflicting file
-	mv "${target}/$file" "${backupdir}"
+  # Backup the conflicting file
+  mv "${target}/$file" "${backupdir}"
 
-	# Report the backup
-	echo "backed up ${target}/${file} to ${backupdir}/${file}"
+  # Report the backup
+  echo "backed up ${target}/${file} to ${backupdir}/${file}"
 done <<<"${conflicts}"
 
 # Retry the stow command
