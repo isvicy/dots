@@ -5,8 +5,8 @@
 set -xueE -o pipefail
 
 function install_nix() {
-	! command -v nix &>/dev/null || return 0
-	curl -fsSL https://nixos.org/nix/install | sh -s -- --yes
+  ! command -v nix &>/dev/null || return 0
+  curl -fsSL https://nixos.org/nix/install | sh -s -- --yes
 }
 
 install_nix
