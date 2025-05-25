@@ -25,58 +25,18 @@ function add_to_sudoers() {
 # Install a bunch of debian packages.
 function install_packages() {
   local packages=(
-    apt-transport-https
-    autoconf # nvim
-    automake # nvim
-    build-essential
-    bzip2
+    curl
+    net-tools
     ca-certificates
-    clang-format
-    cmake # nvim
-    command-not-found
-    conntrack # kk
-    curl      # nvim
-    g++       # nvim
-    gcc       # git
-    git
-    gnupg # terraform
-    gzip
+    vim
     htop
-    jq
-    libbz2-dev         # python3.10
-    liblzma-dev        # python3.10
-    libreadline-dev    # python3.10
-    gdb                # python3.10
-    lcov               # python3.10
-    libffi-dev         # python3.10
-    libgdbm-dev        # python3.10
-    libgdbm-compat-dev # python3.10
-    libncurses5-dev    # python3.10
-    libreadline6-dev   # python3.10
-    libsqlite3-dev     # python3.10
-    lzma               # python3.10
-    lzma-dev           # python3.10
-    tk-dev             # python3.10
-    uuid-dev           # python3.10
-    zlib1g-dev         # python3.10
-    libssl-dev         # python3.10
-    man
-    pkg-config # nvim
-    python3
-    python3-pip
-    python3-tk                 # python3.10
-    socat                      # kk
-    software-properties-common # terraform
-    stow
-    tree
-    unrar
-    unzip # nvim
-    wget
-    xz-utils
-    zip
-    # psql
-    postgresql
-    postgresql-contrib
+    tmux
+    gnupg
+    git
+    apt-transport-https
+    software-properties-common
+    zsh
+    open-vm-tools # for vmware workstation
   )
 
   sudo apt-get update
@@ -146,7 +106,7 @@ function post_docker_installation() {
   fi
 }
 
-function install_nvidia_docker_toolkit() {
+function try_install_nvidia_docker_toolkit() {
   if nvidia-smi; then
     [ ! -e /etc/apt/sources.list.d/nvidia-container-toolkit.list ] || return 0
     local installed_packages
@@ -218,6 +178,13 @@ function install_nix() {
   curl -fsSL https://nixos.org/nix/install | sh -s -- --daemon --yes
 }
 
+function install_homemanager() {
+  source /etc/profile.d/nix.sh &&
+    nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager &&
+    nix-channel --update &&
+    nix-shell '<home-manager>' -A install
+}
+
 if [[ "$(id -u)" == 0 ]]; then
   echo "${BASH_SOURCE[0]}: please run as non-root" >&2
   exit 1
@@ -230,8 +197,9 @@ add_to_sudoers
 install_packages
 install_docker
 post_docker_installation
-install_nvidia_docker_toolkit
+try_install_nvidia_docker_toolkit
 install_nix
+install_homemanager
 # install_live555
 # install_fonts
 

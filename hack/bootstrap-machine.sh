@@ -60,7 +60,7 @@ Linux)
     sudo apt-get autoremove -y
     sudo apt-get autoclean
 
-    sudo apt-get install -y curl git make stow
+    sudo apt-get install -y curl git make stow zsh
   else
     echo "not supported distro: ${distro_name}, exiting bootstrap."
     exit 1
@@ -75,9 +75,7 @@ Darwin) ;;
   ;;
 esac
 
-sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh-bin/master/install)" \
-  sh -d /usr/local -e yes
-sudo chsh -s /usr/local/bin/zsh "$USER"
+sudo chsh -s "$(which zsh)" "$USER"
 
 tmpdir="$(mktemp -d)"
 GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" \
