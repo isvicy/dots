@@ -6,6 +6,7 @@ export MANOPT=--no-hyphenation                 # Display man pages without hyphe
 export XDG_CONFIG_HOME="$HOME/.config"         # Set the base directory for user-specific configuration files
 
 export PATH="${HOME}/.local/bin":${PATH}       # add local path for current user
+export PATH="$HOME/.npm-global/bin:$PATH"      # add npm global bin path, remeber do: npm set prefix ~/.npm-global
 
 export WORDCHARS=$'!"$%&\'()*+,-.:;<>@[\\]^_`{|}~'
 
