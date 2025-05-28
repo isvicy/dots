@@ -275,6 +275,10 @@ eallinone() {
     export RESEARCH_MCP_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchmcpbase.gpg)
     export RESEARCH_MCP_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchmcpkey.gpg)
     export TOKENISM_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tokenismkey.gpg)
+    export MSUSER=$(gpg --quiet --decrypt ${HOME}/.gpgs/msgituser.gpg)
+    export MSGITTOKEN=$(gpg --quiet --decrypt ${HOME}/.gpgs/msgittoken.gpg)
+    export GOPROXY=$MSUSER:$MSGITTOKEN@$MSGITPROXYBASE,https://goproxy.cn,direct
+    export GITHUB_PERSONAL_ACCESS_TOKEN=$(gpg --quiet --decrypt ${HOME}/.gpgs/githubtoken.gpg)
 }
 
 eallinoneai() {
@@ -296,11 +300,11 @@ eallinoneai() {
     export RESEARCH_MCP_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchmcpbase.gpg)
     export RESEARCH_MCP_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchmcpkey.gpg)
     export TOKENISM_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tokenismkey.gpg)
-}
-
-ems() {
-    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/mskey.gpg)
-    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msbase.gpg)/v1
+    export MSUSER=$(gpg --quiet --decrypt ${HOME}/.gpgs/msgituser.gpg)
+    export MSGITTOKEN=$(gpg --quiet --decrypt ${HOME}/.gpgs/msgittoken.gpg)
+    export MSGITPROXYBASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msproxybase.gpg)
+    export GOPROXY=$MSUSER:$MSGITTOKEN@$MSGITPROXYBASE,https://goproxy.cn,direct
+    export GITHUB_PERSONAL_ACCESS_TOKEN=$(gpg --quiet --decrypt ${HOME}/.gpgs/githubtoken.gpg)
 }
 
 eg() {
