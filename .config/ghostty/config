@@ -5,3 +5,4 @@ theme = "3024 Night"
 background-opacity = 1
 macos-titlebar-style = hidden
 macos-option-as-alt = true
+window-decoration = none
