@@ -106,7 +106,7 @@ local launch_menu = {}
 if wezterm.target_triple:find("windows") then
 	-- default_prog only affects local domain not default domain
 	config.default_prog = { "powershell.exe", "-NoLogo" }
-	config.default_domain = "SSH:wsl"
+	config.default_domain = "WSL:NixOS"
 end
 config.launch_menu = launch_menu
 
