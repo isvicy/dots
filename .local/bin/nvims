@@ -9,6 +9,7 @@ readonly neovim_apps=(
   "nvchad    | https://github.com/NvChad/NvChad,git@github.com:isvicy/NvChadCustom.git#lua/custom          | default"
   "starter   | https://github.com/LazyVim/starter         | default"
   "pwnvim    | https://github.com/pwnwriter/pwnvim.git    | main"
+  "kickstarter | https://github.com/nvim-lua/kickstart.nvim.git | master"
   "default   | git@git.knocknoc.xyz:isvicy/nvim.git        | main"
 )
 
