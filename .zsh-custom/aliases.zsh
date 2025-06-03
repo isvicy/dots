@@ -219,75 +219,8 @@ sync_time(){
     fi
 }
 
-eo() {
-    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/openaikey.gpg)
-    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/openaibase.gpg)
-}
-# keys from burn.hair
-ebo() {
-    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/burnopenaikey.gpg)
-    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/burnopenaibase.gpg)
-}
-# keys from wild
-ew() {
-    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
-    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)/v1
-    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
-    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
-    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
-}
-
-# keys from api.burn.hair with claude
-ebh() {
-    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
-    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)/v1
-    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
-    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
-    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
-    export TAVILY_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tavilykey.gpg)
-}
-
-eai() {
-    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
-    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)/v1
-    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
-    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
-    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
-    export TAVILY_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tavilykey.gpg)
-}
-
-eallinone() {
-    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
-    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)/v1
-    export OPENAI_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)/v1
-    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
-    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
-    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
-    export TAVILY_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tavilykey.gpg)
-    export DEEPSEEK_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/deepseekkey.gpg)
-    export DEEPSEEK_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/deepseekbase.gpg)
-    export MOONSHOT_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/moonshotkey.gpg)
-    export GEMINI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/geminikey.gpg)
-    export MOONSHOT_APM_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapmbase.gpg)
-    export MOONSHOT_APM_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapmapikey.gpg)
-    export MOONSHOT_RESEARCH_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchkey.gpg)
-    export MOONSHOT_RESEARCH_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchbase.gpg)
-    export RESEARCH_MCP_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchmcpbase.gpg)
-    export RESEARCH_MCP_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/researchmcpkey.gpg)
-    export TOKENISM_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tokenismkey.gpg)
-    export MSUSER=$(gpg --quiet --decrypt ${HOME}/.gpgs/msgituser.gpg)
-    export MSGITTOKEN=$(gpg --quiet --decrypt ${HOME}/.gpgs/msgittoken.gpg)
-    export GOPROXY=$MSUSER:$MSGITTOKEN@$MSGITPROXYBASE,https://goproxy.cn,direct
-    export GITHUB_PERSONAL_ACCESS_TOKEN=$(gpg --quiet --decrypt ${HOME}/.gpgs/githubtoken.gpg)
-}
-
-eallinoneai() {
-    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
-    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)/v1
-    export OPENAI_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)/v1
-    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
-    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
-    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
+# Helper function to set common API keys and environment variables
+_set_common_api_keys() {
     export TAVILY_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/tavilykey.gpg)
     export DEEPSEEK_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/deepseekkey.gpg)
     export DEEPSEEK_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/deepseekbase.gpg)
@@ -305,6 +238,46 @@ eallinoneai() {
     export MSGITPROXYBASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msproxybase.gpg)
     export GOPROXY=$MSUSER:$MSGITTOKEN@$MSGITPROXYBASE,https://goproxy.cn,direct
     export GITHUB_PERSONAL_ACCESS_TOKEN=$(gpg --quiet --decrypt ${HOME}/.gpgs/githubtoken.gpg)
+    export GROQ_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/groqapikey.gpg)
+    export GROQ_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/groqapibase.gpg)
+}
+
+# Set environment for Wild API
+ew() {
+    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
+    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)/v1
+    export OPENAI_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)/v1
+    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
+    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
+    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
+}
+
+# Set environment for BH API
+eallinone() {
+    # BH API specific settings
+    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
+    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)/v1
+    export OPENAI_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)/v1
+    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
+    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
+    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
+
+    # Common API keys and environment variables
+    _set_common_api_keys
+}
+
+# Set environment for AI Hub Mix
+eallinoneai() {
+    # AI Hub Mix specific settings
+    export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
+    export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)/v1
+    export OPENAI_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)/v1
+    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
+    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
+    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
+
+    # Common API keys and environment variables
+    _set_common_api_keys
 }
 
 eg() {
