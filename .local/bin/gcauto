@@ -1,2 +1,6 @@
-#!/bin/bash
-git commit -m "$(claude -p "Look at the staged git changes and create a summarizing git commit title. Only respond with the title and no affirmation.")"
+#!/usr/bin/env bash
+cmsg=$(claude --dangerously-skip-permissions -p "Look at the staged git changes and create a summarizing git commit title. normally, the commit should follow conventional commit guidelines, you should check the recently git commit messages in the current repository and use them as a reference. Only respond with the title and no affirmation. ")
+git commit -m "$cmsg" || {
+  echo "Commit failed. Please check the staged changes and try again."
+  exit 1
+}
