@@ -287,6 +287,7 @@ eg() {
 }
 # clean sensitive env && make gpg require password immediately
 alias clai="unset OPENAI_API_KEY && unset OPENAI_API_BASE && unset ANTHROPIC_API_KEY && unset ANTHROPIC_API_BASE && unset ANTHROPIC_BASE_URL && unset TAVILY_API_KEY && unset DEEPSEEK_BASE_URL && unset DEEPSEEK_API_KEY && unset MOONSHOT_API_KEY && gpgconf --kill gpg-agent"
+alias clan="unset ANTHROPIC_API_KEY && unset ANTHROPIC_API_BASE && unset ANTHROPIC_BASE_URL"
 alias clgit="unset GITLAB_TOKEN && unset GITLAB_URL && gpgconf --kill gpg-agent"
 
 alias yolo="claude --dangerously-skip-permissions"
