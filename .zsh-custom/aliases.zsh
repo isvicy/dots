@@ -248,9 +248,9 @@ ew() {
     export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
     export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)/v1
     export OPENAI_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)/v1
-    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
-    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
-    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
+    export CUSTOM_ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapikey.gpg)
+    export CUSTOM_ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
+    export CUSTOM_ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/wildapibase.gpg)
 }
 
 # Set environment for BH API
@@ -259,9 +259,9 @@ eallinone() {
     export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
     export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)/v1
     export OPENAI_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)/v1
-    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
-    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
-    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
+    export CUSTOM_ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapikey.gpg)
+    export CUSTOM_ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
+    export CUSTOM_ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/bhapibase.gpg)
 
     # Common API keys and environment variables
     _set_common_api_keys
@@ -273,9 +273,9 @@ eallinoneai() {
     export OPENAI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
     export OPENAI_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)/v1
     export OPENAI_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)/v1
-    export ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
-    export ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
-    export ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
+    export CUSTOM_ANTHROPIC_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixkey.gpg)
+    export CUSTOM_ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
+    export CUSTOM_ANTHROPIC_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/aihubmixbase.gpg)
 
     # Common API keys and environment variables
     _set_common_api_keys
@@ -286,8 +286,8 @@ eg() {
     export GITLAB_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/gitlabbase.gpg)
 }
 # clean sensitive env && make gpg require password immediately
-alias clai="unset OPENAI_API_KEY && unset OPENAI_API_BASE && unset ANTHROPIC_API_KEY && unset ANTHROPIC_API_BASE && unset ANTHROPIC_BASE_URL && unset TAVILY_API_KEY && unset DEEPSEEK_BASE_URL && unset DEEPSEEK_API_KEY && unset MOONSHOT_API_KEY && gpgconf --kill gpg-agent"
-alias clan="unset ANTHROPIC_API_KEY && unset ANTHROPIC_API_BASE && unset ANTHROPIC_BASE_URL"
+alias clai="unset OPENAI_API_KEY && unset OPENAI_API_BASE && unset CUSTOM_ANTHROPIC_API_KEY && unset CUSTOM_ANTHROPIC_API_BASE && unset CUSTOM_ANTHROPIC_BASE_URL && unset TAVILY_API_KEY && unset DEEPSEEK_BASE_URL && unset DEEPSEEK_API_KEY && unset MOONSHOT_API_KEY && gpgconf --kill gpg-agent"
+alias clan="unset CUSTOM_ANTHROPIC_API_KEY && unset CUSTOM_ANTHROPIC_API_BASE && unset CUSTOM_ANTHROPIC_BASE_URL"
 alias clgit="unset GITLAB_TOKEN && unset GITLAB_URL && gpgconf --kill gpg-agent"
 
 alias yolo="claude --dangerously-skip-permissions"
