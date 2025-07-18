@@ -34,3 +34,6 @@ setopt interactivecomments # Enable comments in interactive shell
 
 echo -ne '\e[3 q' # Use underline blink cursor on startup.
 preexec() { echo -ne '\e[3 q' ;} # Use underline blink cursor for each new prompt.
+
+typeset -gA ZSH_HIGHLIGHT_STYLES
+ZSH_HIGHLIGHT_STYLES[comment]='fg=#a6e3a1,bold'  # pick any bright colour
