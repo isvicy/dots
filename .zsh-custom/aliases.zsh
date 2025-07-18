@@ -226,6 +226,9 @@ _set_common_api_keys() {
     export DEEPSEEK_BASE_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/deepseekbase.gpg)
     export MOONSHOT_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapikey.gpg)
     export MOONSHOT_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapibase.gpg)
+    export MOONSHOT_IAPI_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msiapikey.gpg)
+    export MOONSHOT_IAPI_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msiapibase.gpg)
+    export MOONSHOT_IAPI_AN_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msiapianbase.gpg)
     export GEMINI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/geminikey.gpg)
     export MOONSHOT_APM_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapmbase.gpg)
     export MOONSHOT_APM_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapmapikey.gpg)
@@ -241,6 +244,9 @@ _set_common_api_keys() {
     export GITHUB_PERSONAL_ACCESS_TOKEN=$(gpg --quiet --decrypt ${HOME}/.gpgs/githubtoken.gpg)
     export GROQ_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/groqapikey.gpg)
     export GROQ_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/groqapibase.gpg)
+    export LOCAL_ENDPOINT=$MOONSHOT_API_BASE
+    export LOCAL_ENDPOINT_API_KEY=$MOONSHOT_API_KEY
+    export MORPH_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/morphapikey.gpg)
 }
 
 # Set environment for Wild API
@@ -287,7 +293,7 @@ eg() {
 }
 # clean sensitive env && make gpg require password immediately
 alias clai="unset OPENAI_API_KEY && unset OPENAI_API_BASE && unset CUSTOM_ANTHROPIC_API_KEY && unset CUSTOM_ANTHROPIC_API_BASE && unset CUSTOM_ANTHROPIC_BASE_URL && unset TAVILY_API_KEY && unset DEEPSEEK_BASE_URL && unset DEEPSEEK_API_KEY && unset MOONSHOT_API_KEY && gpgconf --kill gpg-agent"
-alias clan="unset CUSTOM_ANTHROPIC_API_KEY && unset CUSTOM_ANTHROPIC_API_BASE && unset CUSTOM_ANTHROPIC_BASE_URL"
+alias clan="unset ANTHROPIC_API_KEY && unset ANTHROPIC_API_BASE && unset ANTHROPIC_BASE_URL"
 alias clgit="unset GITLAB_TOKEN && unset GITLAB_URL && gpgconf --kill gpg-agent"
 
 alias yolo="claude --dangerously-skip-permissions"
