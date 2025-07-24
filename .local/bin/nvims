@@ -10,8 +10,8 @@ readonly neovim_apps=(
   "lazyvim         | https://github.com/LazyVim/starter                                                   | default"
   "pwnvim          | https://github.com/pwnwriter/pwnvim.git                                              | main"
   "kickstarter     | https://github.com/nvim-lua/kickstart.nvim.git                                       | master"
-  "lazy            | git@git.knocknoc.xyz:isvicy/nvim.git                                                 | main"
-  "default         | git@git.knocknoc.xyz:isvicy/no-distro.git                                            | main"
+  "minimal         | https://github.com/rezhaTanuharja/minimalistNVIM.git                                 | main"
+  "default         | git@github.com:isvicy/nvim-no-distro.git                                             | main"
 )
 
 # File name that is overwritten with nvim appname aliases.
