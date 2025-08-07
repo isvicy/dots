@@ -6,7 +6,14 @@ export MANOPT=--no-hyphenation                 # Display man pages without hyphe
 export XDG_CONFIG_HOME="$HOME/.config"         # Set the base directory for user-specific configuration files
 
 export PATH="${HOME}/.local/bin":${PATH}       # add local path for current user
-export PATH="$HOME/.npm-global/bin:$PATH"      # add npm global bin path, remeber do: npm set prefix ~/.npm-global
+export PATH="${HOME}/.npm-global/bin:$PATH"      # add npm global bin path, remeber do: npm set prefix ~/.npm-global
+
+# add go env variables
+if command -v go >/dev/null 2>&1 && [ -z "${GOPATH}" ]; then
+    export GOPATH=$(go env GOPATH)
+    export GOBIN="${GOPATH}/bin"                   # Set the Go binary directory
+    export PATH="${GOBIN}:${PATH}"                 # Add Go binary directory to PATH
+fi
 
 export WORDCHARS=$'!"$%&\'()*+,-.:;<>@[\\]^_`{|}~'
 

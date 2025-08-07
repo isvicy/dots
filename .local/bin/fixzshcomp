@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# cclear tells Zi to “clear stray and improper completions”;
+# it deletes every dangling file reference and refreshes the cache.
+zi cclear
+
+# clear the zsh completion cache
+rm -f ~/.zcompdump*
+compinit                      # write a fresh dump
+
+# reinstall zsh-completions
+zi creinstall zsh-users/zsh-completions
+
+# lists insecure or missing completion files
+compaudit
