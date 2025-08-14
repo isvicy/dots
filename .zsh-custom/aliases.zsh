@@ -38,34 +38,34 @@ if [ -d ~/.kube ]; then
     fi
 fi
 kpd() {
-    read namespace podname <<< $(kubectl get pods -A | percol | awk '{print $1, $2}')
+    read namespace podname <<< $(kubectl get pods -A | fzy | awk '{print $1, $2}')
     kubectl describe pod "$podname" -n "$namespace" "$@"
 }
 
 kpe() {
-    read namespace podname <<< $(kubectl get pods -A | percol | awk '{print $1, $2}')
+    read namespace podname <<< $(kubectl get pods -A | fzy | awk '{print $1, $2}')
     kubectl edit pod "$podname" -n "$namespace" "$@"
 }
 
 kpl() {
-    read namespace podname <<< $(kubectl get pods -A | percol | awk '{print $1, $2}')
+    read namespace podname <<< $(kubectl get pods -A | fzy | awk '{print $1, $2}')
     containers=$(kubectl get pod "$podname" -n "$namespace" -o jsonpath='{.spec.containers[*].name}')
-    containername=$(echo $containers | tr ' ' '\n' | percol)
+    containername=$(echo $containers | tr ' ' '\n' | fzy)
     kubectl logs "$podname" -n "$namespace" -c "$containername" "$@"
 }
 
 kpc() {
-    read namespace podname <<< $(kubectl get pods -A | percol | awk '{print $1, $2}')
+    read namespace podname <<< $(kubectl get pods -A | fzy | awk '{print $1, $2}')
     kubectl get pod "$podname" -n "$namespace" -o jsonpath='{.spec.containers[*].name}' "$@"
 }
 
 kpvcd() {
-    read namespace podname <<< $(kubectl get pvc -A | percol | awk '{print $1, $2}')
+    read namespace podname <<< $(kubectl get pvc -A | fzy | awk '{print $1, $2}')
     kubectl delete pvc "$podname" -n "$namespace"
 }
 
 kpvd() {
-    read namespace podname <<< $(kubectl get pv -A | percol | awk '{print $1, $2}')
+    read namespace podname <<< $(kubectl get pv -A | fzy | awk '{print $1, $2}')
     kubectl delete pv "$podname" -n "$namespace"
 }
 
@@ -190,17 +190,17 @@ krdn() {
 [[ -s "${HOME}/.nvim_appnames" ]] && source "${HOME}/.nvim_appnames" || true
 # docker
 dcr() {
-    docker container ls | percol | awk '{print $1}' | xargs -I {} sh -c 'docker stop {} && docker rm {}'
+    docker container ls | fzy | awk '{print $1}' | xargs -I {} sh -c 'docker stop {} && docker rm {}'
 }
 dcl() {
-    docker container ls | percol | awk '{print $1}' | xargs -I {} sh -c 'docker logs -f {}'
+    docker container ls | fzy | awk '{print $1}' | xargs -I {} sh -c 'docker logs -f {}'
 }
 dis() {
     local image_tag=$1
     docker history --no-trunc --format "{{.Size}}, {{.CreatedBy}}" "${image_tag}" | grep -v 0B
 }
 dir() {
-    docker image ls | percol | awk '{print $1":"$2}' | xargs -I {} docker image rm {}
+    docker image ls | fzy | awk '{print $1":"$2}' | xargs -I {} docker image rm {}
 }
 # copy image from one registry to another, useful when you are dealing with multi-arch images.
 dic() {
