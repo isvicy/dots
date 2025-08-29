@@ -240,6 +240,7 @@ _set_common_api_keys() {
     export MSUSER=$(gpg --quiet --decrypt ${HOME}/.gpgs/msgituser.gpg)
     export MSGITTOKEN=$(gpg --quiet --decrypt ${HOME}/.gpgs/msgittoken.gpg)
     export MSGITPROXYBASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msproxybase.gpg)
+    export MSDOMAINBASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msdomainbase.gpg)
     export GOPROXY=$MSUSER:$MSGITTOKEN@$MSGITPROXYBASE,https://goproxy.cn,direct
     export GITHUB_PERSONAL_ACCESS_TOKEN=$(gpg --quiet --decrypt ${HOME}/.gpgs/githubtoken.gpg)
     export GROQ_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/groqapikey.gpg)
