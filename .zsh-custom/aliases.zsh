@@ -227,6 +227,7 @@ _set_common_api_keys() {
     export MOONSHOT_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapikey.gpg)
     export MOONSHOT_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapibase.gpg)
     export MOONSHOT_IAPI_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msiapikey.gpg)
+    export MOONSHOT_STAFF_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msiapikey.gpg)
     export MOONSHOT_IAPI_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msiapibase.gpg)
     export MOONSHOT_IAPI_AN_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msiapianbase.gpg)
     export GEMINI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/geminikey.gpg)
