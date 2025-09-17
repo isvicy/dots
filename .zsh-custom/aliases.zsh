@@ -227,6 +227,7 @@ _set_common_api_keys() {
     export LLM_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapikey.gpg)
     export LLM_API_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msapibase.gpg)
     export LLM_IAPI_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msiapikey.gpg)
+    export LLM_STAFF_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/msiapikey.gpg)
     export LLM_IAPI_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msiapibase.gpg)
     export LLM_IAPI_AN_BASE=$(gpg --quiet --decrypt ${HOME}/.gpgs/msiapianbase.gpg)
     export GEMINI_API_KEY=$(gpg --quiet --decrypt ${HOME}/.gpgs/geminikey.gpg)
