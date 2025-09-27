@@ -299,3 +299,11 @@ alias clan="unset ANTHROPIC_API_KEY && unset ANTHROPIC_API_BASE && unset ANTHROP
 alias clgit="unset GITLAB_TOKEN && unset GITLAB_URL && gpgconf --kill gpg-agent"
 
 alias yolo="claude --dangerously-skip-permissions"
+
+cdx() {
+    if [[ "$1" == "update" ]]; then
+        npm install -g @openai/codex@latest
+    else
+        codex -m gpt-5-codex -c model_reasoning_effort="high" --search "$@"
+    fi
+}
