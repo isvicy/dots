@@ -29,9 +29,6 @@ zinit light Aloxaf/fzf-tab
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
-zinit as"program" atclone'./build.sh' \
-    atpull'%atclone' pick"smart-suggestion" src"smart-suggestion.plugin.zsh" for \
-        yetone/smart-suggestion
 
 # Add in snippets
 zinit snippet OMZL::git.zsh
