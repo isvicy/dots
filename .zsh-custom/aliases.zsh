@@ -298,12 +298,18 @@ alias clai="unset OPENAI_API_KEY && unset OPENAI_API_BASE && unset CUSTOM_ANTHRO
 alias clan="unset ANTHROPIC_API_KEY && unset ANTHROPIC_API_BASE && unset ANTHROPIC_BASE_URL && unset ANTHROPIC_SMALL_FAST_MODEL && unset ANTHROPIC_MODEL"
 alias clgit="unset GITLAB_TOKEN && unset GITLAB_URL && gpgconf --kill gpg-agent"
 
-alias yolo="claude --dangerously-skip-permissions"
+yolo() {
+    if [[ "$1" == "update" ]]; then
+        npm install -g @anthropic-ai/claude-code@latest
+    else
+        claude --dangerously-skip-permissions "$@"
+    fi
+}
 
 cdx() {
     if [[ "$1" == "update" ]]; then
         npm install -g @openai/codex@latest
     else
-        codex -m gpt-5-codex -c model_reasoning_effort="high" --search "$@"
+        codex -c model_reasoning_effort="high" --enable web_search_request "$@"
     fi
 }
