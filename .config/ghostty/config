@@ -6,8 +6,8 @@ window-decoration = true
 theme = dark:onenord,light:onenord-light
 
 custom-shader-animation = true
-custom-shader = "~/.config/ghostty/shaders/tesla_coil.glsl"
-custom-shader = "~/.config/ghostty/shaders/glow.glsl"
+custom-shader = "shaders/tesla_coil.glsl"
+custom-shader = "shaders/glow.glsl"
 
 # cursor-style = "bar"
 # cursor-style-blink = true
@@ -16,7 +16,7 @@ custom-shader = "~/.config/ghostty/shaders/glow.glsl"
 
 mouse-hide-while-typing = true
 
-font-size = 16
+font-size = 14
 font-family = "Agave Nerd Font"
 font-family-italic = "Cascadia Code NF"
 font-variation-italic = "wght=800"
