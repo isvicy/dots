@@ -1,3 +1,8 @@
+# if custom aliases file exists, source it
+if [ -f "${HOME}/.aliases_custom.zsh" ]; then
+    source "${HOME}/.aliases_custom.zsh"
+fi
+
 # basic
 alias ls='ls --color'
 alias c='clear'
@@ -351,7 +356,7 @@ cdx() {
     if [[ "$1" == "update" ]]; then
         npm install -g @openai/codex@latest
     else
-        codex -c model_reasoning_effort="high" --enable web_search_request "$@"
+        codex -m gpt-5-codex -c model_reasoning_effort="high" --enable web_search_request "$@"
     fi
 }
 
@@ -363,7 +368,4 @@ gmi() {
     fi
 }
 
-# if custom aliases file exists, source it
-if [ -f "${HOME}/.aliases_custom.zsh" ]; then
-    source "${HOME}/.aliases_custom.zsh"
-fi
+alias s="kitten ssh"
