@@ -37,6 +37,8 @@ if [ -d ~/.kube ]; then
         export KUBECONFIG="$FOUND_CONFIGS"
     fi
 fi
+
+# pod:: 
 kpd() {
     read namespace podname <<< $(kubectl get pods -A | fzy | awk '{print $1, $2}')
     kubectl describe pod "$podname" -n "$namespace" "$@"
@@ -59,51 +61,89 @@ kpc() {
     kubectl get pod "$podname" -n "$namespace" -o jsonpath='{.spec.containers[*].name}' "$@"
 }
 
+# debug::
+kd() {
+    local namespace=$1
+    local podname
+    if [[ -n $namespace ]]; then
+      read podname <<< $(kubectl get pods -n $namespace | fzy | awk '{print $1}')
+    else
+      read namespace podname <<< $(kubectl get pods -A | fzy | awk '{print $1, $2}')
+    fi
+    containers=$(kubectl get pod "$podname" -n "$namespace" -o jsonpath='{.spec.containers[*].name}')
+    containername=$(echo $containers | tr ' ' '\n' | fzy)
+    kubectl debug ${podname} -n ${namespace} -it --copy-to=${podname}-$(date +%Y%m%d-%H%M%S)-debug --container=${containername} -- bash
+}
+
+kdd() {
+    local namespace=$1
+    local debug_pods
+    if [[ -n $namespace ]]; then
+        debug_pods=$(kubectl get pods -n $namespace --no-headers -o custom-columns=":metadata.name" 2>/dev/null | grep -- '-debug' || true)
+    else
+        debug_pods=$(kubectl get pods -A --no-headers -o custom-columns=":metadata.namespace,:metadata.name" 2>/dev/null | awk '{print $2,$1}' | grep -- '-debug' || true)
+    fi
+    if [ -z "$debug_pods" ]; then
+        if [ -n "$namespace" ]; then
+            echo "No debug pods found in namespace '$namespace'"
+        else
+            echo "No debug pods found in any namespace"
+        fi
+        return 0
+    fi
+
+    # Count and display debug pods
+    local pod_count=$(echo "$debug_pods" | wc -l | tr -d ' ')
+    echo -e "\nFound $pod_count debug pod(s):"
+    echo "$debug_pods" | while IFS= read -r line; do
+        read pod_name ns <<< "$line"
+        echo "- $pod_name (namespace: $ns)"
+    done
+
+    # Ask for confirmation
+    echo -e "\nAre you sure you want to delete these debug pods? (y/N): "
+    read -r confirm
+
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+        echo "Operation cancelled"
+        return 0
+    fi
+
+    echo -e "\nDeleting debug pods..."
+    local deleted_count=0
+    local failed_count=0
+
+    echo "$debug_pods" | while IFS= read -r line; do
+        read pod_name ns <<< "$line"
+        if kubectl delete pod "$pod_name" -n "$ns" &>/dev/null; then
+            echo "✓ Deleted $pod_name in namespace $ns"
+            ((deleted_count++))
+        else
+            echo "✗ Failed to delete $pod_name in namespace $ns"
+            ((failed_count++))
+        fi
+    done
+
+    # Summary
+    echo -e "\nDeletion Summary:"
+    echo "- Total debug pods processed: $pod_count"
+    if [ $failed_count -gt 0 ]; then
+        echo "- Failed deletions may require manual intervention"
+    fi
+}
+
+# pvc::
 kpvcd() {
-    read namespace podname <<< $(kubectl get pvc -A | fzy | awk '{print $1, $2}')
-    kubectl delete pvc "$podname" -n "$namespace"
+    read namespace pvcname <<< $(kubectl get pvc -A | fzy | awk '{print $1, $2}')
+    kubectl delete pvc "$pvcname" -n "$namespace"
 }
 
 kpvd() {
-    read namespace podname <<< $(kubectl get pv -A | fzy | awk '{print $1, $2}')
-    kubectl delete pv "$podname" -n "$namespace"
+    read namespace pvcname <<< $(kubectl get pv -A | fzy | awk '{print $1, $2}')
+    kubectl delete pv "$pvcname" -n "$namespace"
 }
 
-# krdn - Kubectl Resource Delete in Namespace
-#
-# This function provides an interactive way to safely delete Kubernetes resources
-# within a specified namespace. It includes validation, confirmation prompts,
-# and detailed progress reporting.
-#
-# Usage:
-#     krdn <namespace> <resourceType> [--force]
-#
-# Arguments:
-#     namespace    - The Kubernetes namespace containing the resources
-#     resourceType - The type of Kubernetes resource to delete (pods, deployments, etc.)
-#     --force     - (Optional) Skip confirmation prompt and delete immediately
-#
-# Exapmles:
-#     krdn default pods         # Delete all pods in default namespace
-#     krdn dev deployments     # Delete all deployments in dev namespace
-#     krdn prod services --force # Force delete all services in prod namespace
-#
-# Features:
-#     - Validates namespace existence
-#     - Confirms resource type validity
-#     - Interactive confirmation (unless --force is used)
-#     - Progress tracking for each deletion
-#     - Summary report of successful/failed deletions
-#
-# Exit Codes:
-#     0 - Success or user cancelled
-#     1 - Error (invalid input, resource not found, deletion failed)
-#
-# Notes:
-#     - Use with caution in production environments
-#     - Consider resource dependencies before deletion
-#     - Some resources may have finalizers preventing immediate deletion
-#
+# remove::
 krdn() {
     local usage="Usage: krdn <namespace> <resourceType> [--force]"
 
@@ -188,6 +228,7 @@ krdn() {
 
 # try different nvim distro
 [[ -s "${HOME}/.nvim_appnames" ]] && source "${HOME}/.nvim_appnames" || true
+
 # docker
 dcr() {
     docker container ls | fzy | awk '{print $1}' | xargs -I {} sh -c 'docker stop {} && docker rm {}'
@@ -196,7 +237,7 @@ dcl() {
     docker container ls | fzy | awk '{print $1}' | xargs -I {} sh -c 'docker logs -f {}'
 }
 dis() {
-    local image_tag=$1
+    local image_tag=$(docker image ls | fzy | awk '{print $1":"$2}')
     docker history --no-trunc --format "{{.Size}}, {{.CreatedBy}}" "${image_tag}" | grep -v 0B
 }
 dir() {
@@ -204,13 +245,12 @@ dir() {
 }
 # copy image from one registry to another, useful when you are dealing with multi-arch images.
 dic() {
-    TAG=$1
+    SRC_REGISTRY=$1
+    DST_REGISTRY=$2
+    TAG=$3
     skopeo copy --insecure-policy --src-tls-verify=false --dest-tls-verify=false --multi-arch=all docker://${SRC_REGISTRY}/${TAG} docker://${DST_REGISTRY}/${TAG}
 }
-# systemctl
-alias scs="sudo systemctl status"
-alias sct="sudo systemctl start"
-alias scr="sudo systemctl restart"
+
 # fix windows wsl clock drift
 sync_time(){
     if sudo echo Starting time sync in background
@@ -293,6 +333,7 @@ eg() {
     export GITLAB_TOKEN=$(gpg --quiet --decrypt ${HOME}/.gpgs/gitlabkey.gpg)
     export GITLAB_URL=$(gpg --quiet --decrypt ${HOME}/.gpgs/gitlabbase.gpg)
 }
+
 # clean sensitive env && make gpg require password immediately
 alias clai="unset OPENAI_API_KEY && unset OPENAI_API_BASE && unset CUSTOM_ANTHROPIC_API_KEY && unset CUSTOM_ANTHROPIC_API_BASE && unset CUSTOM_ANTHROPIC_BASE_URL && unset TAVILY_API_KEY && unset DEEPSEEK_BASE_URL && unset DEEPSEEK_API_KEY && unset MOONSHOT_API_KEY && gpgconf --kill gpg-agent"
 alias clan="unset ANTHROPIC_API_KEY && unset ANTHROPIC_API_BASE && unset ANTHROPIC_BASE_URL && unset ANTHROPIC_SMALL_FAST_MODEL && unset ANTHROPIC_MODEL"
@@ -313,3 +354,16 @@ cdx() {
         codex -c model_reasoning_effort="high" --enable web_search_request "$@"
     fi
 }
+
+gmi() {
+    if [[ "$1" == "update" ]]; then
+        npm install -g @google/gemini-cli@latest
+    else
+        gemini "$@"
+    fi
+}
+
+# if custom aliases file exists, source it
+if [ -f "${HOME}/.aliases_custom.zsh" ]; then
+    source "${HOME}/.aliases_custom.zsh"
+fi
