@@ -29,6 +29,7 @@ zinit light Aloxaf/fzf-tab
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
+zinit light MoonshotAI/zsh-kimi-cli
 
 # Add in snippets
 zinit snippet OMZL::git.zsh
