@@ -15,6 +15,7 @@ ensureTargetDir "${HOME}/.config"
 ensureTargetDir "${HOME}/.local"
 ensureTargetDir "${HOME}/.local/bin"
 ensureTargetDir "${HOME}/.local/share"
+ensureTargetDir "${HOME}/.mcp"
 
 # Run stow in simulation mode to detect conflicts
 # use uniq to remove duplicates cause stow will output the confilcts info multiple times
