@@ -369,3 +369,11 @@ gmi() {
 }
 
 alias s="kitten ssh"
+
+alias mm="ikimi --mcp-config-file ${HOME}/.mcp/default.json"
+# necessary for using kimi cli zsh plugin
+if command -v ikimi >/dev/null; then
+    if ! command -v kimi >/dev/null; then
+        ln -s $(which ikimi) $(dirname $(which ikimi))/kimi
+    fi
+fi
