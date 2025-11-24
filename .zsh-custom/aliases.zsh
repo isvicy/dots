@@ -80,6 +80,7 @@ kd() {
     kubectl debug ${podname} -n ${namespace} -it --copy-to=${podname}-$(date +%Y%m%d-%H%M%S)-debug --container=${containername} -- bash
 }
 
+# delete::
 kdd() {
     local namespace=$1
     local debug_pods
@@ -137,6 +138,16 @@ kdd() {
     fi
 }
 
+kdr() {
+    resource_type=$1
+    if [ -z "$resource_type" ]; then
+        echo "Usage: kdr <resourceType>"
+        return 1
+    fi
+    read namespace resource_name <<< $(kubectl get "$resource_type" -A | fzy | awk '{print $1, $2}')
+    kubectl delete "$resource_type" "$resource_name" -n "$namespace"
+}
+
 # pvc::
 kpvcd() {
     read namespace pvcname <<< $(kubectl get pvc -A | fzy | awk '{print $1, $2}')
@@ -146,6 +157,12 @@ kpvcd() {
 kpvd() {
     read namespace pvcname <<< $(kubectl get pv -A | fzy | awk '{print $1, $2}')
     kubectl delete pv "$pvcname" -n "$namespace"
+}
+
+# context::
+ksc() {
+    context_name=$(kubectl config get-contexts | fzy | awk '{print $1}')
+    kubectl config use-context "$context_name"
 }
 
 # remove::
