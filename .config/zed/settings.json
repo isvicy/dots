@@ -1,0 +1,15 @@
+{
+  "ui_font_size": 18.0,
+  "ui_font_family": ".ZedSans",
+  "vim_mode": true,
+  "theme": "Gruvbox Light Soft",
+  "agent_servers": {
+    "Kimi CLI": {
+      "command": "kimi",
+      "args": [
+        "--acp"
+      ],
+      "env": {}
+    }
+  }
+}
