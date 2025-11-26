@@ -14,7 +14,7 @@ bindkey '^U' backward-kill-line         # Bind Ctrl-U to delete from the cursor 
 ulimit -n 65535 # Increase file descriptor limit
 
 # History
-HISTSIZE=5000
+HISTSIZE=50000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
