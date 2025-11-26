@@ -24,12 +24,22 @@ source "${ZINIT_HOME}/zinit.zsh"
 # Add in Powerlevel10k
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 
-# Add in zsh plugins
-zinit light Aloxaf/fzf-tab
-zinit light zsh-users/zsh-syntax-highlighting
+# Add in zsh plugins (order matters: syntax-highlighting must be last)
 zinit light zsh-users/zsh-completions
+
+# Turbo mode for deferred loading (improves startup time)
+zinit ice wait lucid
 zinit light zsh-users/zsh-autosuggestions
+
+zinit ice wait lucid
+zinit light Aloxaf/fzf-tab
+
+zinit ice wait lucid
 zinit light MoonshotAI/zsh-kimi-cli
+
+# syntax-highlighting must be loaded last
+zinit ice wait lucid
+zinit light zsh-users/zsh-syntax-highlighting
 
 # Add in snippets
 zinit snippet OMZL::git.zsh
@@ -37,8 +47,13 @@ zinit snippet OMZP::git
 zinit snippet OMZP::sudo
 zinit snippet OMZP::command-not-found
 
-# Load completions
-autoload -Uz compinit && compinit
+# Load completions with caching (regenerate only once per day)
+autoload -Uz compinit
+if [[ -n ${HOME}/.zcompdump(#qN.mh+24) ]]; then
+    compinit
+else
+    compinit -C
+fi
 
 zinit cdreplay -q
 

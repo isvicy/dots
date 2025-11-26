@@ -7,8 +7,8 @@ fi
 alias ls='ls --color'
 alias c='clear'
 alias tree='tree -a -I .git'
-# find the first tag contains COMMIT_HASH
-tac() {
+# find the first tag contains COMMIT_HASH (renamed from tac to avoid conflict with GNU coreutils tac)
+gft() {
     local COMMIT_HASH=$1
     git describe --tags $(git rev-list --tags --reverse --ancestry-path ${COMMIT_HASH}..HEAD) | head -n 1
 }
@@ -43,26 +43,26 @@ if [ -d ~/.kube ]; then
     fi
 fi
 
-# pod:: 
+# pod::
 kpd() {
-    read namespace podname <<< $(kubectl get pods -A | fzy | awk '{print $1, $2}')
+    read namespace podname <<< $(kubectl get pods -A | fzf --header-lines=1 | awk '{print $1, $2}')
     kubectl describe pod "$podname" -n "$namespace" "$@"
 }
 
 kpe() {
-    read namespace podname <<< $(kubectl get pods -A | fzy | awk '{print $1, $2}')
+    read namespace podname <<< $(kubectl get pods -A | fzf --header-lines=1 | awk '{print $1, $2}')
     kubectl edit pod "$podname" -n "$namespace" "$@"
 }
 
 kpl() {
-    read namespace podname <<< $(kubectl get pods -A | fzy | awk '{print $1, $2}')
+    read namespace podname <<< $(kubectl get pods -A | fzf --header-lines=1 | awk '{print $1, $2}')
     containers=$(kubectl get pod "$podname" -n "$namespace" -o jsonpath='{.spec.containers[*].name}')
-    containername=$(echo $containers | tr ' ' '\n' | fzy)
+    containername=$(echo $containers | tr ' ' '\n' | fzf)
     kubectl logs "$podname" -n "$namespace" -c "$containername" "$@"
 }
 
 kpc() {
-    read namespace podname <<< $(kubectl get pods -A | fzy | awk '{print $1, $2}')
+    read namespace podname <<< $(kubectl get pods -A | fzf --header-lines=1 | awk '{print $1, $2}')
     kubectl get pod "$podname" -n "$namespace" -o jsonpath='{.spec.containers[*].name}' "$@"
 }
 
@@ -71,12 +71,12 @@ kd() {
     local namespace=$1
     local podname
     if [[ -n $namespace ]]; then
-      read podname <<< $(kubectl get pods -n $namespace | fzy | awk '{print $1}')
+      read podname <<< $(kubectl get pods -n $namespace | fzf --header-lines=1 | awk '{print $1}')
     else
-      read namespace podname <<< $(kubectl get pods -A | fzy | awk '{print $1, $2}')
+      read namespace podname <<< $(kubectl get pods -A | fzf --header-lines=1 | awk '{print $1, $2}')
     fi
     containers=$(kubectl get pod "$podname" -n "$namespace" -o jsonpath='{.spec.containers[*].name}')
-    containername=$(echo $containers | tr ' ' '\n' | fzy)
+    containername=$(echo $containers | tr ' ' '\n' | fzf)
     kubectl debug ${podname} -n ${namespace} -it --copy-to=${podname}-$(date +%Y%m%d-%H%M%S)-debug --container=${containername} -- bash
 }
 
@@ -150,13 +150,14 @@ kdr() {
 
 # pvc::
 kpvcd() {
-    read namespace pvcname <<< $(kubectl get pvc -A | fzy | awk '{print $1, $2}')
+    read namespace pvcname <<< $(kubectl get pvc -A | fzf --header-lines=1 | awk '{print $1, $2}')
     kubectl delete pvc "$pvcname" -n "$namespace"
 }
 
+# pv:: (PV is cluster-scoped, no namespace)
 kpvd() {
-    read namespace pvcname <<< $(kubectl get pv -A | fzy | awk '{print $1, $2}')
-    kubectl delete pv "$pvcname" -n "$namespace"
+    local pvname=$(kubectl get pv | fzf --header-lines=1 | awk '{print $1}')
+    kubectl delete pv "$pvname"
 }
 
 # context::
@@ -389,11 +390,8 @@ alias s="kitten ssh"
 
 alias mm="ikimi --mcp-config-file ${HOME}/.mcp/default.json"
 # necessary for using kimi cli zsh plugin
-if command -v ikimi >/dev/null; then
-    if ! command -v kimi >/dev/null; then
-        ln -s $(which ikimi) $(dirname $(which ikimi))/kimi
-    fi
-fi
+command -v ikimi >/dev/null && ! command -v kimi >/dev/null && \
+    ln -s "$(which ikimi)" "$(dirname "$(which ikimi)")/kimi" 2>/dev/null || true
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
