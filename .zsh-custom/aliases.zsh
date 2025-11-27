@@ -389,6 +389,7 @@ gmi() {
 alias s="kitten ssh"
 
 alias mm="ikimi --mcp-config-file ${HOME}/.mcp/default.json"
+alias ym="yolo --mcp-config ${HOME}/.mcp/default.json"
 # necessary for using kimi cli zsh plugin
 command -v ikimi >/dev/null && ! command -v kimi >/dev/null && \
     ln -s "$(which ikimi)" "$(dirname "$(which ikimi)")/kimi" 2>/dev/null || true
