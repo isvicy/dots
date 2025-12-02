@@ -3,7 +3,7 @@ macos-titlebar-proxy-icon = hidden
 macos-titlebar-style = hidden
 window-decoration = true
 
-theme = dark:onenord,light:onenord-light
+theme = onenord
 
 custom-shader-animation = true
 custom-shader = "shaders/tesla_coil.glsl"
