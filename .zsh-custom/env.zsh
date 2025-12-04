@@ -1,5 +1,6 @@
 export PAGER=less                              # Use 'less' as the default pager for viewing long outputs
 export EDITOR='nvim'                           # Set Neovim as the default text editor
+export MD_HEADING_BG=transparent               # neobean markdown heading style
 export GPG_TTY=$TTY                            # Set GPG to use the current terminal for passphrase prompts
 export SYSTEMD_LESS=${LESS}S                   # Configure 'less' for systemd logs to fold long lines
 export MANOPT=--no-hyphenation                 # Display man pages without hyphenation for better readability
