@@ -5,6 +5,8 @@ else
 fi
 
 if command -v fzf >/dev/null 2>&1; then
+    # 使用与 kitty 光标一致的粉红色 #e8a0a4
+    export FZF_DEFAULT_OPTS='--color=fg:#ffffff,bg:#000000,hl:#e8a0a4 --color=fg+:#ffffff,bg+:#333333,hl+:#e8a0a4 --color=info:#999999,prompt:#e8a0a4,pointer:#e8a0a4 --color=marker:#e8a0a4,spinner:#e8a0a4,header:#666666'
     eval "$(fzf --zsh)"
 else
     echo "fzf missing!"
