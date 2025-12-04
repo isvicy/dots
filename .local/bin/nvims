@@ -4,13 +4,18 @@
 # The repository clonded must bootstrap itself.  In otherwords, clone and nvim
 # is all tha tis needed.
 #
-# alias      | url,url#relative_path    | default or branch name
+# alias      | url,url#relative_path              | default or branch name
+#            | url->subdir (symlink mode)         |
+#
+# Symlink mode: Clone repo to ~/github/<repo-name>/
+#               Create symlink ~/.config/<alias> -> repo/<subdir>
 readonly neovim_apps=(
   "nvchad          | https://github.com/NvChad/NvChad,git@github.com:isvicy/NvChadCustom.git#lua/custom   | default"
   "lazyvim         | https://github.com/LazyVim/starter                                                   | default"
   "pwnvim          | https://github.com/pwnwriter/pwnvim.git                                              | main"
   "kickstarter     | https://github.com/nvim-lua/kickstart.nvim.git                                       | master"
   "minimal         | https://github.com/rezhaTanuharja/minimalistNVIM.git                                 | main"
+  "neobean         | https://github.com/linkarzu/dotfiles-latest.git->neovim/neobean                      | main"
   "default         | git@github.com:isvicy/nvim-no-distro.git                                             | main"
 )
 
@@ -68,6 +73,10 @@ buildNeovimAppArray() {
 }
 
 # --------------------------------------------------------------------------
+#  Repo storage directory for symlink mode
+readonly nvimRepoDir="$HOME/github"
+
+# --------------------------------------------------------------------------
 #  Clone or Pull selected nvapp
 
 cloneOrPullNvApp() {
@@ -86,17 +95,60 @@ cloneOrPullNvApp() {
       branch="$(removeSpaces "$branch")"
       IFS=',' read -ra addrs <<<"$urls"
       for addrInfo in "${addrs[@]}"; do
-        IFS='#' read -r url path <<<"$addrInfo"
-        location=$HOME/.config/$alias/$path
-        if [[ -d "$location" ]]; then
-          pullRepository "$alias" $location
+        # Check for symlink mode (->)
+        if [[ "$addrInfo" == *"->"* ]]; then
+          url="${addrInfo%%->*}"
+          subdir="${addrInfo#*->}"
+          cloneOrPullSymlink "$alias" "$url" "$branch" "$subdir"
         else
-          cloneRepository "$alias" "$url" "$branch" "$location"
+          IFS='#' read -r url path <<<"$addrInfo"
+          location=$HOME/.config/$alias/$path
+          if [[ -d "$location" ]]; then
+            pullRepository "$alias" $location
+          else
+            cloneRepository "$alias" "$url" "$branch" "$location"
+          fi
         fi
-
       done
     fi
   done
+}
+
+# --------------------------------------------------------------------------
+#  Clone or Pull for symlink mode
+
+cloneOrPullSymlink() {
+  local alias="$1"
+  local url="$2"
+  local branch="$3"
+  local subdir="$4"
+  # Extract repo name from URL (e.g., dotfiles-latest from .../dotfiles-latest.git)
+  local repoName="${url##*/}"
+  repoName="${repoName%.git}"
+  local repoLocation="$nvimRepoDir/$repoName"
+  local configLocation="$HOME/.config/$alias"
+
+  # Ensure repo directory exists
+  mkdir -p "$nvimRepoDir"
+
+  if [[ -d "$repoLocation" ]]; then
+    # Pull existing repo
+    pullRepository "$alias" "$repoLocation"
+  else
+    # Clone new repo
+    cloneRepository "$alias" "$url" "$branch" "$repoLocation"
+  fi
+
+  # Create symlink if not exists
+  if [[ ! -L "$configLocation" ]]; then
+    # Remove directory if exists (but not symlink)
+    if [[ -d "$configLocation" ]]; then
+      echo "Warning: $configLocation exists as directory, removing..."
+      rm -rf "$configLocation"
+    fi
+    ln -s "$repoLocation/$subdir" "$configLocation"
+    echo "Created symlink: $configLocation -> $repoLocation/$subdir"
+  fi
 }
 
 # --------------------------------------------------------------------------
@@ -134,6 +186,16 @@ removeDirIfPresent() {
 }
 
 # --------------------------------------------------------------------------
+#  Remove symlink if present
+
+removeSymlinkIfPresent() {
+  if [[ -L "$1" ]]; then
+    echo "Removed symlink $1"
+    rm "$1"
+  fi
+}
+
+# --------------------------------------------------------------------------
 #  Delete NvimApp from $HOME/.config directory
 
 deleteNvimApp() {
@@ -153,15 +215,39 @@ deleteNvimApp() {
       branch="$(removeSpaces "$branch")"
       IFS=',' read -ra addrs <<<"$urls"
       for addrInfo in "${addrs[@]}"; do
-        IFS='#' read -r url path <<<"$addrInfo"
-        location=$HOME/.config/$alias/$path
-        removeDirIfPresent "$location"
+        # Check for symlink mode (->)
+        if [[ "$addrInfo" == *"->"* ]]; then
+          url="${addrInfo%%->*}"
+          deleteSymlinkNvimApp "$alias" "$url"
+        else
+          IFS='#' read -r url path <<<"$addrInfo"
+          location=$HOME/.config/$alias/$path
+          removeDirIfPresent "$location"
+        fi
       done
       removeDirIfPresent "$HOME"/.cache/"$alias"
       removeDirIfPresent "$HOME"/.local/share/"$alias"
       removeDirIfPresent "$HOME"/.local/state/"$alias"
     fi
   done
+}
+
+# --------------------------------------------------------------------------
+#  Delete symlink mode NvimApp
+
+deleteSymlinkNvimApp() {
+  local alias="$1"
+  local url="$2"
+  local configLocation="$HOME/.config/$alias"
+  # Extract repo name from URL
+  local repoName="${url##*/}"
+  repoName="${repoName%.git}"
+  local repoLocation="$nvimRepoDir/$repoName"
+
+  # Remove symlink
+  removeSymlinkIfPresent "$configLocation"
+  # Remove repo directory
+  removeDirIfPresent "$repoLocation"
 }
 
 # --------------------------------------------------------------------------
