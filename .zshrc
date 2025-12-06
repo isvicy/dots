@@ -27,14 +27,15 @@ zinit ice depth=1; zinit light romkatv/powerlevel10k
 # Add in zsh plugins (order matters: syntax-highlighting must be last)
 zinit light zsh-users/zsh-completions
 
-# Turbo mode for deferred loading (improves startup time)
-zinit ice wait lucid
+# Load autosuggestions immediately (lightweight, needed for first prompt)
 zinit light zsh-users/zsh-autosuggestions
 
+# Turbo mode for deferred loading (improves startup time)
 zinit ice wait lucid
 zinit light Aloxaf/fzf-tab
 
-zinit ice wait lucid
+# Load after zle is ready (wait"0" = load immediately after prompt, before user input)
+zinit ice wait"0" lucid
 zinit light MoonshotAI/zsh-kimi-cli
 
 # syntax-highlighting must be loaded last
