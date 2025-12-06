@@ -1,3 +1,6 @@
+# Homebrew must be loaded first before other tools
+[[ -s /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)" || true
+
 if command -v zoxide >/dev/null 2>&1; then
     eval "$(zoxide init zsh)"
 else
@@ -29,5 +32,3 @@ case ":$PATH:" in
     *":$PNPM_HOME:"*) ;;
     *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
-
-[[ -s /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)" || true
