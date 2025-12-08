@@ -26,8 +26,12 @@ if [[ "$(</proc/version)" == *[Mm]icrosoft* ]] 2>/dev/null; then
     esac
 fi
 
-if [ -e "$HOME"/.cargo/env ]; then
+if [ -e "$HOME/.cargo/env" ]; then
     . "$HOME/.cargo/env"
+fi
+
+if [ -d "$HOME/.cargo/bin" ]; then
+    export PATH="${HOME}/.cargo/bin:${PATH}"
 fi
 
 export SHELL=$(which zsh)
