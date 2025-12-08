@@ -402,3 +402,5 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
+
+alias twg='cd "$(twiggle --icons)"'
