@@ -1,0 +1,73 @@
+#!/bin/bash
+# 格式化包含 Grafana 变量的 PromQL 查询
+
+set -eo pipefail
+
+# 唯一占位符前缀
+readonly PLACEHOLDER="__XGFV_"
+
+# 读取查询
+if [[ -n "${1:-}" ]]; then
+  QUERY="$1"
+elif [[ ! -t 0 ]]; then
+  QUERY=$(cat)
+else
+  echo "用法: $0 <promql_query>" >&2
+  echo "  或: echo '<promql_query>' | $0" >&2
+  exit 1
+fi
+
+# 空查询检查
+if [[ -z "${QUERY// /}" ]]; then
+  echo "错误: 查询为空" >&2
+  exit 1
+fi
+
+# 检查 promtool 是否可用
+if ! command -v promtool &>/dev/null; then
+  echo "错误: promtool 未安装或不在 PATH 中" >&2
+  exit 1
+fi
+
+# 步骤 1 & 2: 替换时间宏和普通变量
+# 占位符经 promtool 格式化后的映射：
+#   98763m  -> 68d14h3m  ($__rate_interval)
+#   98764m  -> 68d14h4m  ($__range_interval)
+#   98765m  -> 68d14h5m  ($__interval)
+#   98766m  -> 68d14h6m  ($__range)
+#   98767m  -> 68d14h7m  ($__from)
+#   98768m  -> 68d14h8m  ($__to)
+#   9876101ms -> 2h44m36s101ms ($__rate_interval_ms)
+#   9876102ms -> 2h44m36s102ms ($__interval_ms)
+query_fixed=$(echo "$QUERY" | sed \
+  -e 's/\$__rate_interval_ms/9876101ms/g' \
+  -e 's/\$__interval_ms/9876102ms/g' \
+  -e 's/\$__rate_interval/98763m/g' \
+  -e 's/\$__range_interval/98764m/g' \
+  -e 's/\$__interval/98765m/g' \
+  -e 's/\$__range/98766m/g' \
+  -e 's/\$__from/98767m/g' \
+  -e 's/\$__to/98768m/g' \
+  -e "s/\\$/${PLACEHOLDER}/g")
+
+# 步骤 3: 格式化
+if ! formatted=$(promtool promql format --experimental "$query_fixed" 2>&1); then
+  echo "错误: promtool 格式化失败" >&2
+  echo "$formatted" >&2
+  echo "$QUERY"
+  exit 1
+fi
+
+# 步骤 4 & 5: 恢复所有变量（使用 promtool 转换后的格式）
+result=$(echo "$formatted" | sed \
+  -e 's/2h44m36s101ms/$__rate_interval_ms/g' \
+  -e 's/2h44m36s102ms/$__interval_ms/g' \
+  -e 's/68d14h3m/$__rate_interval/g' \
+  -e 's/68d14h4m/$__range_interval/g' \
+  -e 's/68d14h5m/$__interval/g' \
+  -e 's/68d14h6m/$__range/g' \
+  -e 's/68d14h7m/$__from/g' \
+  -e 's/68d14h8m/$__to/g' \
+  -e "s/${PLACEHOLDER}/\$/g")
+
+echo "$result" | tee /dev/tty | osc
