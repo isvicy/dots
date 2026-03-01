@@ -372,7 +372,7 @@ cdx() {
   if [[ "$1" == "update" ]]; then
     npm install -g @openai/codex@latest
   else
-    codex -m gpt-5-codex -c model_reasoning_effort="high" --enable web_search_request "$@"
+    codex --search --dangerously-bypass-approvals-and-sandbox "$@"
   fi
 }
 
@@ -386,8 +386,13 @@ gmi() {
 
 alias s="kitten ssh"
 
-alias mm="ikimi --mcp-config-file ${HOME}/.mcp/default.json"
-alias ym="yolo --mcp-config ${HOME}/.mcp/default.json"
+mm() {
+    ikimi --mcp-config-file "${HOME}/.mcp/default.json" "$@"
+}
+ym() {
+    claude --dangerously-skip-permissions --mcp-config "${HOME}/.mcp/default.json" "$@"
+}
+
 # necessary for using kimi cli zsh plugin
 command -v ikimi >/dev/null && ! command -v kimi >/dev/null &&
   ln -s "$(which ikimi)" "$(dirname "$(which ikimi)")/kimi" 2>/dev/null || true
