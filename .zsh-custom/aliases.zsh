@@ -351,14 +351,13 @@ eallinoneai() {
 }
 
 eg() {
-  export GITLAB_TOKEN=$(gpg --quiet --decrypt "${HOME}"/.gpgs/gitlabkey.gpg)
-  export GITLAB_URL=$(gpg --quiet --decrypt "${HOME}"/.gpgs/gitlabbase.gpg)
+  export GITLAB_PRIVATE_TOKEN=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msgittoken.gpg)
 }
 
 # clean sensitive env && make gpg require password immediately
 alias clai="unset OPENAI_API_KEY && unset OPENAI_API_BASE && unset CUSTOM_ANTHROPIC_API_KEY && unset CUSTOM_ANTHROPIC_API_BASE && unset CUSTOM_ANTHROPIC_BASE_URL && unset TAVILY_API_KEY && unset DEEPSEEK_BASE_URL && unset DEEPSEEK_API_KEY && unset MOONSHOT_API_KEY && gpgconf --kill gpg-agent"
 alias clan="unset ANTHROPIC_API_KEY && unset ANTHROPIC_API_BASE && unset ANTHROPIC_BASE_URL && unset ANTHROPIC_SMALL_FAST_MODEL && unset ANTHROPIC_MODEL"
-alias clgit="unset GITLAB_TOKEN && unset GITLAB_URL && gpgconf --kill gpg-agent"
+alias clgit="unset GITLAB_PRIVATE_TOKEN && unset GITLAB_URL && gpgconf --kill gpg-agent"
 
 yolo() {
   if [[ "$1" == "update" ]]; then
@@ -387,7 +386,7 @@ gmi() {
 alias s="kitten ssh"
 
 mm() {
-    ikimi --mcp-config-file "${HOME}/.mcp/default.json" "$@"
+    ikimi --yolo --mcp-config-file "${HOME}/.mcp/default.json" "$@"
 }
 ym() {
     claude --dangerously-skip-permissions --mcp-config "${HOME}/.mcp/default.json" "$@"
