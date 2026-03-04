@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+dir="${1:-.}"
+envfile="$dir/.env"
+
+if [[ ! -f "$envfile" ]]; then
+  echo "Error: $envfile not found" >&2
+  exit 1
+fi
+
+dsn=$(grep -E '^DATABASE_URL=' "$envfile" | head -1 | sed 's/^DATABASE_URL=//' | tr -d '"' | tr -d "'")
+
+if [[ -z "$dsn" ]]; then
+  echo "Error: DATABASE_URL not found in $envfile" >&2
+  exit 1
+fi
+
+echo "DSN: $dsn"
+echo ""
+
+if [[ "$dsn" == postgres://* || "$dsn" == postgresql://* ]]; then
+  db_type="postgres"
+elif [[ "$dsn" == mysql://* ]]; then
+  db_type="mysql"
+else
+  echo "Error: unsupported DSN scheme. Expected postgres:// or mysql://" >&2
+  exit 1
+fi
+
+if [[ "$db_type" == "postgres" ]]; then
+  tables=$(psql "$dsn" -t -A -c "
+    SELECT tablename FROM pg_tables
+    WHERE schemaname = 'public'
+    ORDER BY tablename;
+  ")
+else
+  db_name=$(echo "$dsn" | sed -E 's|mysql://[^/]+/([^?]+).*|\1|')
+  mycli_dsn=$(echo "$dsn" | sed -E 's|\?.*||')
+  tables=$(mycli "$mycli_dsn" -e "
+    SELECT table_name FROM information_schema.tables
+    WHERE table_schema = '$db_name' AND table_type = 'BASE TABLE'
+    ORDER BY table_name;
+  " --csv 2>/dev/null | tail -n +2 | tr -d '\r"')
+fi
+
+if [[ -z "$tables" ]]; then
+  echo "No tables found."
+  exit 0
+fi
+
+echo "Tables to drop:"
+echo "$tables" | sed 's/^/  - /'
+echo ""
+echo "Total: $(echo "$tables" | wc -l | tr -d ' ') table(s)"
+echo ""
+
+read -rp "Drop all these tables? (yes/no): " confirm
+if [[ "$confirm" != "yes" ]]; then
+  echo "Aborted."
+  exit 0
+fi
+
+if [[ "$db_type" == "postgres" ]]; then
+  psql "$dsn" -c "
+    DO \$\$
+    DECLARE r RECORD;
+    BEGIN
+      FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+        EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
+      END LOOP;
+    END \$\$;
+  "
+else
+  mycli_dsn=$(echo "$dsn" | sed -E 's|\?.*||')
+  drop_sql="SET FOREIGN_KEY_CHECKS = 0;"
+  while IFS= read -r t; do
+    drop_sql+=" DROP TABLE IF EXISTS \`$t\`;"
+  done <<< "$tables"
+  drop_sql+=" SET FOREIGN_KEY_CHECKS = 1;"
+  mycli "$mycli_dsn" -e "$drop_sql" 2>/dev/null
+fi
+
+echo "All tables dropped."
