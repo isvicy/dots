@@ -1,0 +1,268 @@
+#!/usr/bin/env python3
+"""
+Proxy server that forwards OpenAI Responses API requests to ChatGPT Codex API.
+
+Handles auth injection, system prompt -> instructions conversion,
+and reasoning effort override. Supports runtime config via HTTP.
+
+Usage:
+    python3 chatgpt_codex_proxy.py                    # default: port 8787, effort high
+    python3 chatgpt_codex_proxy.py --effort xhigh     # start with xhigh reasoning
+    python3 chatgpt_codex_proxy.py --debug             # enable request/response logging
+
+Runtime config:
+    curl localhost:8787/config
+    curl -X PUT localhost:8787/config -d '{"reasoning_effort":"xhigh"}'
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import signal
+import sys
+import traceback
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
+from pathlib import Path
+from typing import Any
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
+
+UPSTREAM_URL = "https://chatgpt.com/backend-api/codex/responses"
+VALID_EFFORTS = frozenset(("low", "medium", "high", "xhigh"))
+PROXY_PATHS = frozenset(("/v1/responses", "/responses"))
+SKIP_RESPONSE_HEADERS = frozenset(("transfer-encoding", "content-length"))
+STREAM_CHUNK_SIZE = 16384
+
+log = logging.getLogger("codex-proxy")
+
+
+def load_auth() -> tuple[str, str]:
+    path = Path.home() / ".codex" / "auth.json"
+    if not path.exists():
+        log.error("Auth file not found: %s", path)
+        sys.exit(1)
+    with open(path) as f:
+        data = json.load(f)
+    tokens = data["tokens"]
+    return tokens["access_token"], tokens["account_id"]
+
+
+def extract_instructions(data: dict[str, Any]) -> None:
+    """Move system/developer messages from input into the instructions field."""
+    if "instructions" in data or "input" not in data:
+        return
+    system_parts: list[str] = []
+    remaining: list[Any] = []
+    for msg in data["input"]:
+        if isinstance(msg, dict) and msg.get("role") in ("system", "developer"):
+            content = msg.get("content", "")
+            if content:
+                system_parts.append(content)
+        else:
+            remaining.append(msg)
+    if system_parts:
+        data["instructions"] = "\n\n".join(system_parts)
+        data["input"] = remaining
+        log.debug("Extracted %d system message(s) as instructions (%d chars)",
+                   len(system_parts), len(data["instructions"]))
+    else:
+        data["instructions"] = "You are a helpful assistant."
+
+
+class ProxyConfig:
+    __slots__ = ("reasoning_effort",)
+
+    def __init__(self, reasoning_effort: str = "high"):
+        self.reasoning_effort = reasoning_effort
+
+    def to_dict(self) -> dict[str, str]:
+        return {"reasoning_effort": self.reasoning_effort}
+
+    def update(self, updates: dict[str, Any]) -> str | None:
+        if "reasoning_effort" in updates:
+            val = updates["reasoning_effort"]
+            if val not in VALID_EFFORTS:
+                return f"Invalid reasoning_effort: {val!r}, must be one of {sorted(VALID_EFFORTS)}"
+            old = self.reasoning_effort
+            self.reasoning_effort = val
+            if old != val:
+                log.info("reasoning_effort: %s -> %s", old, val)
+        return None
+
+
+def _make_handler_class(
+    access_token: str,
+    account_id: str,
+    config: ProxyConfig,
+) -> type[BaseHTTPRequestHandler]:
+    """Factory to inject shared state into the handler without globals."""
+
+    upstream_headers = {
+        "Authorization": f"Bearer {access_token}",
+        "ChatGPT-Account-Id": account_id,
+        "Content-Type": "application/json",
+        "Accept": "text/event-stream",
+    }
+
+    class Handler(BaseHTTPRequestHandler):
+
+        def log_message(self, fmt: str, *args: Any) -> None:
+            log.info(fmt, *args)
+
+        def _read_body(self) -> bytes:
+            length = int(self.headers.get("Content-Length", 0))
+            return self.rfile.read(length)
+
+        def _json_response(self, code: int, data: Any) -> None:
+            body = json.dumps(data).encode()
+            self.send_response(code)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        # -- GET -------------------------------------------------------
+
+        def do_GET(self) -> None:
+            if self.path == "/health":
+                self._json_response(200, {
+                    "status": "ok",
+                    "account_id": account_id[:8] + "...",
+                    **config.to_dict(),
+                })
+            elif self.path == "/config":
+                self._json_response(200, config.to_dict())
+            else:
+                self.send_response(404)
+                self.end_headers()
+
+        # -- PUT -------------------------------------------------------
+
+        def do_PUT(self) -> None:
+            if self.path != "/config":
+                self.send_response(404)
+                self.end_headers()
+                return
+
+            body = self._read_body()
+            try:
+                updates = json.loads(body)
+            except json.JSONDecodeError:
+                self._json_response(400, {"error": "Invalid JSON"})
+                return
+
+            if err := config.update(updates):
+                self._json_response(400, {"error": err})
+                return
+            self._json_response(200, config.to_dict())
+
+        # -- POST (proxy) ----------------------------------------------
+
+        def do_POST(self) -> None:
+            if self.path not in PROXY_PATHS:
+                self.send_response(404)
+                self.end_headers()
+                return
+
+            body = self._read_body()
+            log.debug(">>> POST %s (%d bytes)", self.path, len(body))
+            log.debug("Request headers: %s", dict(self.headers))
+
+            try:
+                data = json.loads(body)
+            except json.JSONDecodeError as e:
+                log.debug("JSON parse error: %s", e)
+                self._json_response(400, {"error": "Invalid JSON"})
+                return
+
+            log.debug("Request body:\n%s", json.dumps(data, indent=2))
+
+            data["store"] = False
+            extract_instructions(data)
+            data["reasoning"] = {
+                "effort": config.reasoning_effort,
+                "summary": "auto",
+            }
+
+            upstream_body = json.dumps(data).encode()
+            log.debug("Forwarding %d bytes to upstream (effort=%s)",
+                       len(upstream_body), config.reasoning_effort)
+
+            req = Request(
+                UPSTREAM_URL,
+                data=upstream_body,
+                headers=upstream_headers,
+                method="POST",
+            )
+
+            try:
+                with urlopen(req, timeout=600) as resp:
+                    log.debug("<<< %d from upstream", resp.status)
+                    log.debug("Response headers: %s", dict(resp.headers))
+
+                    self.send_response(resp.status)
+                    for key, val in resp.headers.items():
+                        if key.lower() not in SKIP_RESPONSE_HEADERS:
+                            self.send_header(key, val)
+                    self.end_headers()
+
+                    total = 0
+                    while chunk := resp.read(STREAM_CHUNK_SIZE):
+                        self.wfile.write(chunk)
+                        total += len(chunk)
+                    log.debug("Streamed %d bytes", total)
+
+            except HTTPError as e:
+                error_body = e.read()
+                log.warning("Upstream error %d:\n%s", e.code, error_body.decode(errors="replace"))
+                self.send_response(e.code)
+                self.end_headers()
+                self.wfile.write(error_body)
+            except Exception as e:
+                log.error("Proxy error: %s\n%s", e, traceback.format_exc())
+                self._json_response(500, {"error": str(e)})
+
+    return Handler
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="ChatGPT Codex API Proxy")
+    parser.add_argument("--port", type=int, default=8787)
+    parser.add_argument("--effort", choices=sorted(VALID_EFFORTS), default="high",
+                        help="Initial reasoning effort (default: high)")
+    parser.add_argument("--debug", action="store_true",
+                        help="Enable verbose request/response logging")
+    args = parser.parse_args()
+
+    logging.basicConfig(
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        datefmt="%H:%M:%S",
+        level=logging.DEBUG if args.debug else logging.INFO,
+    )
+
+    access_token, account_id = load_auth()
+    config = ProxyConfig(reasoning_effort=args.effort)
+    handler_cls = _make_handler_class(access_token, account_id, config)
+
+    server = ThreadingHTTPServer(("127.0.0.1", args.port), handler_cls)
+    signal.signal(signal.SIGTERM, lambda *_: server.shutdown())
+
+    log.info("=" * 50)
+    log.info("ChatGPT Codex API Proxy")
+    log.info("  Listen:    http://127.0.0.1:%d", args.port)
+    log.info("  Account:   %s...", account_id[:8])
+    log.info("  Reasoning: %s", config.reasoning_effort)
+    log.info("  Debug:     %s", args.debug)
+    log.info("=" * 50)
+
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        log.info("Shutting down...")
+        server.shutdown()
+
+
+if __name__ == "__main__":
+    main()
