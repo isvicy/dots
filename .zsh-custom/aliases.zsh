@@ -363,7 +363,7 @@ yolo() {
   if [[ "$1" == "update" ]]; then
     npm install -g @anthropic-ai/claude-code@latest
   else
-    claude --dangerously-skip-permissions "$@"
+    claude --dangerously-skip-permissions --mcp-config "${HOME}/.mcp/default.json" "$@"
   fi
 }
 
@@ -386,10 +386,10 @@ gmi() {
 alias s="kitten ssh"
 
 mm() {
-    ikimi --yolo --mcp-config-file "${HOME}/.mcp/default.json" "$@"
+  kimi --yolo --mcp-config-file "${HOME}/.mcp/default.json" "$@"
 }
-ym() {
-    claude --dangerously-skip-permissions --mcp-config "${HOME}/.mcp/default.json" "$@"
+mc() {
+  kimi --yolo --mcp-config-file "${HOME}/.mcp/default.json" --config-file "${HOME}/.kimi/codex.toml" "$@"
 }
 
 # necessary for using kimi cli zsh plugin

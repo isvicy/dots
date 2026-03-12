@@ -1,0 +1,14 @@
+default_model = "gpt-5.4"
+default_thinking = true
+default_yolo = true
+
+[providers.chatgpt-codex]
+type = "openai_responses"
+base_url = "http://127.0.0.1:8787"
+api_key = "dummy"
+
+[models."gpt-5.4"]
+provider = "chatgpt-codex"
+model = "gpt-5.4"
+max_context_size = 258000
+capabilities = ["always_thinking", "thinking", "image_in"]
