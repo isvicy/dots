@@ -362,7 +362,7 @@ alias clgit="unset GITLAB_PRIVATE_TOKEN && unset GITLAB_URL && gpgconf --kill gp
 # Expand env vars in a file, return temp file path with the expanded content
 _expand_envs() {
   local src="$1"
-  local tmp=$(mktemp /tmp/mcp-XXXXXX.json)
+  local tmp=$(mktemp)
   envsubst < "$src" > "$tmp"
   echo "$tmp"
 }
