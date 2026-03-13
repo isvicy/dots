@@ -359,11 +359,21 @@ alias clai="unset OPENAI_API_KEY && unset OPENAI_API_BASE && unset CUSTOM_ANTHRO
 alias clan="unset ANTHROPIC_API_KEY && unset ANTHROPIC_API_BASE && unset ANTHROPIC_BASE_URL && unset ANTHROPIC_SMALL_FAST_MODEL && unset ANTHROPIC_MODEL"
 alias clgit="unset GITLAB_PRIVATE_TOKEN && unset GITLAB_URL && gpgconf --kill gpg-agent"
 
+# Expand env vars in a file, return temp file path with the expanded content
+_expand_envs() {
+  local src="$1"
+  local tmp=$(mktemp /tmp/mcp-XXXXXX.json)
+  envsubst < "$src" > "$tmp"
+  echo "$tmp"
+}
+
 yolo() {
   if [[ "$1" == "update" ]]; then
     npm install -g @anthropic-ai/claude-code@latest
   else
-    claude --dangerously-skip-permissions --mcp-config "${HOME}/.mcp/default.json" "$@"
+    local cfg=$(_expand_envs "${HOME}/.mcp/default.json")
+    claude --dangerously-skip-permissions --mcp-config "$cfg" "$@"
+    rm -f "$cfg"
   fi
 }
 
@@ -386,15 +396,25 @@ gmi() {
 alias s="kitten ssh"
 
 mm() {
-  kimi --yolo --mcp-config-file "${HOME}/.mcp/default.json" "$@"
+  local cfg=$(_expand_envs "${HOME}/.mcp/default.json")
+  kimi --yolo --mcp-config-file "$cfg" "$@"
+  rm -f "$cfg"
 }
 mc() {
-  kimi --yolo --mcp-config-file "${HOME}/.mcp/default.json" --config-file "${HOME}/.kimi/codex.toml" "$@"
+  local cfg=$(_expand_envs "${HOME}/.mcp/default.json")
+  kimi --yolo --mcp-config-file "$cfg" --config-file "${HOME}/.kimi/codex.toml" "$@"
+  rm -f "$cfg"
 }
-
-# necessary for using kimi cli zsh plugin
-command -v ikimi >/dev/null && ! command -v kimi >/dev/null &&
-  ln -s "$(which ikimi)" "$(dirname "$(which ikimi)")/kimi" 2>/dev/null || true
+mg() {
+  local cfg=$(_expand_envs "${HOME}/.mcp/gitlab.json")
+  kimi --mcp-config-file "$cfg" "$@"
+  rm -f "$cfg"
+}
+yg() {
+  local cfg=$(_expand_envs "${HOME}/.mcp/gitlab.json")
+  claude --dangerously-skip-permissions --mcp-config "$cfg" "$@"
+  rm -f "$cfg"
+}
 
 function y() {
   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"

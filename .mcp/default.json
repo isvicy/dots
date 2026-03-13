@@ -9,7 +9,7 @@
       "command": "uv",
       "args": [
         "--directory",
-        "/home/isvicy/.mcp/anki-mcp",
+        "${HOME}/.mcp/anki-mcp",
         "run",
         "server.py"
       ],
@@ -19,7 +19,17 @@
       "type": "stdio",
       "command": "npx",
       "args": [
-        "@playwright/mcp@latest"
+        "@playwright/mcp@latest",
+        "--isolated",
+        "--storage-state",
+        "${HOME}/.playwright-profiles/storage-state.json"
+      ]
+    },
+    "obsidian": {
+      "command": "npx",
+      "args": [
+        "@mauricio.wolff/mcp-obsidian@latest",
+        "${HOME}/Documents/SyncVault"
       ]
     }
   }
