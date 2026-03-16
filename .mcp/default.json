@@ -4,17 +4,6 @@
       "type": "http",
       "url": "https://mcp.context7.com/mcp"
     },
-    "anki": {
-      "type": "stdio",
-      "command": "uv",
-      "args": [
-        "--directory",
-        "${HOME}/.mcp/anki-mcp",
-        "run",
-        "server.py"
-      ],
-      "env": {}
-    },
     "playwright": {
       "type": "stdio",
       "command": "npx",
@@ -23,13 +12,6 @@
         "--isolated",
         "--storage-state",
         "${HOME}/.playwright-profiles/storage-state.json"
-      ]
-    },
-    "obsidian": {
-      "command": "npx",
-      "args": [
-        "@mauricio.wolff/mcp-obsidian@latest",
-        "${HOME}/Documents/SyncVault"
       ]
     }
   }
