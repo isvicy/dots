@@ -23,6 +23,7 @@ import logging
 import signal
 import sys
 import traceback
+from http.client import IncompleteRead
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from typing import Any
@@ -209,9 +210,15 @@ def _make_handler_class(
                     self.end_headers()
 
                     total = 0
-                    while chunk := resp.read(STREAM_CHUNK_SIZE):
-                        self.wfile.write(chunk)
-                        total += len(chunk)
+                    try:
+                        while chunk := resp.read(STREAM_CHUNK_SIZE):
+                            self.wfile.write(chunk)
+                            total += len(chunk)
+                    except IncompleteRead as e:
+                        if e.partial:
+                            self.wfile.write(e.partial)
+                            total += len(e.partial)
+                        log.warning("Upstream closed connection early (%d bytes read)", total)
                     log.debug("Streamed %d bytes", total)
 
             except HTTPError as e:
