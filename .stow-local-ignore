@@ -13,6 +13,7 @@
 
 ^/commitlint.config.js
 ^/\.husky
+^/\.sops\.yaml
 
 ^/template
 ^/docs
