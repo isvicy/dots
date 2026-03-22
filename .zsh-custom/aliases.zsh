@@ -280,90 +280,35 @@ sync_time() {
   fi
 }
 
-# Helper function to set common API keys and environment variables
 _set_common_api_keys() {
-  export TAVILY_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/tavilykey.gpg)
-  export DEEPSEEK_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/deepseekkey.gpg)
-  export DEEPSEEK_BASE_URL=$(gpg --quiet --decrypt "${HOME}"/.gpgs/deepseekbase.gpg)
-  export MOONSHOT_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msapikey.gpg)
-  export MOONSHOT_API_BASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msapibase.gpg)
-  export MOONSHOT_IAPI_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msiapikey.gpg)
-  export MOONSHOT_STAFF_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msiapikey.gpg)
-  export MOONSHOT_IAPI_BASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msiapibase.gpg)
-  export MOONSHOT_IAPI_AN_BASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msiapianbase.gpg)
-  export GEMINI_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/geminikey.gpg)
-  export MOONSHOT_APM_API_BASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msapmbase.gpg)
-  export MOONSHOT_APM_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msapmapikey.gpg)
-  export MOONSHOT_RESEARCH_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/researchkey.gpg)
-  export MOONSHOT_RESEARCH_API_BASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/researchbase.gpg)
-  export RESEARCH_MCP_API_BASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/researchmcpbase.gpg)
-  export RESEARCH_MCP_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/researchmcpkey.gpg)
-  export TOKENISM_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/tokenismkey.gpg)
-  export MSUSER=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msgituser.gpg)
-  export MSGITTOKEN=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msgittoken.gpg)
-  export MSGITPROXYBASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msproxybase.gpg)
-  export MSDOMAINBASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msdomainbase.gpg)
+  export TAVILY_API_KEY=$(gopass show -o ai/tavily/key)
+  export MSUSER=$(gopass show -o moonshot/git/user)
+  export MSGITTOKEN=$(gopass show -o moonshot/git/token)
+  export MSGITPROXYBASE=$(gopass show -o moonshot/proxy-base)
+  export MSDOMAINBASE=$(gopass show -o moonshot/domain-base)
   export GOPROXY=$MSUSER:$MSGITTOKEN@$MSGITPROXYBASE,https://goproxy.cn,direct
-  export GITHUB_PERSONAL_ACCESS_TOKEN=$(gpg --quiet --decrypt "${HOME}"/.gpgs/githubtoken.gpg)
-  export GROQ_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/groqapikey.gpg)
-  export GROQ_API_BASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/groqapibase.gpg)
-  export LOCAL_ENDPOINT=$MOONSHOT_API_BASE
-  export LOCAL_ENDPOINT_API_KEY=$MOONSHOT_API_KEY
-  export MORPH_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/morphapikey.gpg)
-}
-
-# Set environment for Wild API
-ew() {
-  export OPENAI_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/wildapikey.gpg)
-  export OPENAI_API_BASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/wildapibase.gpg)/v1
-  export OPENAI_BASE_URL=$(gpg --quiet --decrypt "${HOME}"/.gpgs/wildapibase.gpg)/v1
-  export CUSTOM_ANTHROPIC_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/wildapikey.gpg)
-  export CUSTOM_ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt "${HOME}"/.gpgs/wildapibase.gpg)
-  export CUSTOM_ANTHROPIC_API_BASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/wildapibase.gpg)
-}
-
-# Set environment for BH API
-eallinone() {
-  # BH API specific settings
-  export OPENAI_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/bhapikey.gpg)
-  export OPENAI_API_BASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/bhapibase.gpg)/v1
-  export OPENAI_BASE_URL=$(gpg --quiet --decrypt "${HOME}"/.gpgs/bhapibase.gpg)/v1
-  export CUSTOM_ANTHROPIC_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/bhapikey.gpg)
-  export CUSTOM_ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt "${HOME}"/.gpgs/bhapibase.gpg)
-  export CUSTOM_ANTHROPIC_API_BASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/bhapibase.gpg)
-
-  # Common API keys and environment variables
-  _set_common_api_keys
-}
-
-# Set environment for AI Hub Mix
-eallinoneai() {
-  # AI Hub Mix specific settings
-  export OPENAI_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/aihubmixkey.gpg)
-  export OPENAI_API_BASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/aihubmixbase.gpg)/v1
-  export OPENAI_BASE_URL=$(gpg --quiet --decrypt "${HOME}"/.gpgs/aihubmixbase.gpg)/v1
-  export CUSTOM_ANTHROPIC_API_KEY=$(gpg --quiet --decrypt "${HOME}"/.gpgs/aihubmixkey.gpg)
-  export CUSTOM_ANTHROPIC_BASE_URL=$(gpg --quiet --decrypt "${HOME}"/.gpgs/aihubmixbase.gpg)
-  export CUSTOM_ANTHROPIC_API_BASE=$(gpg --quiet --decrypt "${HOME}"/.gpgs/aihubmixbase.gpg)
-
-  # Common API keys and environment variables
-  _set_common_api_keys
+  export GITHUB_PERSONAL_ACCESS_TOKEN=$(gopass show -o git/github/token)
 }
 
 eg() {
-  export GITLAB_PRIVATE_TOKEN=$(gpg --quiet --decrypt "${HOME}"/.gpgs/msgittoken.gpg)
+  export GITLAB_PRIVATE_TOKEN=$(gopass show -o moonshot/git/token)
 }
 
-# clean sensitive env && make gpg require password immediately
-alias clai="unset OPENAI_API_KEY && unset OPENAI_API_BASE && unset CUSTOM_ANTHROPIC_API_KEY && unset CUSTOM_ANTHROPIC_API_BASE && unset CUSTOM_ANTHROPIC_BASE_URL && unset TAVILY_API_KEY && unset DEEPSEEK_BASE_URL && unset DEEPSEEK_API_KEY && unset MOONSHOT_API_KEY && gpgconf --kill gpg-agent"
+alias clai="unset TAVILY_API_KEY"
 alias clan="unset ANTHROPIC_API_KEY && unset ANTHROPIC_API_BASE && unset ANTHROPIC_BASE_URL && unset ANTHROPIC_SMALL_FAST_MODEL && unset ANTHROPIC_MODEL"
-alias clgit="unset GITLAB_PRIVATE_TOKEN && unset GITLAB_URL && gpgconf --kill gpg-agent"
+alias clgit="unset GITLAB_PRIVATE_TOKEN && unset GITLAB_URL"
 
-# Expand env vars in a file, return temp file path with the expanded content
 _expand_envs() {
   local src="$1"
   local tmp=$(mktemp)
   envsubst < "$src" > "$tmp"
+  echo "$tmp"
+}
+
+_decrypt_sops() {
+  local src="$1"
+  local tmp=$(mktemp)
+  sops --decrypt "$src" > "$tmp"
   echo "$tmp"
 }
 
@@ -406,12 +351,12 @@ mc() {
   rm -f "$cfg"
 }
 mg() {
-  local cfg=$(_expand_envs "${HOME}/.mcp/gitlab.json")
+  local cfg=$(_decrypt_sops "${HOME}/.mcp/gitlab.sops.json")
   kimi --mcp-config-file "$cfg" "$@"
   rm -f "$cfg"
 }
 yg() {
-  local cfg=$(_expand_envs "${HOME}/.mcp/gitlab.json")
+  local cfg=$(_decrypt_sops "${HOME}/.mcp/gitlab.sops.json")
   claude --dangerously-skip-permissions --mcp-config "$cfg" "$@"
   rm -f "$cfg"
 }
