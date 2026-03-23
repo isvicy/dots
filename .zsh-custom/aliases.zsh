@@ -308,7 +308,7 @@ _expand_envs() {
 _decrypt_sops() {
   local src="$1"
   local tmp=$(mktemp)
-  pass show age/identity | sops --decrypt --age-key-file /dev/stdin "$src" > "$tmp"
+  SOPS_AGE_KEY=$(pass show age/identity) sops --decrypt "$src" > "$tmp"
   echo "$tmp"
 }
 
