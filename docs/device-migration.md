@@ -90,28 +90,67 @@ rm ~/private-key.gpg          # on target machine after import
 
 ---
 
-## Adding a New Secret
+## Daily Usage
+
+### pass — managing secrets
 
 ```bash
-pass insert category/service/key
-# or pipe:
-echo "sk-abc123" | pass insert -m category/service/key
+# List all secrets
+pass ls
 
-# Sync
-cd ~/.password-store && git push
+# Show a secret
+pass show category/service/key
+
+# Add a new secret (interactive)
+pass insert category/service/key
+
+# Add a new secret (pipe)
+echo "value" | pass insert -m category/service/key
+
+# Generate a random password
+pass generate category/service/key 32
+
+# Edit an existing secret
+pass edit category/service/key
+
+# Remove a secret
+pass rm category/service/key
+
+# Sync with remote
+cd ~/.password-store && git pull   # pull
+cd ~/.password-store && git push   # push
 ```
 
-## Adding a SOPS-encrypted Config
+### psops — managing SOPS-encrypted configs
+
+`psops` is a wrapper that pipes the age key from `pass` via stdin so the key never touches disk or env vars.
 
 ```bash
-# Create the file
-vim .mcp/newservice.sops.json
+# Edit in place (decrypts in $EDITOR, re-encrypts on save)
+psops .mcp/gitlab.sops.json
 
-# Encrypt (uses .sops.yaml creation rules)
-pass show age/identity | SOPS_AGE_KEY_FILE=/dev/stdin sops --encrypt --in-place .mcp/newservice.sops.json
+# Decrypt to stdout
+psops --decrypt .mcp/gitlab.sops.json
 
-# Edit later (decrypts in $EDITOR, re-encrypts on save)
-pass show age/identity | SOPS_AGE_KEY_FILE=/dev/stdin sops .mcp/newservice.sops.json
+# Encrypt a new file (must match .sops.yaml path_regex)
+psops --encrypt --in-place .mcp/newservice.sops.json
+
+# Show a specific key
+psops --decrypt --extract '["mcpServers"]["gitlab"]["env"]' .mcp/gitlab.sops.json
+```
+
+### Shell functions
+
+```bash
+# Load common API keys into env (prompts GPG passphrase once per session)
+_set_common_api_keys
+
+# Load GitLab token
+eg
+
+# Clear sensitive env vars
+clai
+clgit
 ```
 
 ## Syncing Between Devices
