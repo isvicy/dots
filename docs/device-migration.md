@@ -61,7 +61,17 @@ pass show git/github/token
 pass show age/identity | SOPS_AGE_KEY_FILE=/dev/stdin sops --decrypt ~/.dots/.mcp/gitlab.sops.json | head -3
 ```
 
-## 6. Link dotfiles
+## 6. Install git hooks
+
+```bash
+cd ~/.dots && pnpm install
+```
+
+This sets up husky which runs two hooks on every commit:
+- **pre-commit**: `gitleaks` scans staged changes for leaked secrets
+- **commit-msg**: `commitlint` enforces conventional commit format
+
+## 7. Link dotfiles
 
 ```bash
 cd ~/.dots && make link
