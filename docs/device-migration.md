@@ -36,7 +36,9 @@ sudo apt install pass age sops gnupg
 
 ```bash
 gpg --import /path/to/private-key.gpg
-gpg --edit-key B142D3EAD158D347 trust
+
+# Set trust to ultimate (replace <KEY_ID> with your key fingerprint)
+gpg --edit-key <KEY_ID> trust
 # Select 5 (ultimate trust), confirm, quit
 ```
 
@@ -52,11 +54,11 @@ git clone git@github.com:isvicy/password-store.git ~/.password-store
 # Should prompt GPG passphrase once, then cached by gpg-agent
 pass show ai/tavily/key
 
-# Second call — no prompt
-pass show moonshot/git/token
+# Second call — no prompt (gpg-agent cached)
+pass show git/github/token
 
 # SOPS decryption via age key in pass
-pass show age/identity | sops --decrypt --age-key-file /dev/stdin ~/.dots/.mcp/gitlab.sops.json | head -3
+SOPS_AGE_KEY=$(pass show age/identity) sops --decrypt ~/.dots/.mcp/gitlab.sops.json | head -3
 ```
 
 ## 6. Link dotfiles
@@ -72,7 +74,7 @@ cd ~/.dots && make link
 On an existing machine, export the private key for transfer:
 
 ```bash
-gpg --export-secret-keys B142D3EAD158D347 > ~/private-key.gpg
+gpg --export-secret-keys <KEY_ID> > ~/private-key.gpg
 ```
 
 Transfer via secure channel (scp, USB):
@@ -91,9 +93,9 @@ rm ~/private-key.gpg          # on target machine after import
 ## Adding a New Secret
 
 ```bash
-pass insert moonshot/newservice/key
+pass insert category/service/key
 # or pipe:
-echo "sk-abc123" | pass insert -m moonshot/newservice/key
+echo "sk-abc123" | pass insert -m category/service/key
 
 # Sync
 cd ~/.password-store && git push
@@ -105,15 +107,11 @@ cd ~/.password-store && git push
 # Create the file
 vim .mcp/newservice.sops.json
 
-# Encrypt (uses .sops.yaml rules + age key from ~/.config/age/keys.txt)
-pass show age/identity > /tmp/age-key && \
-  SOPS_AGE_KEY_FILE=/tmp/age-key sops --encrypt --in-place .mcp/newservice.sops.json && \
-  rm /tmp/age-key
+# Encrypt (uses .sops.yaml creation rules)
+SOPS_AGE_KEY=$(pass show age/identity) sops --encrypt --in-place .mcp/newservice.sops.json
 
 # Edit later (decrypts in $EDITOR, re-encrypts on save)
-pass show age/identity > /tmp/age-key && \
-  SOPS_AGE_KEY_FILE=/tmp/age-key sops .mcp/newservice.sops.json && \
-  rm /tmp/age-key
+SOPS_AGE_KEY=$(pass show age/identity) sops .mcp/newservice.sops.json
 ```
 
 ## Syncing Between Devices
