@@ -57,8 +57,8 @@ pass show ai/tavily/key
 # Second call — no prompt (gpg-agent cached)
 pass show git/github/token
 
-# SOPS decryption via age key in pass
-SOPS_AGE_KEY=$(pass show age/identity) sops --decrypt ~/.dots/.mcp/gitlab.sops.json | head -3
+# SOPS decryption via age key in pass (piped, never in env or on disk)
+pass show age/identity | SOPS_AGE_KEY_FILE=/dev/stdin sops --decrypt ~/.dots/.mcp/gitlab.sops.json | head -3
 ```
 
 ## 6. Link dotfiles
@@ -108,10 +108,10 @@ cd ~/.password-store && git push
 vim .mcp/newservice.sops.json
 
 # Encrypt (uses .sops.yaml creation rules)
-SOPS_AGE_KEY=$(pass show age/identity) sops --encrypt --in-place .mcp/newservice.sops.json
+pass show age/identity | SOPS_AGE_KEY_FILE=/dev/stdin sops --encrypt --in-place .mcp/newservice.sops.json
 
 # Edit later (decrypts in $EDITOR, re-encrypts on save)
-SOPS_AGE_KEY=$(pass show age/identity) sops .mcp/newservice.sops.json
+pass show age/identity | SOPS_AGE_KEY_FILE=/dev/stdin sops .mcp/newservice.sops.json
 ```
 
 ## Syncing Between Devices
