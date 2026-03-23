@@ -281,17 +281,17 @@ sync_time() {
 }
 
 _set_common_api_keys() {
-  export TAVILY_API_KEY=$(gopass show -o ai/tavily/key)
-  export MSUSER=$(gopass show -o org/git/user)
-  export MSGITTOKEN=$(gopass show -o org/git/token)
-  export MSGITPROXYBASE=$(gopass show -o org/proxy-base)
-  export MSDOMAINBASE=$(gopass show -o org/domain-base)
+  export TAVILY_API_KEY=$(pass show ai/tavily/key)
+  export MSUSER=$(pass show org/git/user)
+  export MSGITTOKEN=$(pass show org/git/token)
+  export MSGITPROXYBASE=$(pass show org/proxy-base)
+  export MSDOMAINBASE=$(pass show org/domain-base)
   export GOPROXY=$MSUSER:$MSGITTOKEN@$MSGITPROXYBASE,https://goproxy.cn,direct
-  export GITHUB_PERSONAL_ACCESS_TOKEN=$(gopass show -o git/github/token)
+  export GITHUB_PERSONAL_ACCESS_TOKEN=$(pass show git/github/token)
 }
 
 eg() {
-  export GITLAB_PRIVATE_TOKEN=$(gopass show -o org/git/token)
+  export GITLAB_PRIVATE_TOKEN=$(pass show org/git/token)
 }
 
 alias clai="unset TAVILY_API_KEY"
@@ -308,7 +308,7 @@ _expand_envs() {
 _decrypt_sops() {
   local src="$1"
   local tmp=$(mktemp)
-  gopass show -o age/identity | sops --decrypt --age-key-file /dev/stdin "$src" > "$tmp"
+  pass show age/identity | sops --decrypt --age-key-file /dev/stdin "$src" > "$tmp"
   echo "$tmp"
 }
 
