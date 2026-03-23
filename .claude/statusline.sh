@@ -1,5 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -f
+
+OS="$(uname -s)"
 
 input=$(cat)
 
@@ -151,19 +153,35 @@ format_reset_time() {
     stripped="${stripped%%+*}"
     stripped="${stripped%%-[0-9][0-9]:[0-9][0-9]}"
     local epoch=""
-    if [[ "$iso_str" == *"Z"* ]] || [[ "$iso_str" == *"+00:00"* ]]; then
-        epoch=$(env TZ=UTC date -j -f "%Y-%m-%dT%H:%M:%S" "$stripped" +%s 2>/dev/null)
+    if [[ "$OS" == "Darwin" ]]; then
+        if [[ "$iso_str" == *"Z"* ]] || [[ "$iso_str" == *"+00:00"* ]]; then
+            epoch=$(env TZ=UTC date -j -f "%Y-%m-%dT%H:%M:%S" "$stripped" +%s 2>/dev/null)
+        else
+            epoch=$(date -j -f "%Y-%m-%dT%H:%M:%S" "$stripped" +%s 2>/dev/null)
+        fi
     else
-        epoch=$(date -j -f "%Y-%m-%dT%H:%M:%S" "$stripped" +%s 2>/dev/null)
+        if [[ "$iso_str" == *"Z"* ]] || [[ "$iso_str" == *"+00:00"* ]]; then
+            epoch=$(env TZ=UTC date -d "${stripped}" +%s 2>/dev/null)
+        else
+            epoch=$(date -d "${stripped}" +%s 2>/dev/null)
+        fi
     fi
     [ -z "$epoch" ] && return
     local result=""
     case "$style" in
         time)
-            result=$(date -j -r "$epoch" +"%l:%M%p" 2>/dev/null | sed 's/^ //; s/\.//g' | tr '[:upper:]' '[:lower:]')
+            if [[ "$OS" == "Darwin" ]]; then
+                result=$(TZ=Asia/Shanghai LC_ALL=C date -j -r "$epoch" +"%l:%M%p" 2>/dev/null | sed 's/^ //; s/\.//g' | tr '[:upper:]' '[:lower:]')
+            else
+                result=$(TZ=Asia/Shanghai LC_ALL=C date -d "@$epoch" +"%l:%M%p" 2>/dev/null | sed 's/^ //; s/\.//g' | tr '[:upper:]' '[:lower:]')
+            fi
             ;;
         datetime)
-            result=$(date -j -r "$epoch" +"%b %-d, %l:%M%p" 2>/dev/null | sed 's/  / /g; s/^ //; s/\.//g' | tr '[:upper:]' '[:lower:]')
+            if [[ "$OS" == "Darwin" ]]; then
+                result=$(TZ=Asia/Shanghai LC_ALL=C date -j -r "$epoch" +"%b %-d, %l:%M%p" 2>/dev/null | sed 's/  / /g; s/^ //; s/\.//g' | tr '[:upper:]' '[:lower:]')
+            else
+                result=$(TZ=Asia/Shanghai LC_ALL=C date -d "@$epoch" +"%b %-d, %l:%M%p" 2>/dev/null | sed 's/  / /g; s/^ //; s/\.//g' | tr '[:upper:]' '[:lower:]')
+            fi
             ;;
     esac
     printf "%s" "$result"
@@ -206,7 +224,11 @@ needs_refresh=true
 usage_data=""
 
 if [ -f "$cache_file" ]; then
-    cache_mtime=$(stat -f %m "$cache_file" 2>/dev/null)
+    if [[ "$OS" == "Darwin" ]]; then
+        cache_mtime=$(stat -f %m "$cache_file" 2>/dev/null)
+    else
+        cache_mtime=$(stat -c %Y "$cache_file" 2>/dev/null)
+    fi
     now=$(date +%s)
     cache_age=$(( now - cache_mtime ))
     if [ "$cache_age" -lt "$cache_max_age" ]; then
