@@ -305,10 +305,14 @@ _expand_envs() {
   echo "$tmp"
 }
 
+psops() {
+  pass show age/identity | SOPS_AGE_KEY_FILE=/dev/stdin sops "$@"
+}
+
 _decrypt_sops() {
   local src="$1"
   local tmp=$(mktemp)
-  pass show age/identity | SOPS_AGE_KEY_FILE=/dev/stdin sops --decrypt "$src" > "$tmp"
+  psops --decrypt "$src" > "$tmp"
   echo "$tmp"
 }
 
