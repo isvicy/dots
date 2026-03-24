@@ -34,3 +34,4 @@ if [ -d "$HOME/.cargo/bin" ]; then
 fi
 
 export SHELL=$(which zsh)
+export GPG_TTY=$TTY
