@@ -14,23 +14,6 @@
         "server.py"
       ],
       "env": {}
-    },
-    "playwright": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "@playwright/mcp@latest",
-        "--isolated",
-        "--storage-state",
-        "${HOME}/.playwright-profiles/storage-state.json"
-      ]
-    },
-    "obsidian": {
-      "command": "npx",
-      "args": [
-        "@mauricio.wolff/mcp-obsidian@latest",
-        "${HOME}/Documents/SyncVault"
-      ]
     }
   }
 }
