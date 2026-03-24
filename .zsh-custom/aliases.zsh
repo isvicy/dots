@@ -349,6 +349,16 @@ mm() {
   kimi --yolo --mcp-config-file "$cfg" "$@"
   rm -f "$cfg"
 }
+mmka() {
+  local cfg=$(_expand_envs "${HOME}/.mcp/default.json")
+  kimi --yolo --skills-dir "${HOME}/skills/anonymize" --mcp-config-file "$cfg" "$@"
+  rm -f "$cfg"
+}
+mmkn() {
+  local cfg=$(_expand_envs "${HOME}/.mcp/default.json")
+  kimi --yolo --skills-dir "${HOME}/skills/non-anonymize" --mcp-config-file "$cfg" "$@"
+  rm -f "$cfg"
+}
 mc() {
   local cfg=$(_expand_envs "${HOME}/.mcp/default.json")
   kimi --yolo --mcp-config-file "$cfg" --config-file "${HOME}/.kimi/codex.toml" "$@"
