@@ -7,14 +7,14 @@ Set up a new machine with dotfiles, secrets, and SOPS-encrypted configs.
 - SSH key added to GitHub (`ssh -T git@github.com`)
 - GPG private key exported from an existing machine (see [Export GPG Key](#export-gpg-key))
 
-## 1. Bootstrap dotfiles
+## 1. Bootstrap Dotfiles
 
 ```bash
 GITHUB_USERNAME=$USER bash -c \
   "$(curl -fsSL 'https://raw.githubusercontent.com/isvicy/dots/refs/heads/main/hack/bootstrap-machine.sh')"
 ```
 
-## 2. Install tools (NixOS)
+## 2. Install Tools (NixOS)
 
 ```bash
 cd ~/nix && sudo nixos-rebuild switch --flake ~/nix
@@ -23,6 +23,7 @@ cd ~/nix && sudo nixos-rebuild switch --flake ~/nix
 Required packages (already in `nix/home/programs/common.nix`): `pass`, `age`, `sops`, `gitleaks`.
 
 For non-NixOS (macOS/Ubuntu), install manually:
+
 ```bash
 # macOS
 brew install pass age sops gitleaks gnupg
@@ -32,7 +33,7 @@ sudo apt install pass age sops gnupg
 # gitleaks: download from https://github.com/gitleaks/gitleaks/releases
 ```
 
-## 3. Import GPG key
+## 3. Import GPG Key
 
 ```bash
 gpg --import /path/to/private-key.gpg
@@ -42,7 +43,7 @@ gpg --edit-key <KEY_ID> trust
 # Select 5 (ultimate trust), confirm, quit
 ```
 
-## 4. Clone password store
+## 4. Clone Password Store
 
 ```bash
 git clone git@github.com:isvicy/password-store.git ~/.password-store
@@ -61,17 +62,18 @@ pass show git/github/token
 pass show age/identity | SOPS_AGE_KEY_FILE=/dev/stdin sops --decrypt ~/.dots/.mcp/gitlab.sops.json | head -3
 ```
 
-## 6. Install git hooks
+## 6. Install Git Hooks
 
 ```bash
 cd ~/.dots && pnpm install
 ```
 
 This sets up husky which runs two hooks on every commit:
+
 - **pre-commit**: `gitleaks` scans staged changes for leaked secrets
 - **commit-msg**: `commitlint` enforces conventional commit format
 
-## 7. Link dotfiles
+## 7. Link Dotfiles
 
 ```bash
 cd ~/.dots && make link
@@ -88,11 +90,13 @@ gpg --export-secret-keys <KEY_ID> > ~/private-key.gpg
 ```
 
 Transfer via secure channel (scp, USB):
+
 ```bash
 scp ~/private-key.gpg newmachine:~/
 ```
 
 Delete the exported file after import:
+
 ```bash
 rm ~/private-key.gpg          # on source machine
 rm ~/private-key.gpg          # on target machine after import
@@ -102,7 +106,7 @@ rm ~/private-key.gpg          # on target machine after import
 
 ## Daily Usage
 
-### pass — managing secrets
+### Pass — Managing Secrets
 
 ```bash
 # List all secrets
@@ -149,7 +153,7 @@ psops --encrypt --in-place .mcp/newservice.sops.json
 psops --decrypt --extract '["mcpServers"]["gitlab"]["env"]' .mcp/gitlab.sops.json
 ```
 
-### Shell functions
+### Shell Functions
 
 ```bash
 # Load common API keys into env (prompts GPG passphrase once per session)
