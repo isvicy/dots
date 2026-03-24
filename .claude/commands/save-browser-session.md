@@ -1,29 +1,52 @@
-Print instructions for refreshing the Playwright browser session storage state.
+Ensure the browser session is authenticated for a given URL. Loads existing state, checks login status, waits for manual login if needed, then saves updated state.
+
+Argument: URL to authenticate (e.g. `https://manus.im`)
 
 ## What to do
 
-Tell the user to run this in a separate terminal:
+Run the following steps. The state file is `~/.browser-profiles/storage-state.json`.
+
+### 1. Load existing state (if any) and open the URL
 
 ```bash
-bash ~/.claude/scripts/save-browser-session.sh
+STATE_FILE=~/.browser-profiles/storage-state.json
+[ -f "$STATE_FILE" ] && agent-browser state load "$STATE_FILE"
+agent-browser --headed open "$URL"
+agent-browser wait --load networkidle
 ```
 
-Then explain the workflow:
-1. It launches kimi with a persistent (non-isolated) Playwright browser
-2. Tell kimi to open each site you need (e.g. "open https://github.com")
-3. Log in manually in the browser
-4. Ask kimi to save the storage state by running this code via `browser_run_code` (use the actual path printed by the script):
+### 2. Check if already authenticated
 
-```js
-async (page) => {
-  const context = page.context();
-  await context.storageState({ path: '<HOME>/.playwright-profiles/storage-state.json' });
-  return 'done';
-}
+Take a snapshot and inspect the page. Common signs of NOT being logged in:
+- URL contains `/login`, `/signin`, `/auth`, `/sso`
+- Page has login form elements (username/password fields, "Sign in" button)
+- Page shows "Log in", "Sign up", or similar prompts
+
+```bash
+agent-browser get url
+agent-browser snapshot -i
 ```
 
-Replace `<HOME>` with the actual home directory (e.g. `/Users/username` on macOS, `/home/username` on Linux).
+If the page looks authenticated (dashboard, profile, app content), skip to step 4.
 
-5. Exit kimi
+### 3. Wait for manual login
 
-All agents using `--isolated --storage-state` in `~/.mcp/default.json` will pick up the new sessions.
+Tell the user:
+> The browser is open at `$URL`. Please log in manually in the browser window. Let me know when you're done.
+
+After the user confirms, re-check:
+```bash
+agent-browser get url
+agent-browser snapshot -i
+```
+
+Verify the page now shows authenticated content. If still on a login page, tell the user and wait again.
+
+### 4. Save state and close
+
+```bash
+agent-browser state save ~/.browser-profiles/storage-state.json
+agent-browser close
+```
+
+Tell the user the session has been saved and will be available to all browser automation skills (website-debug, agent-browser, etc.).
