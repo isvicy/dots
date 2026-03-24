@@ -309,6 +309,11 @@ psops() {
   pass show age/identity | SOPS_AGE_KEY_FILE=/dev/stdin sops "$@"
 }
 
+_set_garage_env() {
+  export AWS_ACCESS_KEY_ID="$(pass show s3/garage/access-key)"
+  export AWS_SECRET_ACCESS_KEY="$(pass show s3/garage/secret-key)"
+}
+
 _decrypt_sops() {
   local src="$1"
   local tmp=$(mktemp)
