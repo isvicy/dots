@@ -380,6 +380,8 @@ yg() {
   rm -f "$cfg"
 }
 
+alias oo="opencode"
+
 function y() {
   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
   yazi "$@" --cwd-file="$tmp"
