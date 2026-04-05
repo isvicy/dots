@@ -141,6 +141,7 @@ bootstrap_darwin() {
     xcode-select --install
     info "Press enter after Xcode CLT installation completes."
     read -r
+    need_cmd git || err "git not available. Ensure Xcode CLT installation completed successfully."
   fi
 
   install_nix
