@@ -36,43 +36,45 @@ clone_if_missing() {
     git clone --recurse-submodules "git@github.com:${GITHUB_USERNAME}/${repo}.git" "$dest"
 }
 
-# ── SSH key setup ────────────────────────────────────────────────────────────
+# ── SSH connectivity ─────────────────────────────────────────────────────────
+# Test GitHub SSH access via `ssh -T`. This works with any SSH agent
+# (1Password, gpg-agent, ssh-agent, etc.) — no key files required.
 
-setup_ssh() {
-  if [[ -e ~/.ssh/id_ed25519 ]]; then
+ensure_github_ssh() {
+  info "Testing GitHub SSH access..."
+  if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
+    info "GitHub SSH access OK"
     return 0
   fi
 
-  mkdir -p ~/.ssh && chmod 700 ~/.ssh
-
-  # On WSL, try copying from Windows Downloads
-  if [[ "${OS}" == "Linux" ]] && grep -qi microsoft /proc/version 2>/dev/null; then
+  # If agent-based auth failed, try WSL key copy as fallback
+  if [[ "$OS" == "Linux" ]] && grep -qi microsoft /proc/version 2>/dev/null; then
+    info "Trying to copy SSH key from Windows..."
     local win_home downloads
     win_home="$(cd /mnt/c && cmd.exe /c "echo %HOMEDRIVE%%HOMEPATH%" 2>/dev/null | sed 's/\r$//')"
     downloads="$(wslpath "$win_home")/Downloads"
+    mkdir -p ~/.ssh && chmod 700 ~/.ssh
     if [[ -f "$downloads/id_ed25519" ]]; then
       install -m 600 "$downloads/id_ed25519" ~/.ssh/id_ed25519
-      info "Copied SSH key from Windows Downloads"
-      return 0
     elif [[ -f "$downloads/id_ed25519.txt" ]]; then
       install -m 600 "$downloads/id_ed25519.txt" ~/.ssh/id_ed25519
-      info "Copied SSH key from Windows Downloads"
-      return 0
+    fi
+    if [[ -f ~/.ssh/id_ed25519 ]]; then
+      eval "$(ssh-agent -s)"
+      ssh-add ~/.ssh/id_ed25519
+      if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
+        info "GitHub SSH access OK (via WSL key)"
+        return 0
+      fi
     fi
   fi
 
-  err "No SSH key found at ~/.ssh/id_ed25519. Please place your key there and retry."
-}
-
-setup_ssh_agent() {
-  if [[ -z "${SSH_AUTH_SOCK:-}" ]]; then
-    eval "$(ssh-agent -s)"
-  fi
-  ssh-add ~/.ssh/id_ed25519 2>/dev/null || true
-
-  if [[ ! -e ~/.ssh/id_ed25519.pub ]]; then
-    ssh-add -L > ~/.ssh/id_ed25519.pub 2>/dev/null || true
-  fi
+  err "Cannot authenticate to GitHub via SSH.
+  Ensure one of:
+    - 1Password SSH agent is configured (macOS)
+    - ssh-agent has your key loaded
+    - ~/.ssh/id_ed25519 exists
+  Then retry."
 }
 
 # ── Platform prerequisites ───────────────────────────────────────────────────
@@ -80,7 +82,7 @@ setup_ssh_agent() {
 install_nix() {
   need_cmd nix && return 0
   info "Installing Nix..."
-  curl -fsSL https://nixos.org/nix/install | sh -s -- --daemon --yes
+  sh <(curl --proto '=https' --tlsv1.2 -sSfL https://nixos.org/nix/install) --daemon --yes
   # Source nix in current shell
   if [[ -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
     . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
@@ -100,7 +102,7 @@ install_just() {
   if need_cmd brew; then
     brew install just
   elif need_cmd nix; then
-    nix profile install nixpkgs#just
+    nix profile install nixpkgs#just --extra-experimental-features 'nix-command flakes'
   else
     err "Cannot install just: neither brew nor nix available"
   fi
@@ -121,7 +123,8 @@ apply_stow() {
     if [[ "$OS" == "Darwin" ]]; then
       brew install stow
     else
-      sudo apt-get install -y stow 2>/dev/null || nix profile install nixpkgs#stow
+      sudo apt-get install -y stow 2>/dev/null || \
+        nix profile install nixpkgs#stow --extra-experimental-features 'nix-command flakes'
     fi
   }
   cd "$DOTS_REPO" && make link
@@ -169,10 +172,12 @@ bootstrap_linux() {
   install_nix
   clone_repos
   apply_stow
-  install_just
 
   info "Activating home-manager..."
-  cd "$NIX_REPO" && just home
+  cd "$NIX_REPO"
+  # On first run, home-manager isn't on PATH yet — use nix run to bootstrap
+  nix run home-manager/release-25.11 -- switch --flake . \
+    --extra-experimental-features 'nix-command flakes'
 }
 
 # ── Main ─────────────────────────────────────────────────────────────────────
@@ -182,8 +187,7 @@ main() {
     err "Please run as non-root."
   fi
 
-  setup_ssh
-  setup_ssh_agent
+  ensure_github_ssh
 
   case "$OS" in
     Darwin)
