@@ -1,10 +1,10 @@
 #!/bin/bash
 
-curl "${OPENAI_API_BASE}/chat/completions" \
-	-H "Content-Type: application/json" \
-	-H "Authorization: Bearer ${OPENAI_API_KEY}" \
-	-d '{
-    "model": "gpt-4.1",
+curl "https://api.$(pass show work/domain-base)/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $(pass show work/staff-key)" \
+  -d '{
+    "model": "opensource-gpt-oss-20b-chat",
     "stream": true,
     "messages": [
       {
