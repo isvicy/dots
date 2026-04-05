@@ -18,6 +18,7 @@ ensureTargetDir "${HOME}/.local/share"
 ensureTargetDir "${HOME}/.mcp"
 ensureTargetDir "${HOME}/.claude"
 ensureTargetDir "${HOME}/.kimi"
+ensureTargetDir "${HOME}/.agents/skills"
 
 # Run stow in simulation mode to detect conflicts
 # use uniq to remove duplicates cause stow will output the confilcts info multiple times
