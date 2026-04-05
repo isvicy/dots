@@ -42,7 +42,9 @@ clone_if_missing() {
 
 ensure_github_ssh() {
   info "Testing GitHub SSH access..."
-  if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
+  local ssh_output
+  ssh_output="$(ssh -T git@github.com 2>&1 || true)"
+  if echo "$ssh_output" | grep -q "successfully authenticated"; then
     info "GitHub SSH access OK"
     return 0
   fi
@@ -62,7 +64,8 @@ ensure_github_ssh() {
     if [[ -f ~/.ssh/id_ed25519 ]]; then
       eval "$(ssh-agent -s)"
       ssh-add ~/.ssh/id_ed25519
-      if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
+      ssh_output="$(ssh -T git@github.com 2>&1 || true)"
+      if echo "$ssh_output" | grep -q "successfully authenticated"; then
         info "GitHub SSH access OK (via WSL key)"
         return 0
       fi
