@@ -16,24 +16,6 @@ gft() {
 alias setp="export ALL_PROXY=http://127.0.0.1:7890; export HTTP_PROXY=http://127.0.0.1:7890; export HTTPS_PROXY=http://127.0.0.1:7890; export no_proxy='localhost,127.0.0.1,msh.team,msh.work,launchpad,svc,ivolces.com,aliyuncs.com,ksyun.cn,volces.com,aliyun.com,goproxy.cn'"
 alias usetp="unset ALL_PROXY; unset HTTP_PROXY; unset HTTPS_PROXY; unset all_proxy; unset http_proxy; unset https_proxy"
 alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"
-fly() {
-  if [[ "$*" == *"?"* ]] || [[ "$*" == *"#"* ]] || [[ "$*" == *"*"* ]]; then
-    # Use noglob only when command contains special characters
-    proxychains4 -q -f "${HOME}"/.config/proxychains/fly.conf zsh -ic "noglob $*"
-  else
-    # Normal command without special characters, allow alias expansion
-    proxychains4 -q -f "${HOME}"/.config/proxychains/fly.conf zsh -ic "$*"
-  fi
-}
-work() {
-  if [[ "$*" == *"?"* ]] || [[ "$*" == *"#"* ]] || [[ "$*" == *"*"* ]]; then
-    # Use noglob only when command contains special characters
-    proxychains4 -q -f "${HOME}"/.config/proxychains/work.conf zsh -ic "noglob $*"
-  else
-    # Normal command without special characters, allow alias expansion
-    proxychains4 -q -f "${HOME}"/.config/proxychains/work.conf zsh -ic "$*"
-  fi
-}
 # kube
 # manage multiple kubeconfig
 if [ -d ~/.kube ]; then
