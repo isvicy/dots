@@ -1,7 +1,7 @@
 ---
 name: track
 description: Manage multi-repo feature specs. Track what's being built across repo groups, keep specs updated, and let multiple agents stay aligned. Use when user says /track or when starting/finishing feature work.
-argument-hint: "[new|switch|update|read|list|done|reindex] [N|name|all] [feature-name]"
+argument-hint: "[new|switch|update|read|list|done|archive|unarchive|reindex] [N|name|all|archived] [feature-name]"
 user-invocable: true
 ---
 
@@ -49,7 +49,7 @@ groups:
     └── spec.md
 ```
 
-`.index.json` is a JSON array of feature summaries, rebuilt on every mutation (`new`, `update`, `done`). It enables `/track list` to read one file instead of scanning all directories. If missing or suspected stale, any subcommand should rebuild it by scanning all `*/spec.md` files.
+`.index.json` is a JSON array of feature summaries, rebuilt on every mutation (`new`, `update`, `done`, `archive`, `unarchive`). It enables `/track list` to read one file instead of scanning all directories. If missing or suspected stale, any subcommand should rebuild it by scanning all `*/spec.md` files.
 
 ## Feature Index (`.index.json`)
 
@@ -76,7 +76,7 @@ Fields mirror frontmatter plus `name` (directory name) and `repos` (flattened to
 
 **Rebuild logic**: List all directories in `~/.agents/.features/` that contain `spec.md`. For each, parse frontmatter. Build the array. Sort by `updated` desc. Write to `.index.json`.
 
-**When to rebuild**: after `new`, `update`, `done`. Also rebuild if `.index.json` is missing when any subcommand runs.
+**When to rebuild**: after `new`, `update`, `done`, `archive`, `unarchive`. Also rebuild if `.index.json` is missing when any subcommand runs.
 
 **Partial update**: For efficiency, subcommands may patch a single entry in the array rather than full-rebuilding. But full-rebuild is always acceptable and preferred when uncertain about the current state.
 
@@ -131,7 +131,7 @@ repos:
 
 - `group`: which repo group this feature belongs to
 - `branch`: shared branch name across all repos
-- `status`: `in-progress` or `finished`. Set to `in-progress` on creation, `finished` by `/track done`.
+- `status`: `in-progress`, `finished`, or `archived`. Set to `in-progress` on creation, `finished` by `/track done`, `archived` by `/track archive`.
 - `description`: one-line summary of the feature (max ~80 chars). Auto-generated from the Overview section during `/track update`. Can be manually overridden.
 - `created`: date the feature was started (YYYY-MM-DD)
 - `updated`: date the spec was last modified (YYYY-MM-DD)
@@ -150,13 +150,19 @@ Defaults to `/track list`. See below.
 
 **`/track list`** (default — also invoked by `/track` with no args):
 - Filter to **current group only**.
+- Exclude `archived` features.
 - Show all `in-progress` features. If fewer than 10, fill remaining slots with most recent `finished` features from the same group.
 - Sort: in-progress first (by `updated` desc), then finished (by `updated` desc).
 - Cap at 10.
 
 **`/track list all`**:
-- All groups, all statuses.
+- All groups, all statuses **except `archived`**.
 - Ordered by `updated` desc, no cap.
+
+**`/track list archived`**:
+- Show only `archived` features from **current group**.
+- Ordered by `updated` desc, no cap.
+- Use this to find archived features by name for `/track unarchive` or `/track switch`.
 
 Output format:
 
@@ -334,6 +340,64 @@ No summarization — always print the full spec.
 
 **Do NOT append to `finished_features.md`** — it is a legacy archive retained for historical reference only.
 
+### `/track archive [N|name]` — Archive Feature
+
+Soft-delete a feature. Archived features are hidden from all lists (`/track list`, `/track list all`) but remain on disk. Use this when exploring multiple design approaches — archive the ones not chosen, keep the one you want.
+
+1. **Resolve the target feature:**
+   - No argument: detect from current branch (see Context Detection). If no match, error.
+   - Number N: resolve from `.index.json` (same sort as `/track list` for current group).
+   - String name: resolve directly.
+   - If the feature is already archived: print "Already archived." and stop.
+2. Set `status: archived` in frontmatter. Update `updated` date to today.
+3. Write updated spec back.
+4. **Update index**: find entry by name, set `status: archived`, update `updated`. Write back.
+5. **Remove worktrees**: For each repo in the feature's frontmatter, remove its worktree:
+   ```bash
+   cd <bare-repo-path>
+   git worktree remove <worktree-path>
+   ```
+   - If the worktree is the **current working directory**, warn and skip: "Skipped removing worktree `<path>` — it is the current directory. Remove manually after switching."
+   - If the worktree has **uncommitted changes**, `git worktree remove` will fail. In that case, print a warning: "Worktree `<path>` has uncommitted changes — skipped. Force with `git worktree remove --force <path>` if safe."
+   - If the worktree is already gone (path doesn't exist), skip silently.
+6. **Delete branches**: After worktrees are removed, delete the feature branch in each repo:
+   ```bash
+   cd <bare-repo-path>
+   git branch -d <branch>
+   ```
+   - Use `-d` (safe delete) — it will refuse if the branch has unmerged commits. In that case, print a warning: "Branch `<branch>` in `<repo>` has unmerged commits — skipped. Force with `git branch -D <branch>` if safe."
+   - If the branch is the current branch in any worktree (e.g., `main` worktree checked out to it), skip with a warning.
+   - If the branch doesn't exist, skip silently.
+   - Do NOT delete remote branches — only local.
+7. Feature directory stays intact (spec is the archival record).
+8. Print confirmation:
+   ```
+   Archived: search-v2-experiment (group: darkmatter)
+   Spec retained at ~/.agents/.features/search-v2-experiment/spec.md
+   Removed worktrees and branches: backend, proto, frontend
+   Use `/track list archived` to see archived features.
+   To restore: `/track unarchive <name>`
+   ```
+
+### `/track unarchive <name>` — Restore Archived Feature
+
+Restore an archived feature back to `in-progress`, recreating worktrees.
+
+1. Look up `~/.agents/.features/<name>/spec.md`. If not found: "Feature `<name>` not found."
+2. If status is not `archived`: "Feature `<name>` is not archived (status: {status})." and stop.
+3. **Recreate worktrees** for each repo in the frontmatter, using the same logic as `/track new` step 4:
+   - If the branch already has a worktree → record existing path
+   - If the branch exists but has no worktree → `git worktree add <worktree-path> <branch>`
+   - If the branch doesn't exist locally but exists on remote → `git worktree add -b <branch> <worktree-path> origin/<branch>`
+   - If the branch is gone both locally and remotely → create from default branch: `git worktree add -b <branch> <worktree-path> <default_branch>`
+   - Update worktree paths in frontmatter if they changed.
+4. Set `status: in-progress` in frontmatter. Update `updated` date to today.
+5. Write updated spec back.
+6. **Update index**: find entry by name, set `status: in-progress`, update `updated`. Write back.
+7. Print worktree paths + confirmation: "Restored: <name> (status: in-progress)"
+
+Note: `/track unarchive` requires an explicit feature name — no N-based resolution since archived features are not numbered in regular lists. Use `/track list archived` to find the name.
+
 ### `/track reindex` — Rebuild Feature Index
 
 Rebuild `.index.json` from scratch by scanning all `*/spec.md` files in `~/.agents/.features/`.
@@ -344,7 +408,7 @@ Rebuild `.index.json` from scratch by scanning all `*/spec.md` files in `~/.agen
 4. For specs **missing `description`**: leave empty (will be populated on next `/track update`).
 5. For specs **missing `created`**: use the `updated` date as a fallback. Write it back into frontmatter.
 6. Sort by `updated` desc. Write `.index.json`.
-7. Print: "Rebuilt index: N features (M in-progress, K finished)."
+7. Print: "Rebuilt index: N features (M in-progress, K finished, J archived)."
 
 ## Design Reference Workflow
 
@@ -379,6 +443,7 @@ On first access after updating to v2:
 
 ## Important
 
+- NEVER read an archieved feature's spec, archieved feature are failed experiments that should not be used as reference for new work.
 - `~/.agents/.features/` is global — works from any repo, any worktree
 - Same branch name across all repos in a group
 - Feature names: lowercase-hyphenated
