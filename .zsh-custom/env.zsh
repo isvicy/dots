@@ -35,3 +35,5 @@ fi
 
 export SHELL=$(which zsh)
 export GPG_TTY=$TTY
+
+[[ -s /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh ]] && source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh || true
