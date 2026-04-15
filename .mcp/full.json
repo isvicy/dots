@@ -14,6 +14,20 @@
         "server.py"
       ],
       "env": {}
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--browser=chrome",
+        "--headless",
+        "--isolated",
+        "--viewport-size=1920,1080",
+        "--storage-state=${HOME}/.playwright-profiles/storage-state.json"
+      ],
+      "env": {}
     }
   }
 }
