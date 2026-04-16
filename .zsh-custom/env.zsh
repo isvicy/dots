@@ -37,3 +37,9 @@ export SHELL=$(which zsh)
 export GPG_TTY=$TTY
 
 [[ -s /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh ]] && source /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh || true
+
+# enable claude code full screen render mode by default
+export CLAUDE_CODE_NO_FLICKER=1
+
+export AGENT_BROWSER_IDLE_TIMEOUT_MS=600000
+export AGENT_BROWSER_DEFAULT_TIMEOUT=60000
