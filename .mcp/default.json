@@ -3,6 +3,29 @@
     "context7": {
       "type": "http",
       "url": "https://mcp.context7.com/mcp"
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--browser=chrome",
+        "--headless",
+        "--isolated",
+        "--viewport-size=1920,1080",
+        "--storage-state=${HOME}/.playwright-profiles/storage-state.json",
+        "--caps=vision,pdf",
+        "--save-session",
+        "--output-dir=${HOME}/.pwmcp",
+        "--console-level=info",
+        "--image-responses=omit",
+        "--block-service-workers",
+        "--timeout-action=15000",
+        "--timeout-navigation=90000",
+        "--init-script=${HOME}/.pwmcp/init.js"
+      ],
+      "env": {}
     }
   }
 }
