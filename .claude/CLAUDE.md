@@ -3,6 +3,10 @@
 - **Tools**: Use rg not grep, fd not find, tree is installed
 - **Style**: Prefer self-documenting code over comments, and as of comments, you should make sure it's necessary for
   senior developers, don't add comments for obvious things.
+- **Security**: Prohibited from directly outputting sensitive information, including but not limited to environment
+  variables and configuration file content that contain sensitive material.
+- **Context management**: When asked to perform tasks such as research or exploration, always delegate to a sub-agent
+  rather than doing it directly.
 
 ## Git Conventions Section
 
