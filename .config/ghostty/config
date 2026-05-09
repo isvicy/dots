@@ -3,8 +3,6 @@ macos-titlebar-proxy-icon = hidden
 macos-titlebar-style = hidden
 window-decoration = true
 
-theme = onenord
-
 custom-shader-animation = true
 custom-shader = "shaders/tesla_coil.glsl"
 custom-shader = "shaders/glow.glsl"
@@ -13,10 +11,11 @@ custom-shader = "shaders/glow.glsl"
 # cursor-style-blink = true
 # adjust-cursor-height = 20%
 
+theme = Batman
 
 mouse-hide-while-typing = true
 
-font-size = 14
+font-size = 16
 font-family = "Agave Nerd Font"
 font-family-italic = "Cascadia Code NF"
 font-variation-italic = "wght=800"
