@@ -378,3 +378,18 @@ alias twg='cd "$(twiggle --icons)"'
 killport() {
   kill -9 "$(lsof -ti:"$1")"
 }
+
+# Tag every node_modules under the given roots (default ~/repos) with a
+# `.metadata_never_index` sentinel so Spotlight skips the whole subtree.
+# `npm install` recreates node_modules without it, so re-run after big installs.
+mdignore() {
+  local roots=("${@:-$HOME/repos}") root n=0 d
+  for root in "${roots[@]}"; do
+    [[ -d $root ]] || { print -u2 "mdignore: not a directory: $root"; continue; }
+    while IFS= read -r d; do
+      touch -- "$d/.metadata_never_index" && (( n++ ))
+    done < <(find "$root" -type d -name node_modules -prune -print)
+  done
+  print "mdignore: tagged $n node_modules dir(s) under ${roots[*]}"
+  print "  run 'sudo mdutil -E /' to make Spotlight drop them from the index now"
+}
