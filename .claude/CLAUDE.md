@@ -7,6 +7,9 @@
   variables and configuration file content that contain sensitive material.
 - **Context management**: When asked to perform tasks such as research or exploration, always delegate to a sub-agent
   rather than doing it directly.
+- **When to consult a human**: whenever any design-related action is involved, be it architectural design changes or
+  UI/UX design changes, always seek human input and obtain approval before proceeding with the design change.
+- **Response style**: Provide concise, focused responses. Skip non-essential context, and keep examples minimal.
 
 ## Git Conventions Section
 
