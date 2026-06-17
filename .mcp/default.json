@@ -1,9 +1,5 @@
 {
   "mcpServers": {
-    "context7": {
-      "type": "http",
-      "url": "https://mcp.context7.com/mcp"
-    },
     "playwright": {
       "type": "stdio",
       "command": "npx",
@@ -26,6 +22,18 @@
         "--init-script=${HOME}/.pwmcp/init.js"
       ],
       "env": {}
+    },
+    "peekaboo": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "--package=@steipete/peekaboo",
+        "peekaboo-mcp"
+      ],
+      "env": {
+        "PEEKABOO_BRIDGE_SOCKET": "${HOME}/Library/Application Support/Peekaboo/bridge.sock"
+      }
     }
   }
 }

@@ -84,3 +84,8 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 [[ -s ${HOME}/.${(%):-%m}.zsh ]] && source ${HOME}/.${(%):-%m}.zsh || true
 
 [[ -s ${HOME}/.zsh-custom/post.zsh ]] && source ${HOME}/.zsh-custom/post.zsh || true
+
+[ -r ~/.gyro/.profile ] && source ~/.gyro/.profile #[gyro installer]
+
+# kimi-code
+export PATH="/Users/moonshot/.kimi-code/bin:$PATH"

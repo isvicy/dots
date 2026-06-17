@@ -379,6 +379,20 @@ killport() {
   kill -9 "$(lsof -ti:"$1")"
 }
 
+# Debug Chrome that agent-browser drives over CDP (port 9222) with the user's
+# login state but WITHOUT the per-connection "Allow remote debugging?" popup.
+# Backed by the share-chrome-profiles skill.
+chrome-debug() {
+  local s="$HOME/.claude/skills/share-chrome-profiles/scripts"
+  case "$1" in
+    sync)      shift; "$s/sync-profile.sh" "$@" ;;
+    ''|up)     "$s/launch-debug-chrome.sh" ;;
+    headless)  "$s/launch-debug-chrome.sh" --headless ;;   # no window → never steals focus
+    personal)  "$s/launch-personal-chrome.sh" ;;            # your real Chrome, agent ignores it
+    *)         print -u2 "usage: chrome-debug [up|headless|personal|sync [--with-indexeddb|--force]]"; return 2 ;;
+  esac
+}
+
 # Tag every node_modules under the given roots (default ~/repos) with a
 # `.metadata_never_index` sentinel so Spotlight skips the whole subtree.
 # `npm install` recreates node_modules without it, so re-run after big installs.
