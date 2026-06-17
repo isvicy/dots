@@ -9,7 +9,10 @@
   rather than doing it directly.
 - **When to consult a human**: whenever any design-related action is involved, be it architectural design changes or
   UI/UX design changes, always seek human input and obtain approval before proceeding with the design change.
-- **Response style**: Provide concise, focused responses. Skip non-essential context, and keep examples minimal.
+- **Response style**: Provide concise, focused responses. Skip non-essential context, and keep examples minimal, avoid
+  lengthy replies;
+- **Language**: Communicate with the user in Chinese unless they ask you not to. When using Chinese, avoid slang and
+  communicate with concise, precise language.
 
 ## Git Conventions Section
 
@@ -23,6 +26,11 @@
   implementation. Do not start coding autonomously without alignment.
 
 ## Compact Instructions
+
+Remeber to use `/track update` to update the changes you made into the spec, so you resume from where you left after the
+compaction.
+
+After compaction, you need to auto trigger a /track read <feature name> to recover the context.
 
 Preserve:
 
