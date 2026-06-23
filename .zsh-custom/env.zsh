@@ -48,3 +48,6 @@ export AGENT_BROWSER_DEFAULT_TIMEOUT=60000
 export STAFF_KEY=$(pass show work/staff-key)
 export KOKUB_API_KEY=$(pass show work/kth/key/vb)
 export KIMI_CODE_EXPERIMENTAL_FLAG=1
+
+export ANTHROPIC_BASE_URL=$(pass show work/domains/kth)
+export ANTHROPIC_AUTH_TOKEN=$KOKUB_API_KEY
