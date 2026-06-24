@@ -51,6 +51,3 @@ export AGENT_BROWSER_DEFAULT_TIMEOUT=60000
 export STAFF_KEY=$(pass show w/staff-key)
 export KT_API_KEY=$(pass show w/kth/key/vb)
 export KIMI_CODE_EXPERIMENTAL_FLAG=1
-
-export ANTHROPIC_BASE_URL=$(pass show w/domains/kth)
-export ANTHROPIC_AUTH_TOKEN=$KT_API_KEY
