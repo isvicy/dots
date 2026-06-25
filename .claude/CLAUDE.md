@@ -11,8 +11,6 @@
   UI/UX design changes, always seek human input and obtain approval before proceeding with the design change.
 - **Response style**: Provide concise, focused responses. Skip non-essential context, and keep examples minimal, avoid
   lengthy replies;
-- **Language**: Communicate with the user in Chinese unless they ask you not to. When using Chinese, avoid slang and
-  communicate with concise, precise language.
 
 ## Git Conventions Section
 
@@ -27,8 +25,8 @@
 
 ## Compact Instructions
 
-Remeber to use `/track update` to update the changes you made into the spec, so you resume from where you left after the
-compaction.
+Remember to use `/track update` to update the changes you made into the spec, so you resume from where you left after
+the compaction.
 
 After compaction, you need to auto trigger a /track read <feature name> to recover the context.
 
@@ -37,4 +35,4 @@ Preserve:
 1. Architecture decisions (NEVER summarize)
 2. Modified files and key changes
 3. Current verification status (pass/fail commands)
-4. Open risks, TODOs, rollback notes
+4. Open risks, TODO, rollback notes
