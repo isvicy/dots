@@ -21,11 +21,7 @@
       "args": [
         "-y",
         "@playwright/mcp@latest",
-        "--browser=chrome",
-        "--headless",
-        "--isolated",
-        "--viewport-size=1920,1080",
-        "--storage-state=${HOME}/.playwright-profiles/storage-state.json",
+        "--cdp-endpoint=http://localhost:9222",
         "--caps=vision,pdf",
         "--save-session",
         "--output-dir=${HOME}/.pwmcp",
