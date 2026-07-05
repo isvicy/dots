@@ -8,3 +8,6 @@ bind generic T >sh -c "printf '%s' %(tag) | osc"
 
 # copy commit message with osc
 bind generic <Ctrl-T> >sh -c "git log -1 --pretty=%B %(commit) | tr -d '\n' | osc"
+
+# hide jj's internal refs/jj/* labels that otherwise clutter every commit in a colocated jj repo
+set reference-format = hide:other
