@@ -30,8 +30,10 @@ Recovery for a fresh agent = **Current State + the most recent few sessions**, n
 ```yaml
 repos:
   backend:
-    bare: ~/repos/team/backend.git
+    bare: ~/repos/team/backend.git       # git bare — kept for READING existing git features
     default_branch: main
+    vcs: jj                              # new features in this repo are jj-native (omit ⇒ git)
+    jj_repo: ~/repos/team/backend.jj      # dedicated jj clone, separate from the bare
   proto:
     bare: ~/repos/team/proto.git
     default_branch: main
@@ -45,8 +47,34 @@ groups:
     primary: backend
 ```
 
-`repos`: flat registry of short names → bare repo paths + default branch.
+`repos`: flat registry of short names → **git bare** paths + default branch. `bare` stays even for jj repos — it is how legacy git features remain readable.
 `groups`: which repos move together. `primary` is the main repo in the group.
+`vcs` (per repo, optional): `jj` makes **new** features in that repo jj-native. Omitted ⇒ `git`.
+`jj_repo` (per repo, required when `vcs: jj`): path to the repo's **dedicated jj clone** (see below).
+
+## VCS Backends — git (legacy read-compat) · jj (default for new work)
+
+Feature specs are VCS-agnostic; only the physical working dirs differ. Each feature records its backend as **`vcs: git | jj`** in frontmatter + index — **absent ⇒ `git`** (every pre-existing feature; no migration needed). New features on a `vcs: jj` repo are created jj-native.
+
+- **git** (legacy): existing features backed by `git worktree` under the bare repo. Still fully supported for `read`/`list`/`switch`/`update`/`done`/`archive` so history stays accessible. Once a repo is `vcs: jj`, **no new git features are created**.
+- **jj** (default going forward): a feature = a **`jj workspace`** in the repo's **dedicated jj clone** (`jj_repo`) — a *separate*, non-colocated clone, never the git bare, so the two never share refs.
+
+**jj clone layout** (mirrors the bare + worktrees layout):
+```
+<jj_repo>/                     e.g. ~/repos/moonshot/kimi-darkmatter.jj   (made via: jj git clone <gitlab-url> <jj_repo>/main)
+├── main/     ← the `default` workspace: holds the store, tracks the `main` bookmark, git-colocated
+└── <feat>/   ← one jj workspace per feature (jj-only dir, no .git), from `jj workspace add`
+```
+`main/` is the primary/`default` workspace — its `.jj/repo` is the shared store that sibling workspaces point at, so **don't delete it**. Elsewhere, `main` means the **bookmark** (git branch), not a workspace.
+
+**jj conventions this skill uses** (jj ≥0.41 spellings — older tutorials are wrong):
+- Branchless locally; a **bookmark** is attached only at push (`jj bookmark`, *not* `jj branch` — removed v0.30).
+- `trunk()` = the remote main branch; base features off it.
+- Rollback = `jj undo` (last op) / `jj op restore <op-id>` (whole repo to a point). Slice a fat change = `jj split <path> -m "…"`. Re-base after trunk advances = `jj rebase -s 'all:roots(trunk()..@)' -o 'trunk()'` (`-o/--onto`, `all:` for multi-rev).
+- Push / MR: `jj -R <ws> bookmark set <feat> -r @ && jj -R <ws> git push -b <feat>` (auto-tracks; no `--allow-new`). Open an MR with push options: `jj -R <ws> git push -c @ -o merge_request.create -o merge_request.target=main -o merge_request.title="…"`. jj refuses to push a change that has no description.
+- LFS: jj clones don't fetch LFS; run `git lfs pull` in `<jj_repo>/main` before builds needing image assets.
+
+**Feature working loop (jj):** lay the plan as a stack of empty changes (`jj new -m "<step: acceptance criteria>"`), fill each via `jj edit <change>` (descendants auto-rebase), and read progress as the still-empty steps: `jj -R <ws> log -r '(roots(trunk()..@)::) & empty()'`.
 
 ## Directory Layout
 
@@ -83,6 +111,7 @@ A JSON array kept in sync by every mutating subcommand:
     "status": "in-progress",
     "description": "OAuth2 + session-token auth middleware",
     "branch": "auth-refactor",
+    "vcs": "jj",
     "repos": ["backend", "proto", "frontend"],
     "layout": "v2",
     "created": "2026-04-04",
@@ -91,7 +120,7 @@ A JSON array kept in sync by every mutating subcommand:
 ]
 ```
 
-Fields mirror frontmatter plus `name` (directory name), `repos` (flattened to a name list), and `layout` (`"v2"` if `sessions/` exists, else `"legacy"`).
+Fields mirror frontmatter plus `name` (directory name), `vcs` (`git`|`jj`; absent-in-frontmatter ⇒ `git`), `repos` (flattened to a name list), and `layout` (`"v2"` if `sessions/` exists, else `"legacy"`).
 
 **`description` source**: the frontmatter `description` (≤80 chars). For v2 specs this is the first line / one-liner of `## Current State`. NEVER the full rolling digest — that bloat is exactly what v2 removes.
 
@@ -101,17 +130,24 @@ Fields mirror frontmatter plus `name` (directory name), `repos` (flattened to a 
 
 ## Context Detection
 
-**Every subcommand** starts by detecting the current group:
+**Every subcommand** starts by detecting the current repo, group, and feature. The working dir is either a **git worktree** (`.git` present) or a **jj workspace** (`.jj` only, no `.git`):
 
 ```bash
-GIT_COMMON_DIR="$(git rev-parse --git-common-dir)"  # bare repo path
-BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-WORKTREE="$(git rev-parse --show-toplevel)"
+if GIT_COMMON_DIR="$(git rev-parse --git-common-dir 2>/dev/null)"; then
+  # GIT context: match GIT_COMMON_DIR against repos[*].bare → repo short name → group
+  BRANCH="$(git rev-parse --abbrev-ref HEAD)"        # feature key for git features
+  WORKTREE="$(git rev-parse --show-toplevel)"
+else
+  # JJ context: inside a jj workspace (no .git)
+  JJ_ROOT="$(jj root 2>/dev/null)"                    # e.g. <jj_repo>/<feat>
+  # repo   = match dirname("$JJ_ROOT") against repos[*].jj_repo
+  # FEATURE = basename("$JJ_ROOT")   (basename == "main" ⇒ default workspace = on trunk, no feature)
+fi
 ```
 
-Match `GIT_COMMON_DIR` against config `repos[*].bare` (expand `~`) to find the repo short name, then look up its group → `$GROUP`.
+Match against config to find the repo short name, then its group → `$GROUP`. The **feature key** is `$BRANCH` under git, or the workspace dir name (`basename $JJ_ROOT`) under jj.
 
-**Resolving group repos**: read `groups[$GROUP].repos` from `.config.yaml` for the repo short names; for each read `repos[<name>]` for its `bare` (or `path`) and `default_branch`. This is how `/track new` knows which repos to create worktrees for and how `/track update` knows which worktrees to gather git context from.
+**Resolving group repos**: read `groups[$GROUP].repos`; for each read `repos[<name>]` for its `bare`/`path`, `default_branch`, and (if present) `vcs: jj` + `jj_repo`. This tells `/track new` which repos are jj-native (create a `jj workspace`) vs git (create a `git worktree`), and tells `/track update`/`archive` where each feature's working dir is.
 
 **Auto-onboarding** (repo not in config): if `GIT_COMMON_DIR` doesn't match any config entry, auto-detect and offer to register. See `/track new` step 2.
 
@@ -122,7 +158,7 @@ REMOTE_URL="$(git remote get-url origin 2>/dev/null)" # derive short name from l
 ```
 Short name: derive from the bare repo directory name or remote URL last segment (`backend.git` → `backend`).
 
-**Active feature detection**: read `.index.json`, find the entry where `group` matches `$GROUP` AND `branch` matches `$BRANCH` (0 or 1 match). This is the "you are here" feature — used by `/track update`, `/track read` (no args), `/track done` (no args), `/track compact`, and the `>` marker in `/track list`.
+**Active feature detection**: read `.index.json`, find the entry where `group` matches `$GROUP` AND the feature key matches — git: `branch` == `$BRANCH`; jj: `name` == the workspace dir name (0 or 1 match). This is the "you are here" feature — used by `/track update`, `/track read` (no args), `/track done` (no args), `/track compact`, and the `>` marker in `/track list`.
 
 `FEATURES_DIR` is always `~/.agents/.features`. `FEATURE_DIR` = `$FEATURES_DIR/<name>`.
 
@@ -131,25 +167,25 @@ Short name: derive from the bare repo directory name or remote URL last segment 
 ```yaml
 ---
 group: main
-branch: dev-cc
+branch: dev-cc                 # git: shared branch · jj: feature/workspace name (+ push bookmark)
+vcs: jj                        # git | jj  (absent ⇒ git, i.e. legacy features)
 status: in-progress
 description: "Full-stack website workflow: version routing + FUSE screenshots"
 created: 2026-03-25
 updated: 2026-03-30
 repos:
   backend:
-    worktree: /home/user/repos/team/backend.git/dev
-  proto:
-    worktree: /home/user/repos/team/proto.git/dev
+    worktree: /home/user/repos/team/backend.jj/dev-cc   # jj workspace dir (git worktree dir when vcs: git)
 ---
 ```
 
 - `group`: repo group this feature belongs to
-- `branch`: shared branch name across all repos
+- `branch`: git = shared branch name across all repos; jj = the feature/workspace name (also the bookmark set at push)
+- `vcs`: `git` or `jj`; **absent ⇒ git**. Selects the backend for this feature's physical (workspace/worktree) ops
 - `status`: `in-progress`, `finished`, or `archived`
 - `description`: **one line, ≤80 chars.** The feature's elevator pitch / current focus. Derived from `## Current State`. Do NOT stuff a rolling session digest here.
 - `created` / `updated`: YYYY-MM-DD
-- `repos`: absolute worktree paths per repo
+- `repos`: absolute working-dir path per repo (`worktree:` holds a git worktree dir, or a jj workspace dir when `vcs: jj`)
 
 ## Spec Structure (v2)
 
@@ -289,12 +325,33 @@ Defaults to `/track list`.
    5. **New group**: ask group name and `primary`. Create with all discovered repos.
    6. Write `.config.yaml`. Proceed to step 3.
 
-3. **Branch strategy** — ask: "Create new branch or reuse current `<branch>`?" If new: ask base (default: repo's `default_branch`). The **same branch name** across ALL repos in the group.
-4. **Create worktrees** for each repo:
-   - branch already has a worktree → record path
-   - branch exists, no worktree → `git worktree add <branch> <branch>`
-   - branch doesn't exist → `git worktree add -b <branch> <branch> <default_branch>`
-   - Worktree dir name = branch name (unless reusing existing like `dev/` for `dev-cc`)
+3. **Backend** — new features are **jj** on any repo with `vcs: jj` (the default going forward); set the feature's `vcs: jj`. Repos without `vcs: jj` use the legacy git path (bottom of step 4).
+4. **Create the working dir** for each repo in the group:
+
+   **jj repos** (`repos[r].vcs == jj`) — a workspace off `trunk()` in the dedicated clone:
+   ```bash
+   jj -R <jj_repo>/main workspace add --name <feat> -r 'trunk()' <jj_repo>/<feat>
+   ```
+   - `<feat>` = the feature name (plain, no prefix). Record `<jj_repo>/<feat>` as this repo's `worktree` in frontmatter.
+   - Work is branchless; a bookmark named `<feat>` is created only at push / `/track done`.
+   - No same-name guardrail needed — the jj clone shares no refs with the git bare.
+   - **Share memory** — a jj workspace has no `.git`, so Claude Code keys its memory by the workspace path and would start blank. Symlink it to the repo's shared memory (the git `bare`'s `memory/`) so prior learnings carry over. `$BARE` = `repos[r].bare`, `$WSDIR` = `<jj_repo>/<feat>` (absolute; expand `~`):
+     ```bash
+     key() { printf '%s' "$1" | sed 's#[/.]#-#g'; }               # abs path → Claude Code project key
+     SHARED=~/.claude/projects/$(key "$BARE")/memory
+     WS=~/.claude/projects/$(key "$WSDIR"); mkdir -p "$WS"
+     { [ ! -e "$WS/memory" ] || [ -L "$WS/memory" ]; } && ln -sfn "$SHARED" "$WS/memory"
+     ```
+
+   **jj skeleton plan (default on)** — if the feature has a known plan (steps you/the user laid out), materialize it as a stack of empty jj changes; this *is* the jj-native plan and `/track update` reads progress from it:
+   ```bash
+   jj -R <jj_repo>/<feat> describe -m "step 1: <acceptance criteria>"   # names the fresh empty @ (avoids a stray empty change)
+   jj -R <jj_repo>/<feat> new      -m "step 2: <acceptance criteria>"
+   jj -R <jj_repo>/<feat> new      -m "step 3: <acceptance criteria>"
+   ```
+   The agent fills each via `jj edit <change>` (descendants auto-rebase). No plan yet ⇒ skip; lay it later.
+
+   **legacy git repos** (no `vcs: jj`) — ask branch strategy (new vs reuse `<branch>`; base = `default_branch`; same name across repos), then `git worktree add -b <branch> <branch> <default_branch>` (or `git worktree add <branch> <branch>` if it exists); set the feature `vcs: git`.
 5. **Create v2 skeleton**:
    - `$FEATURE_DIR/spec.md` with frontmatter (`description: ""`) + this body:
      ```markdown
@@ -322,8 +379,8 @@ Defaults to `/track list`.
      ```
    - `$FEATURE_DIR/sessions/` (empty dir; `mkdir -p`)
    - `$FEATURE_DIR/archive.md` with header `# Archived Sessions`
-6. **Update index**: append a new entry (`layout: "v2"`).
-7. Print worktree paths.
+6. **Update index**: append a new entry (`layout: "v2"`, `vcs: "jj"` for jj features).
+7. Print the workspace paths (jj) / worktree paths (git).
 
 ### `/track switch <N|name>` — Context Import
 
@@ -368,12 +425,15 @@ Writes the agent's OWN session file (no contention with other agents) and refres
 
 1. **Detect feature from current branch**. If none: "No tracked feature on branch `{BRANCH}`. Use `/track list`."
 2. **If legacy layout** (no `sessions/`): you MAY initialize v2 in place — create `sessions/` + `archive.md`, and lift the existing inline "current state"-ish sections into a `## Current State` block at the top of `spec.md` (keep the old sections below for now). If the user hasn't asked to migrate, it is also fine to keep appending in legacy style — do not silently restructure a large legacy spec mid-crunch. Default: initialize v2 only for small/young legacy specs; leave large ones legacy and just append a dated section.
-3. **Gather context from ALL repos** in frontmatter, sequentially:
-   ```bash
-   cd <worktree-path>
-   git log --oneline -20
-   git diff --stat HEAD~5..HEAD
-   ```
+3. **Gather context from ALL repos** in frontmatter, per the feature's `vcs`:
+   - **jj**:
+     ```bash
+     jj -R <ws> log -r 'trunk()..@' -T builtin_log_oneline                        # this feature's changes
+     jj -R <ws> diff --from 'trunk()' --stat                                       # cumulative diff vs trunk
+     jj -R <ws> log -r '(roots(trunk()..@)::) & empty()' -T builtin_log_oneline    # unfilled plan steps
+     ```
+     If a skeleton plan exists, report progress as filled/total from the last query.
+   - **git** (legacy): `cd <worktree>; git log --oneline -20; git diff --stat HEAD~5..HEAD`
 4. **Write a new session file** (v2): allocate the filename (see *Session ID allocation*), then write the session using the `sessions/<NNN>-<slug>.md` template. Prefix commits with repo name: `[backend] a1b2c3d fix: …`. Record crux → decisions → implementation (HEAD/commit/file anchors) → ship/e2e → 待办/教训 (`[[memory-links]]`). The session is frozen after this write.
 5. **Refresh `## Current State`** (overwrite in place, **incrementally**): take the existing Current State + the session you just wrote → produce the updated block. NEVER re-summarize all sessions from scratch.
    - `### Decisions`: add/overwrite by key (last write wins); drop superseded conclusions.
@@ -443,7 +503,8 @@ Catches drift between what the spec claims and what the code does (replaces the 
    ```
    Finished: auth-refactor (group: main)
    Spec retained at ~/.agents/.features/auth-refactor/
-   To clean up worktrees: `git worktree remove <path>` in each repo.
+   Cleanup: jj → `/track archive <name>` (or `jj workspace forget <feat>` + rm); git → `git worktree remove <path>`.
+   Push/MR (jj, if not already): jj -R <ws> bookmark set <feat> -r @ && jj -R <ws> git push -c @ -o merge_request.create -o merge_request.target=main
    ```
 
 **Do NOT append to `finished_features.md`** — legacy archive, historical reference only.
@@ -455,21 +516,12 @@ Soft-delete. Archived features are hidden from all lists but remain on disk. Use
 1. **Resolve target** (no arg → current branch; N → indexed; name → direct). If already archived: "Already archived." and stop.
 2. Set `status: archived`; `updated` = today. Write back.
 3. **Update index**: `status: archived`, update `updated`.
-4. **Remove worktrees** for each repo in frontmatter:
-   ```bash
-   cd <bare-repo-path>
-   git worktree remove <worktree-path>
-   ```
-   - current working directory → warn and skip: "Skipped `<path>` — it is the current directory. Remove manually after switching."
-   - uncommitted changes → `git worktree remove` fails; warn: "Worktree `<path>` has uncommitted changes — skipped. Force with `git worktree remove --force <path>` if safe."
-   - already gone → skip silently.
-5. **Delete branches** after worktrees removed:
-   ```bash
-   cd <bare-repo-path>
-   git branch -d <branch>
-   ```
-   - `-d` refuses unmerged → warn: "Branch `<branch>` in `<repo>` has unmerged commits — skipped. Force with `git branch -D <branch>` if safe."
-   - current branch in some worktree → skip with warning. Doesn't exist → skip silently. Never delete remote branches.
+4. **Remove the working dir** for each repo, per `vcs`:
+   - **jj**: `jj -R <jj_repo>/main workspace forget <feat>` then `rm -rf <jj_repo>/<feat>`. `forget` never deletes commits — the feature's changes stay in the store as anonymous heads (recoverable via `jj op log`), so there is no "unmerged" refusal to handle. Also drop the local bookmark if one was pushed: `jj -R <jj_repo>/main bookmark delete <feat>` (ignore "No such bookmark"). If `<feat>` is the current dir → warn and skip (cd out first).
+   - **git** (legacy): `git -C <bare> worktree remove <worktree>` then `git -C <bare> branch -d <branch>`.
+     - current dir → skip: "Skipped `<path>` — current directory. Remove manually after switching."
+     - uncommitted changes → warn: "Worktree `<path>` has uncommitted changes — skipped. Force with `git worktree remove --force` if safe."
+     - `branch -d` refuses unmerged → warn: "Branch `<branch>` has unmerged commits — skipped. Force with `git branch -D` if safe." Already gone → skip silently. Never delete remote branches.
 6. Feature directory stays intact (the spec is the archival record).
 7. Print:
    ```
@@ -483,12 +535,9 @@ Soft-delete. Archived features are hidden from all lists but remain on disk. Use
 
 1. Look up `$FEATURES_DIR/<name>/spec.md`. Not found → "Feature `<name>` not found."
 2. Not archived → "Feature `<name>` is not archived (status: {status})." and stop.
-3. **Recreate worktrees** (same logic as `/track new` step 4):
-   - branch has a worktree → record path
-   - branch exists, no worktree → `git worktree add <worktree-path> <branch>`
-   - branch only on remote → `git worktree add -b <branch> <worktree-path> origin/<branch>`
-   - branch gone everywhere → `git worktree add -b <branch> <worktree-path> <default_branch>`
-   - Update worktree paths in frontmatter if changed.
+3. **Recreate the working dir** per `vcs`:
+   - **jj**: `jj -R <jj_repo>/main workspace add --name <feat> -r '<feat>@origin | trunk()' <jj_repo>/<feat>` (restores off the pushed bookmark if it exists, else `trunk()`). Update the path in frontmatter.
+   - **git** (legacy): `git worktree add <worktree> <branch>` (branch exists) / `git worktree add -b <branch> <worktree> origin/<branch>` (remote only) / `git worktree add -b <branch> <worktree> <default_branch>` (gone). Update paths.
 4. Set `status: in-progress`; `updated` = today. Write back.
 5. **Update index**: `status: in-progress`, update `updated`.
 6. Print worktree paths + "Restored: <name> (status: in-progress)".
@@ -498,7 +547,7 @@ Requires an explicit name — no N-based resolution (archived features aren't nu
 ### `/track reindex` — Rebuild Feature Index
 
 1. List all directories in `$FEATURES_DIR` containing `spec.md`.
-2. For each, parse frontmatter; detect `layout` (`sessions/` present → `v2`, else `legacy`). Extract name, group, status, description, branch, repos (keys), created, updated.
+2. For each, parse frontmatter; detect `layout` (`sessions/` present → `v2`, else `legacy`). Extract name, group, status, description, branch, **`vcs`** (frontmatter value, **absent ⇒ `git`**), repos (keys), created, updated.
 3. Missing `status`: infer from `finished_features.md` — name in a `## {Name} (completed …)` heading → `finished`, else `in-progress`. Write it back.
 4. Missing `description`: leave empty (next `/track update` fills it). If a v2 spec's description is a giant legacy digest, replace it with the ≤80-char one-liner from `## Current State`.
 5. Missing `created`: use `updated`. Write it back.
@@ -522,7 +571,7 @@ The `description` field enables quick scanning; `## Current State` is the fast d
 The v2 layout is designed for several agents working one feature concurrently — shared truth, independent progress.
 
 - **Cold-start a new session/agent**: `/track list` → `/track switch N`. Switch prints Current State + Sessions TOC (orientation), not the whole history.
-- **During work**: each agent is on the feature branch — `/track read --session N` to drill in, `/track update` to record.
+- **During work**: each agent is in the feature's jj workspace (or on its git branch) — `/track read --session N` to drill in, `/track update` to record.
 - **Recording is contention-free**: each `/track update` writes the agent's **own** `sessions/<NNN>-<slug>.md`. Two agents never write the same session file — exclusive-create + collision suffix (`036` vs `036b`) guarantees it. No numbering races, no merge conflicts on the log.
 - **Current State is the one shared mutable surface**: it is small and section-structured, so refreshes are quick and edits can be scoped to a single subsection. Keep updates short; the heavy detail lives in the session file, not here.
 - **No file locking** — sessions are append-only-by-construction; Current State is a low-frequency overwrite of a derived snapshot.
@@ -541,11 +590,12 @@ To migrate a specific legacy spec to v2 on request: split its newest-first sessi
 ## Important
 
 - NEVER read an archived feature's spec — archived = failed experiments; stale context pollutes new work.
-- `~/.agents/.features/` is global — works from any repo, any worktree.
-- Same branch name across all repos in a group. Feature names: lowercase-hyphenated.
+- `~/.agents/.features/` is global — works from any repo, any git worktree or jj workspace.
+- **jj is the default backend for new features; git is retained for reading existing ones** (`vcs`, absent ⇒ git). jj features live in the repo's dedicated `jj_repo` clone as `jj workspace`s (never the git bare).
+- git features: same branch name across all repos in a group. jj features: the feature name is the workspace dir name and the push-time bookmark. Feature names: lowercase-hyphenated.
 - **v2 sessions are append-only & frozen.** To revise a conclusion, write a new session, never edit an old one.
 - **`## Current State` is the only rewritable block**, and only because it is a derived snapshot. `### Open Risks & TODOs` and Lessons are never compacted.
 - frontmatter `description` is ≤80 chars — never a rolling digest.
 - `.index.json` is auto-maintained — do not hand-edit. Run `/track reindex` if stale.
 - `/track list` numbers are ephemeral (current invocation only). Always show the list before using a number with `/track switch N`.
-- Absolute worktree paths in frontmatter — no guessing. If config is missing, create `.config.yaml` via the auto-onboarding flow in `/track new`.
+- Absolute working-dir paths in frontmatter (`worktree:` = git worktree or jj workspace dir) — no guessing. If config is missing, create `.config.yaml` via the auto-onboarding flow in `/track new`.
