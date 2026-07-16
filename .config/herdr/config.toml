@@ -1,0 +1,25 @@
+onboarding = false
+
+[theme]
+name = "vesper"
+
+[theme.custom]
+surface_dim = "#3a2e23"
+
+[ui]
+agent_panel_sort = "priority"
+sidebar_collapsed_mode = "hidden"
+sidebar_width = 34
+
+[ui.sidebar.agents]
+rows = [["state_icon", { token = "$display", fg = "#ffffff", bold = true, dim = false }, "agent"], ["terminal_title_stripped"]]
+
+[ui.toast]
+delivery = "herdr"
+delay_seconds = 1
+
+[ui.toast.herdr]
+position = "top-right"
+
+[update]
+channel = "preview"
