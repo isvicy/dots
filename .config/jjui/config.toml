@@ -1,0 +1,6 @@
+[ui.colors]
+# 选中行背景：钉成深灰，避免 jjui 把终端误判为 light 主题时用刺眼的白底
+# 注意1：0.10.x 的键名是 selected；新版（0.11+ 结构化主题）才写作 ":selected"
+# 注意2：不能用调色板索引色（bright black 等）——Ghostty 主题 GitHub Dark High
+#       Contrast 把 index 8 调成了 #9ea7b3 浅灰，所以这里必须用精确 RGB
+selected = { bg = "#21262d" }
