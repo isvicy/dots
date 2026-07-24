@@ -1,0 +1,9 @@
+#:schema https://docs.jj-vcs.dev/latest/config-schema.json
+
+[user]
+name = "yangkai"
+email = "***REMOVED***"
+
+[colors]
+# 关掉 diff 行内 token 的下划线（整行新增/删除时整行都会被划线，太吵）
+"diff token" = { underline = false }
