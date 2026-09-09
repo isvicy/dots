@@ -439,3 +439,18 @@ jjwsrm() {
     jj workspace forget "$ws" && rm -rf -- "$dir"
   done
 }
+
+# Private per-repo instructions for coding agents, without touching a shared
+# repo's tracked files. AGENTS.local.md holds the private half; codex and pi
+# both prefer AGENTS.override.md over AGENTS.md in the same directory, so the
+# override file is regenerated as team + private on every launch and can never
+# go stale. Claude Code ignores AGENTS.md entirely and picks the private half up
+# through CLAUDE.local.md instead, so it needs no wrapper.
+# With no AGENTS.local.md this is a no-op, which leaves a hand-written
+# AGENTS.override.md (full override of a stale team file) alone.
+_agents_sync() {
+  [[ -f AGENTS.md && -f AGENTS.local.md ]] || return 0
+  { cat AGENTS.md; print; print -- '---'; print; cat AGENTS.local.md } >AGENTS.override.md
+}
+cx() { _agents_sync; command codex "$@" }
+pix() { _agents_sync; command pi "$@" }

@@ -1,0 +1,10 @@
+**/.claude/settings.local.json
+
+# Private per-repo agent instructions. Never committed to a shared repo:
+# AGENTS.local.md is the private source, AGENTS.override.md is generated from
+# team + private by _agents_sync (see .zsh-custom/aliases.zsh), CLAUDE.local.md
+# imports the private half for Claude Code. jj honours this file too, so a
+# jj-only repo needs no .git/info/exclude of its own.
+AGENTS.local.md
+AGENTS.override.md
+CLAUDE.local.md
