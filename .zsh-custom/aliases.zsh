@@ -407,3 +407,16 @@ mdignore() {
   print "mdignore: tagged $n node_modules dir(s) under ${roots[*]}"
   print "  run 'sudo mdutil -E /' to make Spotlight drop them from the index now"
 }
+
+jjwsrm() {
+  local ws dir
+  for ws in "$@"; do
+    dir=$(jj workspace list | awk -v ws="$ws:" '$1 == ws {print $2}')
+    if [ -z "$dir" ]; then
+      echo "skip $ws: workspace not found" >&2
+      continue
+    fi
+    echo "forget $ws && rm $dir"
+    jj workspace forget "$ws" && rm -rf -- "$dir"
+  done
+}
