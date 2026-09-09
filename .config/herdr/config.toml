@@ -15,11 +15,20 @@ sidebar_width = 34
 rows = [["state_icon", { token = "$display", fg = "#ffffff", bold = true, dim = false }, { token = "agent", fg = "#a6adc8", dim = false }]]
 
 [ui.toast]
-delivery = "herdr"
+delivery = "terminal"
 delay_seconds = 1
 
 [ui.toast.herdr]
 position = "top-right"
 
 [update]
-channel = "preview"
+channel = "stable"
+
+[experimental]
+kitty_graphics = true
+switch_ascii_input_source_in_prefix = true
+
+[keys]
+previous_agent = "prefix+shift+p"
+next_agent = "prefix+shift+n"
+rename_pane = "prefix+comma"
