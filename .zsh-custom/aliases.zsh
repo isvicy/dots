@@ -313,6 +313,16 @@ yolo() {
   fi
 }
 
+molo() {
+  if [[ "$1" == "update" ]]; then
+    npm install -g @anthropic-ai/claude-code@latest
+  else
+    local cfg=$(_expand_envs "${HOME}/.mcp/default.json")
+    ANTHROPIC_BASE_URL=$(pass show work/kth/base) ANTHROPIC_API_KEY=$(pass show work/kth/key/vb) claude --dangerously-skip-permissions --mcp-config "$cfg" "$@"
+    rm -f "$cfg"
+  fi
+}
+
 cdx() {
   if [[ "$1" == "update" ]]; then
     npm install -g @openai/codex@latest
