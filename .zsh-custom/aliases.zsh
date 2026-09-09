@@ -19,7 +19,7 @@ alias cip="curl 'http://ip-api.com/json/?lang=zh-CN'"
 # kube
 # manage multiple kubeconfig
 if [ -d ~/.kube ]; then
-  FOUND_CONFIGS=$(find ~/.kube -maxdepth 1 -type f -name "config*" | paste -sd ":" -)
+  FOUND_CONFIGS=$(find ~/.kube -maxdepth 1 -type f -name "*config*" | paste -sd ":" -)
   if [ -n "$FOUND_CONFIGS" ]; then
     export KUBECONFIG="$FOUND_CONFIGS"
   fi
