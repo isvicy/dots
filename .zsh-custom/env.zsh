@@ -43,7 +43,7 @@ export GPG_TTY=$TTY
 export CLAUDE_CODE_NO_FLICKER=1
 
 # default Opus reasoning effort to max (only persistable via env var)
-export CLAUDE_CODE_EFFORT_LEVEL=max
+# export CLAUDE_CODE_EFFORT_LEVEL=max
 
 export AGENT_BROWSER_IDLE_TIMEOUT_MS=600000
 export AGENT_BROWSER_DEFAULT_TIMEOUT=60000
