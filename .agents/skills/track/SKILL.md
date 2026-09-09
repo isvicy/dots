@@ -377,6 +377,10 @@ Defaults to `/track list`.
      | # | Slug | Date | Status | One-liner |
      |---|------|------|--------|-----------|
      ```
+   - If the user has already stated explicit scope limits, non-goals,
+     delivery constraints, or approval gates, record them verbatim under
+     `### Decisions` with stable keys. Do not invent a default contract, ask a
+     generic checklist, or infer constraints the user did not state.
    - `$FEATURE_DIR/sessions/` (empty dir; `mkdir -p`)
    - `$FEATURE_DIR/archive.md` with header `# Archived Sessions`
 6. **Update index**: append a new entry (`layout: "v2"`, `vcs: "jj"` for jj features).
@@ -436,7 +440,7 @@ Writes the agent's OWN session file (no contention with other agents) and refres
    - **git** (legacy): `cd <worktree>; git log --oneline -20; git diff --stat HEAD~5..HEAD`
 4. **Write a new session file** (v2): allocate the filename (see *Session ID allocation*), then write the session using the `sessions/<NNN>-<slug>.md` template. Prefix commits with repo name: `[backend] a1b2c3d fix: …`. Record crux → decisions → implementation (HEAD/commit/file anchors) → ship/e2e → 待办/教训 (`[[memory-links]]`). The session is frozen after this write.
 5. **Refresh `## Current State`** (overwrite in place, **incrementally**): take the existing Current State + the session you just wrote → produce the updated block. NEVER re-summarize all sessions from scratch.
-   - `### Decisions`: add/overwrite by key (last write wins); drop superseded conclusions.
+   - `### Decisions`: add/overwrite by key (last write wins); drop superseded conclusions. Carry explicit user-stated scope limits, non-goals, delivery constraints, and approval gates verbatim until the user changes them; do not infer new constraints.
    - `### Open Risks & TODOs`: carry verbatim; check off resolved, add new. **Never compact this section.**
    - `### Key Files`: merge by repo|file.
    - `### Verify Status`: replace with the latest pass/fail + deployed revision.
@@ -482,24 +486,26 @@ Catches drift between what the spec claims and what the code does (replaces the 
 
 1. Detect feature. Read `## Current State` (Decisions, Key Files, Verify Status) and any "done"/"shipped" claims in recent sessions.
 2. For each claimed-complete item, search the code for evidence (the files/symbols it names).
-3. Report two lists: **claimed done but no code evidence** and **code clearly done but unrecorded**. Do not edit the spec automatically — surface findings; the user/agent decides what to fix or record.
+3. Reconcile the actual diff and recorded actions against any **explicit user-stated** scope limits, non-goals, delivery constraints, or approval gates in Decisions. Check only constraints that were actually recorded; do not create a default contract during verification.
+4. Report three lists: **claimed done but no code evidence**, **code clearly done but unrecorded**, and **explicit constraint violations or missing evidence**. Do not edit the spec automatically — surface findings; the user/agent decides what to fix or record.
 
 ### `/track done [N|name]` — Finish Feature
 
 1. **Resolve target** (no arg → current branch; N → indexed; name → direct).
 2. Read the feature's `## Current State` (v2) or full `spec.md` (legacy).
-3. **Output-surface precheck (BLOCKING).** Before flipping status, answer literally, in user-facing text:
+3. **Explicit-constraint precheck (BLOCKING when constraints exist).** Re-read any user-stated scope limits, non-goals, delivery constraints, and approval gates recorded in Decisions. Reconcile the actual diff and recorded external actions against them. If a recorded constraint is violated or lacks evidence, stop and surface it. If none were recorded, do not invent a contract at finish time.
+4. **Output-surface precheck (BLOCKING).** Before flipping status, answer literally, in user-facing text:
 
    > "List every user-observable path this feature claims to cover. For each, point at the code (file:line) that implements it. List every path you considered and consciously decided NOT to cover, with the reason."
 
-   If the feature is framed in surface-level terms — "every reply", "all messages", "footer on X", "thread-id on every send" — this is REQUIRED. Grep every site producing that surface (e.g. all `Channel.send` / `sendFormatted` / `openReply` / `openProgress` / `sendDraft` / `edit` / `react` callers) and reconcile each against the spec's claimed coverage (`### Key Files` / Decisions / session implementation notes). If a path is missing, implement it now or add an explicit "Out of scope: <path> because <reason>" to `### Open Risks & TODOs`. If a path is claimed but its user-observable behavior has not been demonstrated end-to-end (test, fixture replay, or live verification), it is NOT done — fix it before step 4. Tiny single-file features may state "single-site change, no surface audit needed" and proceed. (Consider running `/track verify` first.)
+   If the feature is framed in surface-level terms — "every reply", "all messages", "footer on X", "thread-id on every send" — this is REQUIRED. Grep every site producing that surface (e.g. all `Channel.send` / `sendFormatted` / `openReply` / `openProgress` / `sendDraft` / `edit` / `react` callers) and reconcile each against the spec's claimed coverage (`### Key Files` / Decisions / session implementation notes). If a path is missing, implement it now or add an explicit "Out of scope: <path> because <reason>" to `### Open Risks & TODOs`. If a path is claimed but its user-observable behavior has not been demonstrated end-to-end (test, fixture replay, or live verification), it is NOT done — fix it before step 5. Tiny single-file features may state "single-site change, no surface audit needed" and proceed. (Consider running `/track verify` first.)
 
    Rationale: prevents shipping with fallback / non-canonical paths unfixed. See the `feedback-audit-output-surfaces` memory.
-4. Set `status: finished`; `updated` = today.
-5. Write back.
-6. **Update index**: set `status: finished`, update `updated`.
-7. Feature directory stays intact (browsable archive).
-8. Print:
+5. Set `status: finished`; `updated` = today.
+6. Write back.
+7. **Update index**: set `status: finished`, update `updated`.
+8. Feature directory stays intact (browsable archive).
+9. Print:
    ```
    Finished: auth-refactor (group: main)
    Spec retained at ~/.agents/.features/auth-refactor/
