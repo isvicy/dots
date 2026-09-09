@@ -303,12 +303,39 @@ _decrypt_sops() {
   echo "$tmp"
 }
 
+# Private per-repo instructions for coding agents, without touching a shared
+# repo's tracked files. AGENTS.local.md holds the private half; codex and pi
+# both prefer AGENTS.override.md over AGENTS.md in the same directory, so the
+# override file is regenerated as team + private on every launch and can never
+# go stale.
+# With no AGENTS.local.md this is a no-op, which leaves a hand-written
+# AGENTS.override.md (full override of a stale team file) alone.
+_agents_sync() {
+  [[ -f AGENTS.md && -f AGENTS.local.md ]] || return 0
+  { cat AGENTS.md; print; print -- '---'; print; cat AGENTS.local.md } >AGENTS.override.md
+}
+
+# Claude Code has no per-repo override file — every CLAUDE.md source is additive
+# and it never reads AGENTS.md — so honouring AGENTS.override.md the way codex
+# and pi do natively takes the kill switch plus feeding the user memory and the
+# override back in. That drops the repo's nested CLAUDE.md and .claude/rules/,
+# which is the point. Without an override file this is a plain launch.
+_claude_run() {
+  _agents_sync
+  if [[ -f AGENTS.override.md ]]; then
+    CLAUDE_CODE_DISABLE_CLAUDE_MDS=1 command claude \
+      --append-system-prompt "$(cat "${HOME}/.claude/CLAUDE.md" 2>/dev/null; print; cat AGENTS.override.md)" "$@"
+  else
+    command claude "$@"
+  fi
+}
+
 yolo() {
   if [[ "$1" == "update" ]]; then
     npm install -g @anthropic-ai/claude-code@latest
   else
     local cfg=$(_expand_envs "${HOME}/.mcp/default.json")
-    claude --dangerously-skip-permissions --mcp-config "$cfg" "$@"
+    _claude_run --dangerously-skip-permissions --mcp-config "$cfg" "$@"
     rm -f "$cfg"
   fi
 }
@@ -327,7 +354,17 @@ cdx() {
   if [[ "$1" == "update" ]]; then
     npm install -g @openai/codex@latest
   else
+    _agents_sync
     codex --search --dangerously-bypass-approvals-and-sandbox "$@"
+  fi
+}
+
+pix() {
+  if [[ "$1" == "update" ]]; then
+    pi update self
+  else
+    _agents_sync
+    pi "$@"
   fi
 }
 
@@ -368,7 +405,7 @@ mg() {
 }
 yg() {
   local cfg=$(_decrypt_sops "${HOME}/.mcp/gitlab.sops.json")
-  claude --dangerously-skip-permissions --mcp-config "$cfg" "$@"
+  _claude_run --dangerously-skip-permissions --mcp-config "$cfg" "$@"
   rm -f "$cfg"
 }
 
@@ -439,18 +476,3 @@ jjwsrm() {
     jj workspace forget "$ws" && rm -rf -- "$dir"
   done
 }
-
-# Private per-repo instructions for coding agents, without touching a shared
-# repo's tracked files. AGENTS.local.md holds the private half; codex and pi
-# both prefer AGENTS.override.md over AGENTS.md in the same directory, so the
-# override file is regenerated as team + private on every launch and can never
-# go stale. Claude Code ignores AGENTS.md entirely and picks the private half up
-# through CLAUDE.local.md instead, so it needs no wrapper.
-# With no AGENTS.local.md this is a no-op, which leaves a hand-written
-# AGENTS.override.md (full override of a stale team file) alone.
-_agents_sync() {
-  [[ -f AGENTS.md && -f AGENTS.local.md ]] || return 0
-  { cat AGENTS.md; print; print -- '---'; print; cat AGENTS.local.md } >AGENTS.override.md
-}
-cx() { _agents_sync; command codex "$@" }
-pix() { _agents_sync; command pi "$@" }
