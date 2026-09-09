@@ -324,7 +324,7 @@ _claude_run() {
   _agents_sync
   if [[ -f AGENTS.override.md ]]; then
     CLAUDE_CODE_DISABLE_CLAUDE_MDS=1 command claude \
-      --append-system-prompt "$(cat "${HOME}/.claude/CLAUDE.md" 2>/dev/null; print; cat AGENTS.override.md)" "$@"
+      --append-system-prompt "$(cat "${HOME}/.agents/AGENTS.md" 2>/dev/null; print; cat AGENTS.override.md)" "$@"
   else
     command claude "$@"
   fi
@@ -345,7 +345,7 @@ molo() {
     npm install -g @anthropic-ai/claude-code@latest
   else
     local cfg=$(_expand_envs "${HOME}/.mcp/default.json")
-    ANTHROPIC_BASE_URL=$(pass show work/kth/base) ANTHROPIC_API_KEY=$(pass show work/kth/key/vb) claude --dangerously-skip-permissions --mcp-config "$cfg" "$@"
+    ANTHROPIC_BASE_URL=$(pass show work/kth/base) ANTHROPIC_API_KEY=$(pass show work/kth/key/vb) _claude_run --dangerously-skip-permissions --mcp-config "$cfg" "$@"
     rm -f "$cfg"
   fi
 }
