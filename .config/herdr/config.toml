@@ -12,7 +12,7 @@ sidebar_collapsed_mode = "hidden"
 sidebar_width = 34
 
 [ui.sidebar.agents]
-rows = [["state_icon", { token = "$display", fg = "#ffffff", bold = true, dim = false }, "agent"], ["terminal_title_stripped"]]
+rows = [["state_icon", { token = "$display", fg = "#ffffff", bold = true, dim = false }, { token = "agent", fg = "#a6adc8", dim = false }]]
 
 [ui.toast]
 delivery = "herdr"
