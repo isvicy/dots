@@ -283,7 +283,7 @@ alias clgit="unset GITLAB_PRIVATE_TOKEN && unset GITLAB_URL"
 _expand_envs() {
   local src="$1"
   local tmp=$(mktemp)
-  envsubst < "$src" > "$tmp"
+  envsubst <"$src" >"$tmp"
   echo "$tmp"
 }
 
@@ -299,7 +299,7 @@ _set_garage_env() {
 _decrypt_sops() {
   local src="$1"
   local tmp=$(mktemp)
-  psops --decrypt "$src" > "$tmp"
+  psops --decrypt "$src" >"$tmp"
   echo "$tmp"
 }
 
@@ -385,11 +385,17 @@ killport() {
 chrome-debug() {
   local s="$HOME/.claude/skills/share-chrome-profiles/scripts"
   case "$1" in
-    sync)      shift; "$s/sync-profile.sh" "$@" ;;
-    ''|up)     "$s/launch-debug-chrome.sh" ;;
-    headless)  "$s/launch-debug-chrome.sh" --headless ;;   # no window → never steals focus
-    personal)  "$s/launch-personal-chrome.sh" ;;            # your real Chrome, agent ignores it
-    *)         print -u2 "usage: chrome-debug [up|headless|personal|sync [--with-indexeddb|--force]]"; return 2 ;;
+    sync)
+      shift
+      "$s/sync-profile.sh" "$@"
+      ;;
+    '' | up) "$s/launch-debug-chrome.sh" ;;
+    headless) "$s/launch-debug-chrome.sh" --headless ;; # no window → never steals focus
+    personal) "$s/launch-personal-chrome.sh" ;;         # your real Chrome, agent ignores it
+    *)
+      print -u2 "usage: chrome-debug [up|headless|personal|sync [--with-indexeddb|--force]]"
+      return 2
+      ;;
   esac
 }
 
@@ -399,9 +405,12 @@ chrome-debug() {
 mdignore() {
   local roots=("${@:-$HOME/repos}") root n=0 d
   for root in "${roots[@]}"; do
-    [[ -d $root ]] || { print -u2 "mdignore: not a directory: $root"; continue; }
+    [[ -d $root ]] || {
+      print -u2 "mdignore: not a directory: $root"
+      continue
+    }
     while IFS= read -r d; do
-      touch -- "$d/.metadata_never_index" && (( n++ ))
+      touch -- "$d/.metadata_never_index" && ((n++))
     done < <(find "$root" -type d -name node_modules -prune -print)
   done
   print "mdignore: tagged $n node_modules dir(s) under ${roots[*]}"
