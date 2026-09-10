@@ -464,6 +464,63 @@ mdignore() {
   print "  run 'sudo mdutil -E /' to make Spotlight drop them from the index now"
 }
 
+# Files that are deliberately gitignored but that every worktree/workspace still
+# wants. Symlinked rather than copied, so one edit reaches every workspace.
+# AGENTS.override.md is deliberately absent: _agents_sync regenerates it per
+# workspace, and writing through a symlink would clobber the source worktree's.
+typeset -ga WS_CARRY=(AGENTS.local.md CLAUDE.local.md .envrc)
+
+# Does the new workspace see $3 as a change? Only ignored paths may be carried —
+# a symlink the VCS picks up would end up committed into a shared repo, which is
+# the exact thing these files exist to avoid. .envrc is the usual offender: it is
+# ignored in most repos but committed in some.
+_ws_visible() {
+  local dst=$1 vcs=$2 f=$3
+  if [[ $vcs == jj ]]; then
+    (cd "$dst" && jj diff --name-only 2>/dev/null) | grep -qxF -- "$f"
+  else
+    [[ -n $(git -C "$dst" status --porcelain --untracked-files=all -- "$f" 2>/dev/null) ]]
+  fi
+}
+
+_ws_carry() {
+  local src=$1 dst=$2 vcs=$3 f
+  for f in $WS_CARRY; do
+    [[ -e $src/$f && ! -e $dst/$f ]] || continue
+    ln -s "$src/$f" "$dst/$f" || continue
+    if _ws_visible "$dst" "$vcs" "$f"; then
+      rm -f "$dst/$f"
+      print -u2 "skipped $f: not ignored here, the symlink would get committed"
+    else
+      print "carried $f"
+    fi
+  done
+  if [[ -e $dst/.envrc ]] && (( $+commands[direnv] )); then
+    (cd "$dst" && direnv allow) && print "direnv allow $dst"
+  fi
+  return 0
+}
+
+# jj has no hook system, so workspace creation has to be wrapped. git worktree
+# add does fire post-checkout, but one command for both beats two mechanisms.
+# Destination comes first; everything after it is passed through, which both
+# `jj workspace add` and `git worktree add` accept.
+ws() {
+  local dst=$1
+  if [[ -z $dst ]]; then
+    print -u2 "usage: ws <dir> [jj workspace add / git worktree add args...]"
+    return 2
+  fi
+  shift
+  if jj workspace root >/dev/null 2>&1; then
+    jj workspace add "$dst" "$@" || return
+    _ws_carry "$(jj workspace root)" "$dst" jj
+  else
+    git worktree add "$dst" "$@" || return
+    _ws_carry "$(git rev-parse --show-toplevel)" "$dst" git
+  fi
+}
+
 jjwsrm() {
   local ws dir
   for ws in "$@"; do
