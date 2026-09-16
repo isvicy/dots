@@ -5,6 +5,7 @@ name = "vesper"
 
 [theme.custom]
 surface_dim = "#3a2e23"
+active_row_bg = "#3a2e23"
 
 [ui]
 agent_panel_sort = "priority"
