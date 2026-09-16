@@ -21,6 +21,11 @@ else
   echo "atuin missing!"
 fi
 
+# proto shims (moon/pnpm/node toolchain) — must outrank nix-profile
+# so proto's per-repo version pins (.prototools) apply
+typeset -U path
+path=("$HOME/.proto/shims" "$HOME/.proto/bin" $path)
+
 export PNPM_HOME="${HOME}/.local/share/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
