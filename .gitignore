@@ -6,3 +6,6 @@
 **/.DS_Store
 **/registry.json
 .config/zed/prompts/
+
+# python bytecode
+**/__pycache__/
