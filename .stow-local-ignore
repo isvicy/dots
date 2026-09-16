@@ -17,3 +17,6 @@
 
 ^/template
 ^/docs
+
+# machine-specific nix flake registry (absolute home paths differ per host)
+^/\.config/nix/registry\.json
