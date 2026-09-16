@@ -8,6 +8,7 @@ export XDG_CONFIG_HOME="$HOME/.config" # Set the base directory for user-specifi
 export PATH="${HOME}/.local/bin":${PATH}    # add local path for current user
 export PATH="${HOME}/.npm-global/bin:$PATH" # add npm global bin path, remeber do: npm set prefix ~/.npm-global
 export PATH="${HOME}/.kimi-code/bin:$PATH"  # kimi code don't add itself in .local/bin
+[ -d "$HOME/.nix-profile/bin" ] && export PATH="$HOME/.nix-profile/bin:$PATH" # home-manager standalone profile (plain Linux)
 
 # add go env variables
 if command -v go >/dev/null 2>&1 && [ -z "${GOPATH}" ]; then
