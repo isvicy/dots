@@ -1,0 +1,9 @@
+id = "isvicy.display-name"
+name = "Display Name"
+version = "0.1.0"
+min_herdr_version = "0.7.0"
+description = "Push computed per-pane display names to the $display sidebar token"
+platforms = ["macos", "linux"]
+
+[[startup]]
+command = ["python3", "display-name.py"]
