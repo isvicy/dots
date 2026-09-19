@@ -21,6 +21,12 @@ ensureTargetDir "${HOME}/.claude"
 ensureTargetDir "${HOME}/.kimi"
 ensureTargetDir "${HOME}/.agents/skills"
 
+# herdr runtime dirs: keep plugins/ as a real directory so herdr can create
+# config/, state/, etc. inside it without stow folding the whole plugins/
+# into a symlink that would leak runtime files into the dots repo.
+ensureTargetDir "${HOME}/.config/herdr"
+ensureTargetDir "${HOME}/.config/herdr/plugins"
+
 # Run stow in simulation mode to detect conflicts
 # use uniq to remove duplicates cause stow will output the confilcts info multiple times
 conflicts=$(stow --simulate --verbose=2 --target="$target" "$package" 2>&1 | grep "cannot stow" | awk -F"target " '{print $2}' | awk '{print $1}' | sort | uniq)
