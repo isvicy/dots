@@ -29,6 +29,25 @@ Commits are enforced via **commitlint** (conventional commits) through a husky p
 - **`template/`** — API test scripts (curl snippets for OpenAI, Anthropic, Gemini, etc.).
 - **`docs/`** — Reference docs.
 
+### Stow tree folding and runtime directories
+
+Stow's default behavior is **tree folding**: if a target directory doesn't exist, stow symlinks the entire source directory instead of creating the target directory and linking only the contents. This causes problems when an app writes runtime files into its config directory.
+
+**Example problem:** `~/.config/herdr/plugins/` contains both our plugin source (`herdr-display-name/`) and herdr's runtime files (`config/`, `state/`, etc.). Without pre-creating the target directory, stow folds the whole `plugins/` into a symlink, causing herdr's runtime files to leak into the dots repo.
+
+**Solution:** `hack/stow-with-backup.sh` pre-creates runtime directories before running stow, so only the intended files/dirs get linked. Current pre-created dirs:
+
+- `~/.config.bak` — Backup location for conflicting files
+- `~/.config` — Base config directory
+- `~/.config/direnv`
+- `~/.local`, `~/.local/bin`, `~/.local/share`
+- `~/.mcp`
+- `~/.claude`, `~/.kimi`
+- `~/.agents/skills`
+- `~/.config/herdr`, `~/.config/herdr/plugins` — Prevents stow from folding herdr's plugin runtime files
+
+**When adding a new app config under `.config/`:** If the app writes runtime files into its config directory (logs, caches, state files, sockets, etc.), add the directory to `stow-with-backup.sh`'s `ensureTargetDir` list to prevent tree folding.
+
 ## Shell Aliases Worth Knowing
 
 - `yolo` / `yolo update` — Run Codex with MCP config / update Codex
