@@ -12,6 +12,8 @@
 - **Approval**: Architectural and UI/UX changes are the user's call, and so is the plan for a new tool or feature:
   propose it and get approval before implementing. Small, clearly scoped changes (a one-line fix, a rename, an edit
   the user fully specified) and routine choices within an agreed plan can proceed directly.
+- **MR merges**: Merging MRs and enabling auto-merge are the user's call; agents may push, open MRs, address review
+  comments and monitor CI.
 - **Chinese writing**: When writing Chinese documents, reports, tables, or MR/PR descriptions, load the `zh-writing`
   skill first.
 
