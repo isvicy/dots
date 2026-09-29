@@ -2,3 +2,16 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 gitleaks git --pre-commit --staged --verbose
+
+# This repo is public. Block staged lines matching the local, untracked denylist
+# (one extended regex per line); the patterns themselves would leak if committed.
+denylist="${DOTS_DENYLIST:-$HOME/.config/dots-denylist}"
+if [ -s "$denylist" ]; then
+  hits=$(git diff --cached -U0 --no-color --no-ext-diff -- . ':(exclude).mcp/anki-mcp' |
+    grep '^+' | grep -v '^+++' | grep -Einf "$denylist" || true)
+  if [ -n "$hits" ]; then
+    echo "dots is public: staged lines match $denylist" >&2
+    echo "$hits" >&2
+    exit 1
+  fi
+fi
