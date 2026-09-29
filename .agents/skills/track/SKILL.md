@@ -330,9 +330,9 @@ Defaults to `/track list`.
 3. **Backend** — new features are **jj** on any repo with `vcs: jj` (the default going forward); set the feature's `vcs: jj`. Repos without `vcs: jj` use the legacy git path (bottom of step 4).
 4. **Create the working dir** for each repo in the group:
 
-   **jj repos** (`repos[r].vcs == jj`) — a workspace off `trunk()` in the dedicated clone:
+   **jj repos** (`repos[r].vcs == jj`) — a workspace off `trunk()` in the dedicated clone, created with `mkws` so the ignored per-repo files (`.envrc`, `AGENTS.local.md`, `CLAUDE.local.md`) are carried over from `main`:
    ```bash
-   jj -R <jj_repo>/main workspace add --name <feat> -r 'trunk()' <jj_repo>/<feat>
+   cd <jj_repo>/main && mkws <jj_repo>/<feat> --name <feat> -r 'trunk()'
    ```
    - `<feat>` = the feature name (plain, no prefix). Record `<jj_repo>/<feat>` as this repo's `worktree` in frontmatter.
    - Work is branchless; a bookmark named `<feat>` is created only at push / `/track done`.
@@ -353,7 +353,7 @@ Defaults to `/track list`.
    ```
    The agent fills each via `jj edit <change>` (descendants auto-rebase). No plan yet ⇒ skip; lay it later.
 
-   **legacy git repos** (no `vcs: jj`) — ask branch strategy (new vs reuse `<branch>`; base = `default_branch`; same name across repos), then `git worktree add -b <branch> <branch> <default_branch>` (or `git worktree add <branch> <branch>` if it exists); set the feature `vcs: git`.
+   **legacy git repos** (no `vcs: jj`) — ask branch strategy (new vs reuse `<branch>`; base = `default_branch`; same name across repos), then from inside an existing worktree of the repo (e.g. `<bare>/main`) run `mkws <bare>/<branch> -b <branch> <default_branch>` (or `mkws <bare>/<branch> <branch>` if it exists); set the feature `vcs: git`.
 5. **Create v2 skeleton**:
    - `$FEATURE_DIR/spec.md` with frontmatter (`description: ""`) + this body:
      ```markdown
@@ -544,8 +544,8 @@ Soft-delete. Archived features are hidden from all lists but remain on disk. Use
 1. Look up `$FEATURES_DIR/<name>/spec.md`. Not found → "Feature `<name>` not found."
 2. Not archived → "Feature `<name>` is not archived (status: {status})." and stop.
 3. **Recreate the working dir** per `vcs`:
-   - **jj**: `jj -R <jj_repo>/main workspace add --name <feat> -r '<feat>@origin | trunk()' <jj_repo>/<feat>` (restores off the pushed bookmark if it exists, else `trunk()`). Update the path in frontmatter.
-   - **git** (legacy): `git worktree add <worktree> <branch>` (branch exists) / `git worktree add -b <branch> <worktree> origin/<branch>` (remote only) / `git worktree add -b <branch> <worktree> <default_branch>` (gone). Update paths.
+   - **jj**: `cd <jj_repo>/main && mkws <jj_repo>/<feat> --name <feat> -r '<feat>@origin | trunk()'` (restores off the pushed bookmark if it exists, else `trunk()`). Update the path in frontmatter.
+   - **git** (legacy), from inside an existing worktree: `mkws <worktree> <branch>` (branch exists) / `mkws <worktree> -b <branch> origin/<branch>` (remote only) / `mkws <worktree> -b <branch> <default_branch>` (gone). Update paths.
 4. Set `status: in-progress`; `updated` = today. Write back.
 5. **Update index**: `status: in-progress`, update `updated`.
 6. Print worktree paths + "Restored: <name> (status: in-progress)".
