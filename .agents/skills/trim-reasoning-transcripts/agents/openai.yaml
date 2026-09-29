@@ -1,0 +1,4 @@
+interface:
+  display_name: "Trim Reasoning Transcripts"
+  short_description: "Rewrite session-bound prose as durable facts"
+  default_prompt: "Use $trim-reasoning-transcripts to audit this scope for session-bound prose while preserving every factual obligation."
