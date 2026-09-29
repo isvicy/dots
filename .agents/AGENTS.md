@@ -9,19 +9,17 @@
 - **Subagents**: Delegate to a subagent for broad research or exploration that spans many files, directories, or
   sources, or for genuinely independent work that can run in parallel. Do lookups that take a handful of tool calls
   (a known file, a single rg) directly, and do not spawn subagents to double-check your own work.
-- **Design decisions**: Architectural changes and UI/UX changes are the user's call. Propose the design and get
-  approval before implementing it. Routine implementation choices within an agreed design do not need a check-in.
+- **Approval**: Architectural and UI/UX changes are the user's call, and so is the plan for a new tool or feature:
+  propose it and get approval before implementing. Small, clearly scoped changes (a one-line fix, a rename, an edit
+  the user fully specified) and routine choices within an agreed plan can proceed directly.
 - **Chinese writing**: When writing Chinese documents, reports, tables, or MR/PR descriptions, load the `zh-writing`
   skill first.
 
 ## Communication
 
 - Keep responses focused and concise; skip non-essential context, keep examples minimal, and keep caveats short.
-- Before the first tool call, say in one sentence what you are about to do. While working, give a brief update only
-  when you find something important or change direction. When finishing, lead with the outcome.
 - Match the length of written documents to what the task needs; no filler sections, redundant summaries, or
   boilerplate.
-- Only correct an earlier statement when the error would change the user's code, conclusions, or decisions.
 
 ## VCS Conventions
 
@@ -30,20 +28,13 @@
 - Run the project's lint and test commands before committing. Check the README or local dev docs for the right
   commands if unsure.
 - Repos whose path ends in `jj` are managed with jj; repos ending in `.git` are managed with git.
-- Create worktrees/workspaces with `mkws <dir> [jj workspace add / git worktree add args...]` (zsh function from dots)
-  instead of calling `jj workspace add` / `git worktree add` directly: it also symlinks the ignored `AGENTS.local.md`,
-  `CLAUDE.local.md` and `.envrc` into the new workspace and runs `direnv allow`. Run it from inside an existing
-  workspace of the repo, since that is where the files are carried from.
-
-## Workflow
-
-- When asked to build a tool or implement a feature, make a plan and confirm it with the user before implementing.
-  Small, clearly scoped changes (a one-line fix, a rename, an edit the user fully specified) can proceed directly.
+- Create worktrees/workspaces with `mkws <dir> [args]` from inside an existing one; it carries the ignored `.envrc`
+  and `*.local.md` files over.
 
 ## Compact Instructions
 
-If the current task is associated with a tracked feature, run `/track update` before compaction to record the changes
-into the spec, and run `/track read <feature name>` after compaction to recover the context.
+If the current task is associated with a tracked feature, run `/track update` at each milestone so the spec stays
+current, and run `/track read <feature name>` after compaction to recover the context.
 
 Preserve in the summary:
 
