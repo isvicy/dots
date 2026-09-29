@@ -30,6 +30,10 @@
 - Run the project's lint and test commands before committing. Check the README or local dev docs for the right
   commands if unsure.
 - Repos whose path ends in `jj` are managed with jj; repos ending in `.git` are managed with git.
+- Create worktrees/workspaces with `mkws <dir> [jj workspace add / git worktree add args...]` (zsh function from dots)
+  instead of calling `jj workspace add` / `git worktree add` directly: it also symlinks the ignored `AGENTS.local.md`,
+  `CLAUDE.local.md` and `.envrc` into the new workspace and runs `direnv allow`. Run it from inside an existing
+  workspace of the repo, since that is where the files are carried from.
 
 ## Workflow
 
