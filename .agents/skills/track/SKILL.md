@@ -63,7 +63,7 @@ Feature specs are VCS-agnostic; only the physical working dirs differ. Each feat
 
 **jj clone layout** (mirrors the bare + worktrees layout):
 ```
-<jj_repo>/                     e.g. ~/repos/org/kimi-project.jj   (made via: jj git clone <gitlab-url> <jj_repo>/main)
+<jj_repo>/                     e.g. ~/repos/org/project.jj   (made via: jj git clone <gitlab-url> <jj_repo>/main)
 ├── main/     ← the `default` workspace: holds the store, tracks the `main` bookmark, git-colocated
 └── <feat>/   ← one jj workspace per feature (jj-only dir, no .git), from `jj workspace add`
 ```
@@ -206,7 +206,7 @@ repos:
 - `host-kind`: author interface.hostKind > stdio-derived > hosted default.
 
 ### Open Risks & TODOs       # ⚠️ VERBATIM — never compacted
-- [ ] MR !2910 + !564 待合主干
+- [ ] MR !123 + !45 待合主干
 - [ ] Phase 2: cross-repo author-declared MCP transport
 
 ### Key Files                # dedupe by repo|file
@@ -214,7 +214,7 @@ repos:
 |------|------|---------|
 
 ### Verify Status            # current pass/fail + deployed revision
-- project HEAD 658ad5b36 / argo kimi Synced+Healthy
+- backend HEAD abc1234 / deploy Synced+Healthy
 
 ### Active Sessions          # pointer(s) to in-progress / most-recent session files
 - → sessions/036-mcp-transport.md (Phase 1 done, Phase 2 TODO)
@@ -222,8 +222,8 @@ repos:
 ## Sessions (TOC)            ← auto-generated, newest-first
 | #   | Slug          | Date  | Status                 | One-liner                 |
 |-----|---------------|-------|------------------------|---------------------------|
-| 036 | mcp-transport | 06-14 | ✅code+test+ship+e2e   | baidu SSE transport over… |
-| 035 | paid-plugin   | 06-13 | ✅                     | paid-plugin quota notice  |
+| 036 | mcp-transport | 06-14 | ✅code+test+ship+e2e   | SSE transport override…   |
+| 035 | quota-notice  | 06-13 | ✅                     | quota exceeded notice     |
 ```
 
 `## Current State` is a **derived snapshot** — in principle reconstructible from all sessions — so overwriting it loses nothing. That is why it may be rewritten in place while sessions never can.
@@ -237,7 +237,7 @@ Formalizes the session-block pattern agents self-organized. One file per session
 
 **date**: 2026-06-14 · **agent**: <optional, fill when running concurrently> · **status**: Phase 1 done / Phase 2 TODO
 
-> Crux: baidu plugin authorizes OK but won't connect at runtime — materialized MCPUserSetting hardcodes HTTP; baidu is SSE.
+> Crux: the provider authorizes OK but won't connect at runtime — the materialized config hardcodes HTTP; the provider is SSE.
 
 ## 设计结论 (user-confirmed)
 …
@@ -258,8 +258,8 @@ Rolled-up old sessions, one line each, read-path-skipped by default:
 ```markdown
 # Archived Sessions
 
-- SESSION 001 (06-01): catalog scaffold + auth bypass → see Decisions `catalog-auth`
-- SESSION 002 (06-02): pluginkit JSON schema
+- SESSION 001 (06-01): service scaffold + auth bypass → see Decisions `service-auth`
+- SESSION 002 (06-02): config JSON schema
 ```
 
 ### Session ID allocation (sequential + slug + collision suffix)
@@ -533,7 +533,7 @@ Soft-delete. Archived features are hidden from all lists but remain on disk. Use
 6. Feature directory stays intact (the spec is the archival record).
 7. Print:
    ```
-   Archived: search-v2-experiment (group: project)
+   Archived: search-v2-experiment (group: backend)
    Spec retained at ~/.agents/.features/search-v2-experiment/
    Removed worktrees and branches: backend, proto
    Use `/track list archived` to see archived features. Restore: `/track unarchive <name>`
