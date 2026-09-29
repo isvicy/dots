@@ -1,7 +1,10 @@
 ^/\.git
 ^/\.gitignore
 ^/\.gitmodules
+^/\.git-blame-ignore-revs
 ^/README.*
+^/AGENTS\.md
+^/CLAUDE\.md
 
 ^/Makefile
 ^/hack
