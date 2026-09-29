@@ -40,13 +40,20 @@ fi
 # Handle conflicts
 backupdir="${HOME}"/.config.bak
 
-# Loop over each conflicting file
+# Loop over each conflicting file, mirroring its path relative to the target
+# so same-named files from different directories don't overwrite each other
 while read -r file; do
-  # Backup the conflicting file
-  mv "${target}/$file" "${backupdir}"
+  dest="${backupdir}/${file}"
 
-  # Report the backup
-  echo "backed up ${target}/${file} to ${backupdir}/${file}"
+  # Never clobber (or nest into) a backup left by an earlier run
+  if [[ -e "${dest}" || -L "${dest}" ]]; then
+    dest="${dest}.$(date +%Y%m%d%H%M%S)"
+  fi
+
+  ensureTargetDir "$(dirname "${dest}")"
+  mv "${target}/${file}" "${dest}"
+
+  echo "backed up ${target}/${file} to ${dest}"
 done <<<"${conflicts}"
 
 # Retry the stow command
