@@ -124,7 +124,7 @@ A JSON array kept in sync by every mutating subcommand:
 
 Fields mirror frontmatter plus `name` (directory name), `vcs` (`git`|`jj`; absent-in-frontmatter ⇒ `git`), `repos` (flattened to a name list), and `layout` (`"v2"` if `sessions/` exists, else `"legacy"`).
 
-**`description` source**: the frontmatter `description` (≤80 chars). For v2 specs this is the first line / one-liner of `## Current State`. NEVER the full rolling digest — that bloat is exactly what v2 removes.
+**`description` source**: the frontmatter `description` (≤80 chars). For v2 specs this is the first line / one-liner of `## Current State`, not the full rolling digest — that bloat is exactly what v2 removes.
 
 **Rebuild logic**: list all directories in `~/.agents/.features/` containing `spec.md`. For each, parse frontmatter, detect layout. Build the array, sort by `updated` desc, write `.index.json`.
 
@@ -185,7 +185,7 @@ repos:
 - `branch`: git = shared branch name across all repos; jj = the feature/workspace name (also the bookmark set at push)
 - `vcs`: `git` or `jj`; **absent ⇒ git**. Selects the backend for this feature's physical (workspace/worktree) ops
 - `status`: `in-progress`, `finished`, or `archived`
-- `description`: **one line, ≤80 chars.** The feature's elevator pitch / current focus. Derived from `## Current State`. Do NOT stuff a rolling session digest here.
+- `description`: **one line, ≤80 chars.** The feature's elevator pitch / current focus. Derived from `## Current State`; keep the rolling session digest out of it.
 - `created` / `updated`: YYYY-MM-DD
 - `repos`: absolute working-dir path per repo (`worktree:` holds a git worktree dir, or a jj workspace dir when `vcs: jj`)
 
@@ -311,7 +311,7 @@ Defaults to `/track list`.
 1. **Validate**: lowercase alphanumeric + hyphens. Directory must not exist.
 2. **Detect context**: identify current repo from `git-common-dir`, look up its group. If already in a group → step 3.
 
-   **If repo is NOT in config** (auto-onboarding):
+   **If repo is not in config** (auto-onboarding):
    1. Auto-detect the current repo's properties (bare path, default branch, short name).
    2. Scan **all working directories** in the session (primary + `/add-dir`). Auto-detect each; skip already-registered.
    3. Present and confirm:
@@ -397,7 +397,7 @@ Pure **context import** — no persistent state change. Loads a feature into the
    - string name → `$FEATURES_DIR/<name>/`.
    - no arg → run `/track list` and stop.
 2. **Print worktrees + orientation**:
-   - **v2**: print frontmatter + `## Current State` + `## Sessions (TOC)`. This is the cold-start save-game — NOT the full history. Tell the user to `/track read --session N` for a specific session or `--full` for everything.
+   - **v2**: print frontmatter + `## Current State` + `## Sessions (TOC)`. This is the cold-start save-game — not the full history. Tell the user to `/track read --session N` for a specific session or `--full` for everything.
    - **legacy**: print the full `spec.md` (it predates v2; if it is very large, print frontmatter + the top ~150 lines, which are newest-first, and note it is a large legacy spec).
    ```
    Feature: auth-refactor (group: main, branch: auth-refactor, layout: v2)
@@ -441,7 +441,7 @@ Writes the agent's OWN session file (no contention with other agents) and refres
      If a skeleton plan exists, report progress as filled/total from the last query.
    - **git** (legacy): `cd <worktree>; git log --oneline -20; git diff --stat HEAD~5..HEAD`
 4. **Write a new session file** (v2): allocate the filename (see *Session ID allocation*), then write the session using the `sessions/<NNN>-<slug>.md` template. Prefix commits with repo name: `[backend] a1b2c3d fix: …`. Record crux → decisions → implementation (HEAD/commit/file anchors) → ship/e2e → 待办/教训 (`[[memory-links]]`). The session is frozen after this write.
-5. **Refresh `## Current State`** (overwrite in place, **incrementally**): take the existing Current State + the session you just wrote → produce the updated block. NEVER re-summarize all sessions from scratch.
+5. **Refresh `## Current State`** (overwrite in place, **incrementally**): take the existing Current State + the session you just wrote → produce the updated block. Re-summarizing all sessions from scratch loses detail the incremental update keeps.
    - `### Decisions`: add/overwrite by key (last write wins); drop superseded conclusions. Carry explicit user-stated scope limits, non-goals, delivery constraints, and approval gates verbatim until the user changes them; do not infer new constraints.
    - `### Open Risks & TODOs`: carry verbatim; check off resolved, add new. **Never compact this section.**
    - `### Key Files`: merge by repo|file.
@@ -498,9 +498,9 @@ Catches drift between what the spec claims and what the code does (replaces the 
 3. **Explicit-constraint precheck (BLOCKING when constraints exist).** Re-read any user-stated scope limits, non-goals, delivery constraints, and approval gates recorded in Decisions. Reconcile the actual diff and recorded external actions against them. If a recorded constraint is violated or lacks evidence, stop and surface it. If none were recorded, do not invent a contract at finish time.
 4. **Output-surface precheck (BLOCKING).** Before flipping status, answer literally, in user-facing text:
 
-   > "List every user-observable path this feature claims to cover. For each, point at the code (file:line) that implements it. List every path you considered and consciously decided NOT to cover, with the reason."
+   > "List every user-observable path this feature claims to cover. For each, point at the code (file:line) that implements it. List every path you considered and consciously decided not to cover, with the reason."
 
-   If the feature is framed in surface-level terms — "every reply", "all messages", "footer on X", "thread-id on every send" — this is REQUIRED. Grep every site producing that surface (e.g. all `Channel.send` / `sendFormatted` / `openReply` / `openProgress` / `sendDraft` / `edit` / `react` callers) and reconcile each against the spec's claimed coverage (`### Key Files` / Decisions / session implementation notes). If a path is missing, implement it now or add an explicit "Out of scope: <path> because <reason>" to `### Open Risks & TODOs`. If a path is claimed but its user-observable behavior has not been demonstrated end-to-end (test, fixture replay, or live verification), it is NOT done — fix it before step 5. Tiny single-file features may state "single-site change, no surface audit needed" and proceed. (Consider running `/track verify` first.)
+   If the feature is framed in surface-level terms — "every reply", "all messages", "footer on X", "thread-id on every send" — run this audit. Grep every site producing that surface (e.g. all `Channel.send` / `sendFormatted` / `openReply` / `openProgress` / `sendDraft` / `edit` / `react` callers) and reconcile each against the spec's claimed coverage (`### Key Files` / Decisions / session implementation notes). If a path is missing, implement it now or add an explicit "Out of scope: <path> because <reason>" to `### Open Risks & TODOs`. If a path is claimed but its user-observable behavior has not been demonstrated end-to-end (test, fixture replay, or live verification), it is not done — fix it before step 5. Tiny single-file features may state "single-site change, no surface audit needed" and proceed. (Consider running `/track verify` first.)
 
    Rationale: prevents shipping with fallback / non-canonical paths unfixed. See the `feedback-audit-output-surfaces` memory.
 5. Set `status: finished`; `updated` = today.
@@ -515,7 +515,7 @@ Catches drift between what the spec claims and what the code does (replaces the 
    Push/MR (jj, if not already): jj -R <ws> bookmark set <feat> -r @ && jj -R <ws> git push -c @ -o merge_request.create -o merge_request.target=main
    ```
 
-**Do NOT append to `finished_features.md`** — legacy archive, historical reference only.
+`finished_features.md` is a legacy archive kept for historical reference only; leave it unchanged.
 
 ### `/track archive [N|name]` — Archive Feature
 
@@ -595,9 +595,9 @@ The v2 layout is designed for several agents working one feature concurrently �
 
 To migrate a specific legacy spec to v2 on request: split its newest-first session-like blocks into `sessions/<NNN>-<slug>.md` (preserve order and original numbering where present), build `## Current State` from the most recent block, move the rest into `archive.md`, and back up the original `spec.md` first. This is mechanical and reversible but touches an in-use spec — do it deliberately, not as a side effect.
 
-## Important
+## Invariants
 
-- NEVER read an archived feature's spec — archived = failed experiments; stale context pollutes new work.
+- Skip archived features' specs when gathering context — archived = failed experiments, and their stale context misleads new work.
 - `~/.agents/.features/` is global — works from any repo, any git worktree or jj workspace.
 - **jj is the default backend for new features; git is retained for reading existing ones** (`vcs`, absent ⇒ git). jj features live in the repo's dedicated `jj_repo` clone as `jj workspace`s (never the git bare).
 - git features: same branch name across all repos in a group. jj features: the feature name is the workspace dir name and the push-time bookmark. Feature names: lowercase-hyphenated.
