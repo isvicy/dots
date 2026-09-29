@@ -42,12 +42,10 @@ Commits are enforced via **commitlint** (conventional commits) through a husky p
 
 Reusable operational knowledge for agents lives in two places (outside this repo):
 
-- **`~/.agents/skills/`** — Task-specific skills. Symlinked from `~/repos/work/agent-skills/*` (most) and
-  `~/.dots/.agents/skills/*` (a few). Notable: **`volcano-proxy`** — how dev-p reaches Volcano internal resources
-  (RDS etc.) via a forward-proxy pod on the volcano cluster (dev.example.com), exposed via LoadBalancer. Use when
-  connecting to `*.iexample.com`/`*.example.com` from dev-p.
-- **`~/.agents/.features/`** — Feature specs / worklogs (track system). Notable: **`dev-p-migration`** — full
-  worklog of the Mac → dev-p environment migration (proxy/herdr/env/repos/sessions), with detours and lessons.
+- **`~/.agents/skills/`** — Task-specific skills. Personal/common ones live in `~/.dots/.agents/skills/`; the rest
+  come from a private skills repo. `skills-sync` pulls and links both, and restores the third-party skills listed in
+  `.agents/third-party-skills.txt`.
+- **`~/.agents/.features/`** — Feature specs / worklogs (track system), kept outside this repo.
 
 ### Stow tree folding and runtime directories
 
