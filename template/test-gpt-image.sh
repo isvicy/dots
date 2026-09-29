@@ -7,8 +7,8 @@ out="${3:-/tmp/gpt-image-$(date +%s).png}"
 top_model="${TOP_MODEL:-gpt-5.4}"
 image_model="${IMAGE_MODEL:-gpt-image-2}"
 
-endpoint="$(pass show w/domains/svc-openai)"
-api_key="$(pass show w/staff-key)"
+endpoint="${OPENAI_BASE_URL:?set OPENAI_BASE_URL}"
+api_key="${OPENAI_API_KEY:?set OPENAI_API_KEY}"
 
 response="$(curl -sS "${endpoint}/v1/responses" \
   -H "Content-Type: application/json" \
