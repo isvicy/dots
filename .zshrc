@@ -88,4 +88,4 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 [ -r ~/.tool/.profile ] && source ~/.tool/.profile #[tool installer]
 
 # kimi-code
-export PATH="/Users/user/.kimi-code/bin:$PATH"
+export PATH="$HOME/.kimi-code/bin:$PATH"
