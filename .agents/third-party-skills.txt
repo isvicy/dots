@@ -1,0 +1,4 @@
+# Third-party skills restored by skills-sync: <source> <skill-name>
+# <source> is anything `npx skills add` accepts. lark-suite is handled separately via lark-cli.
+tw93/Kami kami
+ogulcancelik/herdr herdr

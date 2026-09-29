@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Bring ~/.agents/skills on this machine in line with the skill sources:
+# dots and the agent-skills repo (git), third-party skills listed in
+# ~/.agents/third-party-skills.txt, and lark-suite via lark-cli.
+set -euo pipefail
+
+dots="${DOTS_DIR:-$HOME/.dots}"
+work="${AGENT_SKILLS_REPO:-$HOME/repos/work/agent-skills}"
+dest="$HOME/.agents/skills"
+manifest="$dots/.agents/third-party-skills.txt"
+
+step() { printf '\n==> %s\n' "$*"; }
+
+pull() {
+  local repo=$1
+  [[ -d $repo/.git ]] || { echo "skip $repo: not a git checkout"; return 0; }
+  git -C "$repo" pull --rebase --autostash --quiet ||
+    { echo "pull failed in $repo; resolve it there and rerun" >&2; exit 1; }
+  echo "$repo @ $(git -C "$repo" log -1 --format='%h %s')"
+}
+
+step "pull"
+pull "$dots"
+pull "$work"
+
+step "link"
+make -C "$dots" link >/dev/null && echo "stow: ok"
+[[ -x $work/link.sh ]] && "$work/link.sh"
+
+step "prune dangling links"
+while IFS= read -r -d '' link; do
+  [[ -e $link ]] || { rm -- "$link"; echo "removed $(basename "$link")"; }
+done < <(find "$dest" -maxdepth 1 -type l -print0)
+
+step "third-party skills"
+while read -r source name; do
+  [[ -z ${source:-} || $source == \#* ]] && continue
+  if [[ -e $dest/$name ]]; then
+    echo "present: $name"
+  else
+    npx -y skills add "$source" -s "$name" -g -y >/dev/null && echo "installed: $name"
+  fi
+done <"$manifest"
+
+step "lark-suite"
+if ! command -v lark-cli >/dev/null; then
+  echo "lark-cli not on PATH; install with: npx @larksuite/cli@latest install"
+elif [[ -e $dest/lark-suite ]]; then
+  echo "present: lark-suite (update with: lark-cli update)"
+else
+  # `lark-cli install` would add the split lark-* skills; the suite layout replaces them.
+  lark-cli update --skills-layout suite --json >/dev/null && echo "installed: lark-suite"
+fi
