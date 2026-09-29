@@ -264,21 +264,11 @@ sync_time() {
 
 _set_common_api_keys() {
   export TAVILY_API_KEY=$(pass show ai/tavily/key)
-  export MSUSER=$(pass show org/git/user)
-  export MSGITTOKEN=$(pass show org/git/token)
-  export MSGITPROXYBASE=$(pass show org/proxy-base)
-  export MSDOMAINBASE=$(pass show org/domain-base)
-  export GOPROXY=$MSUSER:$MSGITTOKEN@$MSGITPROXYBASE,https://goproxy.cn,direct
   export GITHUB_PERSONAL_ACCESS_TOKEN=$(pass show git/github/token)
-}
-
-eg() {
-  export GITLAB_PRIVATE_TOKEN=$(pass show org/git/token)
 }
 
 alias clai="unset TAVILY_API_KEY"
 alias clan="unset ANTHROPIC_API_KEY && unset ANTHROPIC_API_BASE && unset ANTHROPIC_BASE_URL && unset ANTHROPIC_SMALL_FAST_MODEL && unset ANTHROPIC_MODEL"
-alias clgit="unset GITLAB_PRIVATE_TOKEN && unset GITLAB_URL"
 
 _expand_envs() {
   local src="$1"
@@ -340,16 +330,6 @@ yolo() {
   fi
 }
 
-molo() {
-  if [[ "$1" == "update" ]]; then
-    npm install -g @anthropic-ai/claude-code@latest
-  else
-    local cfg=$(_expand_envs "${HOME}/.mcp/default.json")
-    ANTHROPIC_BASE_URL=$(pass show w/kth/base) ANTHROPIC_API_KEY=$(pass show w/kth/key/vb) _claude_run --dangerously-skip-permissions --mcp-config "$cfg" "$@"
-    rm -f "$cfg"
-  fi
-}
-
 cdx() {
   if [[ "$1" == "update" ]]; then
     npm install -g @openai/codex@latest
@@ -383,29 +363,9 @@ mm() {
   kimi --yolo --mcp-config-file "$cfg" "$@"
   rm -f "$cfg"
 }
-mmka() {
-  local cfg=$(_expand_envs "${HOME}/.mcp/default.json")
-  kimi --yolo --skills-dir "${HOME}/skills/anonymize" --mcp-config-file "$cfg" "$@"
-  rm -f "$cfg"
-}
-mmkn() {
-  local cfg=$(_expand_envs "${HOME}/.mcp/default.json")
-  kimi --yolo --skills-dir "${HOME}/skills/non-anonymize" --mcp-config-file "$cfg" "$@"
-  rm -f "$cfg"
-}
 mc() {
   local cfg=$(_expand_envs "${HOME}/.mcp/default.json")
   kimi --yolo --mcp-config-file "$cfg" --config-file "${HOME}/.kimi/codex.toml" "$@"
-  rm -f "$cfg"
-}
-mg() {
-  local cfg=$(_decrypt_sops "${HOME}/.mcp/gitlab.sops.json")
-  kimi --mcp-config-file "$cfg" "$@"
-  rm -f "$cfg"
-}
-yg() {
-  local cfg=$(_decrypt_sops "${HOME}/.mcp/gitlab.sops.json")
-  _claude_run --dangerously-skip-permissions --mcp-config "$cfg" "$@"
   rm -f "$cfg"
 }
 

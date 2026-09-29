@@ -41,10 +41,6 @@ zinit light zsh-users/zsh-autosuggestions
 zinit ice wait lucid
 zinit light Aloxaf/fzf-tab
 
-# Load after zle is ready (wait"0" = load immediately after prompt, before user input)
-zinit ice wait"0" lucid
-zinit light example/zsh-plugin
-
 # syntax-highlighting must be loaded last
 zinit ice wait lucid
 zinit light zsh-users/zsh-syntax-highlighting
@@ -82,10 +78,8 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 [[ -s ${HOME}/.zsh-custom/thirdparty.zsh ]] && source ${HOME}/.zsh-custom/thirdparty.zsh || true
 
 [[ -s ${HOME}/.${(%):-%m}.zsh ]] && source ${HOME}/.${(%):-%m}.zsh || true
+# untracked work-only config; see the header of that file
+[[ -s ${HOME}/.work.zsh ]] && source ${HOME}/.work.zsh || true
 
 [[ -s ${HOME}/.zsh-custom/post.zsh ]] && source ${HOME}/.zsh-custom/post.zsh || true
 
-[ -r ~/.tool/.profile ] && source ~/.tool/.profile #[tool installer]
-
-# kimi-code
-export PATH="$HOME/.kimi-code/bin:$PATH"

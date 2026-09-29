@@ -48,7 +48,3 @@ export CLAUDE_CODE_NO_FLICKER=1
 
 export AGENT_BROWSER_IDLE_TIMEOUT_MS=600000
 export AGENT_BROWSER_DEFAULT_TIMEOUT=60000
-
-export STAFF_KEY=$(pass show w/staff-key)
-export KT_API_KEY=$(pass show w/kth/key/vb)
-export KIMI_CODE_EXPERIMENTAL_FLAG=1
