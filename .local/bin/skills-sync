@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Bring ~/.agents/skills on this machine in line with the skill sources:
-# dots and the agent-skills repo (git), third-party skills listed in
+# dots and the private skills repo in $AGENT_SKILLS_REPO (git, set in ~/.work.zsh), third-party skills listed in
 # ~/.agents/third-party-skills.txt, and lark-suite via lark-cli.
 set -euo pipefail
 
 dots="${DOTS_DIR:-$HOME/.dots}"
-work="${AGENT_SKILLS_REPO:-$HOME/repos/work/agent-skills}"
+work="${AGENT_SKILLS_REPO:-}"
 dest="$HOME/.agents/skills"
 manifest="$dots/.agents/third-party-skills.txt"
 
@@ -21,11 +21,11 @@ pull() {
 
 step "pull"
 pull "$dots"
-pull "$work"
+[[ -n $work ]] && pull "$work"
 
 step "link"
 make -C "$dots" link >/dev/null && echo "stow: ok"
-[[ -x $work/link.sh ]] && "$work/link.sh"
+if [[ -n $work && -x $work/link.sh ]]; then "$work/link.sh"; fi
 
 step "prune dangling links"
 while IFS= read -r -d '' link; do
