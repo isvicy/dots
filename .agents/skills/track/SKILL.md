@@ -1,6 +1,6 @@
 ---
 name: track
-description: Manage multi-repo feature specs. Track what's being built across repo groups, keep specs updated, and let multiple agents stay aligned. Use when user says /track or when starting/finishing feature work.
+description: Manage feature specs and cross-session work records for single-repo and multi-repo work. Use when the user requests track operations, the current task is associated with an existing tracked feature, or applicable project instructions require track.
 argument-hint: "[new|switch|update|read|compact|verify|list|done|archive|unarchive|reindex] [N|name|all|archived|--session N|--full|--archive] [feature-name]"
 user-invocable: true
 ---
@@ -8,6 +8,8 @@ user-invocable: true
 # Track Skill
 
 Manage feature specs in `~/.agents/.features/` — a global directory shared across all repos and agents.
+
+For work associated with an existing tracked feature, automatically read and update its records and restore context after compaction. A registered repository or a new development task alone does not require creating a tracked feature. Follow the user's request and applicable project instructions when creating features or registering repositories.
 
 ## Spec Model: Event-Sourced (v2)
 
