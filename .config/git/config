@@ -1,0 +1,7 @@
+# Personal identity by default; repos under ~/repos/work/ take the work one from the
+# untracked ~/.work.gitconfig, which git skips when the file is missing.
+[user]
+	name = isvicy
+	email = isregistermail@gmail.com
+[includeIf "gitdir:~/repos/work/"]
+	path = ~/.work.gitconfig
