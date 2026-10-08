@@ -8,3 +8,7 @@
 AGENTS.local.md
 AGENTS.override.md
 CLAUDE.local.md
+
+# Claude Code local runtime artifacts
+.claude/scheduled_tasks.lock
+draft_*_folder/
