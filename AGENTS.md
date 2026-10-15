@@ -28,6 +28,8 @@ Commits are enforced via **commitlint** (conventional commits) through a husky p
   `envsubst`. Secret-containing configs (e.g. `gitlab.sops.json`) are encrypted via SOPS (age backend). Contains
   `anki-mcp` as a git submodule.
 - **`.claude/`** — Claude Code config (CLAUDE.md, statusline.sh, commands/).
+- **`.pi/agent/`** — Pi user settings, models, single-file extensions, and themes. Credentials, sessions, trust
+  state, caches, and installed npm packages remain local runtime files.
 - **`.config/herdr/plugins/`** — Herdr plugins (currently `herdr-display-name/`, which pushes per-pane display names
   to the `$display` sidebar token). Previously managed via LaunchAgent (`Library/LaunchAgents/dev.herdr.display-name.plist`)
   and a standalone script (`.config/herdr/scripts/display-name.py`); both removed in favor of the plugin's `[[startup]]`
@@ -67,7 +69,8 @@ files/dirs get linked. Current pre-created dirs:
 - `~/.mcp`
 - `~/.claude`, `~/.kimi`
 - `~/.agents/skills`
-- `~/.config/herdr`, `~/.config/herdr/plugins` — Prevents stow from folding herdr's plugin runtime files
+- `~/.pi`, `~/.pi/agent`
+- `~/.config/herdr`, `~/.config/herdr/plugins`
 
 **When adding a new app config under `.config/`:** If the app writes runtime files into its config directory (logs,
 caches, state files, sockets, etc.), add the directory to `stow-with-backup.sh`'s `ensureTargetDir` list to prevent tree

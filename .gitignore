@@ -9,3 +9,5 @@
 
 # python bytecode
 **/__pycache__/
+
+/.pi/

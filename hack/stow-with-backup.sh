@@ -20,10 +20,8 @@ ensureTargetDir "${HOME}/.mcp"
 ensureTargetDir "${HOME}/.claude"
 ensureTargetDir "${HOME}/.kimi"
 ensureTargetDir "${HOME}/.agents/skills"
-
-# herdr runtime dirs: keep plugins/ as a real directory so herdr can create
-# config/, state/, etc. inside it without stow folding the whole plugins/
-# into a symlink that would leak runtime files into the dots repo.
+ensureTargetDir "${HOME}/.pi"
+ensureTargetDir "${HOME}/.pi/agent"
 ensureTargetDir "${HOME}/.config/herdr"
 ensureTargetDir "${HOME}/.config/herdr/plugins"
 
