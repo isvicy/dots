@@ -13,6 +13,7 @@ base_dir=$(dirname "$script")
 ensureTargetDir "${HOME}/.config.bak"
 ensureTargetDir "${HOME}/.config"
 ensureTargetDir "${HOME}/.config/direnv"
+ensureTargetDir "${HOME}/.config/pnpm"
 ensureTargetDir "${HOME}/.local"
 ensureTargetDir "${HOME}/.local/bin"
 ensureTargetDir "${HOME}/.local/share"

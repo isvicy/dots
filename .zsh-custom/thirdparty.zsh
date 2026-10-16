@@ -27,10 +27,9 @@ typeset -U path
 path=("$HOME/.proto/shims" "$HOME/.proto/bin" $path)
 
 export PNPM_HOME="${HOME}/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
+# pnpm 11+ uses bin/; keep the legacy directory as a fallback.
+# .config/pnpm/rc directs pnpm 10 installs into bin/ as well.
+path=("$PNPM_HOME/bin" "$PNPM_HOME" $path)
 
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"

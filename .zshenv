@@ -15,4 +15,6 @@ path=("$HOME/.local/bin" "$HOME/.proto/shims" "$HOME/.proto/bin" $path)
 
 # pnpm global bins (claude/codex etc.)
 export PNPM_HOME="$HOME/.local/share/pnpm"
-path=("$PNPM_HOME" $path)
+# pnpm 11+ uses bin/; keep the legacy directory as a fallback.
+# .config/pnpm/rc directs pnpm 10 installs into bin/ as well.
+path=("$PNPM_HOME/bin" "$PNPM_HOME" $path)

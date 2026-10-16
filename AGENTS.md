@@ -65,6 +65,7 @@ files/dirs get linked. Current pre-created dirs:
 - `~/.config.bak` — Backup location for conflicting files
 - `~/.config` — Base config directory
 - `~/.config/direnv`
+- `~/.config/pnpm`
 - `~/.local`, `~/.local/bin`, `~/.local/share`
 - `~/.mcp`
 - `~/.claude`, `~/.kimi`
