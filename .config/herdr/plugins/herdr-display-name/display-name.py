@@ -2,11 +2,12 @@
 """Push a computed per-pane display name to the `$display` sidebar token.
 
 Priority: custom agent name (herdr agent rename) > herdr pane label (herdr
-pane rename) > slug-like terminal title (assigned by launch scripts, e.g.
-"compactor-fable-0726") > meaningful tab label > agent type.
-Terminal titles that are not slugs (prompt excerpts, URLs, "Claude Code",
-CJK text, anything with spaces) are treated as unnamed and skipped, as are
-tab labels that are bare numbers ("1", "8").
+pane rename) > agent terminal title > meaningful tab label > agent type.
+Terminal titles may be generated or manually renamed; their spelling does
+not tell us which. Accept readable titles, including CJK and spaces, but skip
+known default titles such as "Claude Code". For Codex, remove the trailing
+current-directory segment from its default title. Bare-number tab labels
+("1", "8") are skipped.
 Values carry a TTL, so panes that vanish stop being reported and the token
 disappears from the sidebar on its own.
 
@@ -15,7 +16,6 @@ starts and kills it on shutdown, so no LaunchAgent/systemd unit is needed.
 """
 import json
 import os
-import re
 import shutil
 import subprocess
 import time
@@ -23,13 +23,6 @@ import time
 SOURCE = "plugin:isvicy.display-name"
 POLL_SECONDS = 3
 TTL_MS = "15000"
-
-# A title only counts as an explicit name when it looks like a slug the
-# launch tooling would assign: lowercase ASCII, digits, dots, underscores,
-# dashes. Anything else (prompt excerpts, URLs, "Claude Code", CJK) means
-# the pane was never given a real name.
-SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
-
 
 def find_herdr_bin():
     # herdr injects HERDR_BIN_PATH into plugin commands; fall back to PATH
@@ -80,10 +73,24 @@ def herdr(*args):
 
 
 def title_name(agent):
-    title = agent.get("terminal_title_stripped")
-    if title and SLUG_RE.match(title):
-        return title
-    return None
+    title = (agent.get("terminal_title_stripped") or "").strip()
+    kind = (agent.get("agent") or "").casefold()
+    cwd = agent.get("foreground_cwd") or agent.get("cwd") or ""
+    directory = os.path.basename(cwd.rstrip("/"))
+    defaults = {"", kind}
+    if kind == "claude":
+        defaults.add("claude code")
+    elif kind == "codex":
+        # Strip only a verified directory suffix, not arbitrary pipes in a
+        # session name. Without a thread name, Codex shows just the directory.
+        suffix = f" | {directory}"
+        if directory and title.endswith(suffix):
+            title = title[:-len(suffix)].strip()
+        elif directory:
+            defaults.add(directory.casefold())
+    elif kind == "pi" and directory:
+        defaults.add(f"π - {directory}".casefold())
+    return title if title.casefold() not in defaults else None
 
 
 def tick():
