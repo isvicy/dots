@@ -351,10 +351,10 @@ yolo() {
 
 cdx() {
   if [[ "$1" == "update" ]]; then
-    npm install -g @openai/codex@latest
+    pnpm add -g @openai/codex@latest && rehash
   else
     _agents_sync
-    codex --search --dangerously-bypass-approvals-and-sandbox "$@"
+    codex --dangerously-bypass-approvals-and-sandbox "$@"
   fi
 }
 
