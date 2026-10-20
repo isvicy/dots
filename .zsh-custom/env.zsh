@@ -35,6 +35,12 @@ if [ -d "$HOME/.cargo/bin" ]; then
   export PATH="${HOME}/.cargo/bin:${PATH}"
 fi
 
+if [ -d "$HOME/.grok/bin" ]; then
+  export PATH="${HOME}/.grok/bin:${PATH}"
+  fpath=($HOME/.grok/completions/zsh $fpath)
+  autoload -Uz compinit && compinit -C
+fi
+
 export SHELL=$(which zsh)
 export GPG_TTY=$TTY
 
