@@ -11,3 +11,8 @@
 **/__pycache__/
 
 /.pi/
+
+# paid fonts: licensed for personal use only, kept out of this public repo
+/.local/share/fonts/Comic Code/
+/.local/share/fonts/FZJuZXFJF.TTF
+/.local/share/fonts/fangzhengjuzhenxinfang.ttf
