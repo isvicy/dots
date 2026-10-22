@@ -52,5 +52,11 @@ export CLAUDE_CODE_NO_FLICKER=1
 # default Opus reasoning effort to max (only persistable via env var)
 # export CLAUDE_CODE_EFFORT_LEVEL=max
 
+# Claude Code privacy: disable telemetry, feature flags, and nonessential traffic
+export DISABLE_TELEMETRY=1
+export DO_NOT_TRACK=1
+export DISABLE_GROWTHBOOK=1
+export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+
 export AGENT_BROWSER_IDLE_TIMEOUT_MS=600000
 export AGENT_BROWSER_DEFAULT_TIMEOUT=60000
