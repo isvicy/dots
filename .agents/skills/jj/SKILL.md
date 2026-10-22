@@ -172,3 +172,5 @@ jj log -r 'immutable_heads().. & ~::working_copies()'   # 先看选择集再决�
 - 社区：[Chris Krycho: megamerges 与 jj absorb](https://v5.chriskrycho.com/journal/jujutsu-megamerges-and-jj-absorb/) ·
   [André Arko: jj part 3 workflows](https://andre.arko.net/2025/10/12/jj-part-3-workflows/) ·
   [neugierig: Understanding jj bookmarks](https://neugierig.org/software/blog/2025/08/jj-bookmarks.html)
+
+- **jj 0.44 显式推送新书签无需 `--allow-new`**（2026-10-22）：该参数会报 unexpected argument。先看本机 `jj git push --help`；`jj git push --bookmark <name>` 会自动创建并跟踪远端新书签。出处：本机 jj 0.44.0 帮助和 [官方 CLI reference](https://docs.jj-vcs.dev/latest/cli-reference/#jj-git-push)。
