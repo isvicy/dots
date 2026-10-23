@@ -174,3 +174,5 @@ jj log -r 'immutable_heads().. & ~::working_copies()'   # 先看选择集再决�
   [neugierig: Understanding jj bookmarks](https://neugierig.org/software/blog/2025/08/jj-bookmarks.html)
 
 - **jj 0.44 显式推送新书签无需 `--allow-new`**（2026-10-22）：该参数会报 unexpected argument。先看本机 `jj git push --help`；`jj git push --bookmark <name>` 会自动创建并跟踪远端新书签。出处：本机 jj 0.44.0 帮助和 [官方 CLI reference](https://docs.jj-vcs.dev/latest/cli-reference/#jj-git-push)。
+
+- **公共祖先 revset 不使用 `common_ancestors()`**（2026-10-23）：本机 jj 0.44 会报该函数不存在。用 `heads(::A & ::B)` 选取 A、B 的最近公共祖先；先确认结果数量再用于 diff。出处：[官方 revset operators](https://docs.jj-vcs.dev/latest/revsets/#operators) 与本机复验。
